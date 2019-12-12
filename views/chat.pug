@@ -1,0 +1,35 @@
+doctype 5
+html
+  head
+    title= 'Chat'
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous")
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js", integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous")
+    script(src='/socket.io/socket.io.js')
+    script(src='//code.jquery.com/jquery-1.11.1.js')
+  body
+    center
+      div
+        button.btn.btn-info(type='button') 채팅방
+      div
+        textarea#chatLog.form-control(readonly='')
+      form#chat
+        input#name.form-contorl(type='text')
+        input#message.form-contorl(type='text')
+        button.btn.btn-primary(type='submit') 전송
+      #box.box
+    script.
+      var socket = io(); 
+      $('#chat').on('submit', function(e){ 
+      socket.emit('send message', $('#name').val(), $('#message').val());
+      $('#message').val('');
+      $('#message').focus();
+      e.preventDefault();
+      });
+      socket.on('create name', function(name){ 
+      $('#name').val(name);
+      });
+      socket.on('receive message', function(msg){ 
+      $('#chatLog').append(msg+'\n');
+      $('#chatLog').scrollTop($('#chatLog')[0].scrollHeight);
+      });
