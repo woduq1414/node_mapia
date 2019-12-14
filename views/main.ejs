@@ -1,0 +1,152 @@
+<html>
+  <head>
+    <title>즐거운 채팅방</title>
+    <script src='/socket.io/socket.io.js'></script>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.js"
+    integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <h1>chat</h1>
+    <div class="container" >
+        <div style="height:80%">
+          <div style="overflow-y:scroll;width:25%;height:100%;float: left;">
+                <div>
+                  name:
+                  <h3 id="currentName"></h3>
+                  <input id="inputName" type="text">
+                  <button id="setName">Change</button>
+                  <div id="roomContainer">
+      
+                  </div>
+                </div>
+          </div>
+          <div style="width:75%;height:100%;float: left;">
+            <div style="height : 90%;overflow-y:scroll;" id="chatting" readonly=''>
+
+            </div>
+            <div style="height : 10%">
+              <textarea id="chatArea" style="width:80%;height:100%;float:left;" ></textarea>
+              <button id="chatSend" style="width:20%;height:100%;float:left;">Send</button>
+            </div>
+          </div>
+        </div>
+       
+    </div>
+
+  </body>
+  <script>
+
+    function getColor(text){
+      var hash = 0, len = text.length;
+      if (text.length === 0) {
+          return hash;
+      }
+      for (i = 0; i < len; i++) {
+          charC = text.charCodeAt(i);
+          hash = ((hash<<5)-hash)+charC;
+          hash = hash & hash; 
+      }
+      
+      hash = hash * hash
+      hash = hash % 16777216
+      hash = hash.toString(16)
+      return hash;
+    }
+
+    function chatAppend(type, text){
+      if(type == 0){
+        $('#chatting').append("<div style='text-align:center'>" + text + "</div>");
+      }else if(type == 1){
+        $('#chatting').append("<div style='text-align:left'>" + text + "</div>");
+      }
+      $('#chatting').focus()
+    }
+
+
+
+    var socket = io(); 
+    var currentRoom;
+
+    $(document).on("click", "#chatSend", function(){
+
+      var name = $('#currentName').text();
+      var text = $('#chatArea').val();
+      socket.emit('sendChat', currentRoom, name, text);
+
+    })
+
+    socket.on('receiveChat', function(name, text){
+      chatAppend(1, "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span> : " + text);
+    })
+
+    socket.on('noticeChangeName', function(before, after){
+      console.log("d")
+      chatAppend(0, "<span style='font-weight:1000;color:#" + getColor(before) + "'>" + before + "</span>님이 " + "<span style='font-weight:1000;color:#" + getColor(after) + "'>" + after + "</span>로 이름 바꿈 ㅋ");
+    })
+
+
+    $(document).on("click", ".room", function(){
+
+      var roomName = $(this).children('.roomName').text();
+      socket.emit('joinRoom', roomName, $('#currentName').text());
+
+    })
+
+    socket.on('joinRoom', function(roomName, name, me){
+      if (me){
+        $('#chatting').html('');
+      }
+      
+      chatAppend(0, "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "에 입장함 ㅋ")
+      currentRoom = roomName;
+
+  
+    })
+      
+    socket.on('leaveRoom', function(roomName, name){
+      chatAppend(0, "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "을 나감 ㅋ")
+      currentRoom = undefined;
+    })
+      
+
+    socket.on('failSetName', function(){
+      alert("이미 있는 이름임ㅋ");
+    })
+
+    socket.on('successSetName', function(){
+      $('#currentName').text($('#inputName').val())
+    })
+
+    $(document).on("click", "#setName", function(){
+
+      var a = $('#currentName').text();
+      var b = $('#inputName').val()
+      
+      socket.emit('changeName', a, b)
+      
+    })
+
+
+    socket.on('refreshMain', function(data){
+      console.log(data);
+      var string = "<hr>";
+      for (key in data){
+        
+        string += "<div class='room'> <h1 class='roomName'>" + key + "</h1>"
+        for (i in data[key]){
+          string += "<h3 >" + data[key][i] + "</h3>"
+        }
+        string += "</div>"
+        string += "<hr>"
+      }
+      $('#roomContainer').html(string);
+    })
+
+  </script>
+</html>
