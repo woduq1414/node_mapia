@@ -60,12 +60,14 @@
     }
 
     function chatAppend(type, text){
-      if(type == 0){
-        $('#chatting').append("<div style='text-align:center'>" + text + "</div>");
-      }else if(type == 1){
-        $('#chatting').append("<div style='text-align:left'>" + text + "</div>");
+      if(type == "noticePrimary"){
+        $('#chatting').append("<div class='alert alert-primary' style='text-align:center'>" + text + "</div>");
+      }else if(type == "chat"){
+        $('#chatting').append("<div class='alert alert-light' style='text-align:left'>" + text + "</div>");
+      }else if(type == "noticeDanger"){
+        $('#chatting').append("<div class='alert alert-danger' style='text-align:center'>" + text + "</div>");
       }
-      $('#chatting').focus()
+      $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
     }
 
 
@@ -82,12 +84,12 @@
     })
 
     socket.on('receiveChat', function(name, text){
-      chatAppend(1, "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span> : " + text);
+      chatAppend("chat", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span> : " + text);
     })
 
     socket.on('noticeChangeName', function(before, after){
       console.log("d")
-      chatAppend(0, "<span style='font-weight:1000;color:#" + getColor(before) + "'>" + before + "</span>님이 " + "<span style='font-weight:1000;color:#" + getColor(after) + "'>" + after + "</span>로 이름 바꿈 ㅋ");
+      chatAppend("noticePrimary", "<span style='font-weight:1000;color:#" + getColor(before) + "'>" + before + "</span>님이 " + "<span style='font-weight:1000;color:#" + getColor(after) + "'>" + after + "</span>로 이름 바꿈 ㅋ");
     })
 
 
@@ -103,15 +105,18 @@
         $('#chatting').html('');
       }
       
-      chatAppend(0, "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "에 입장함 ㅋ")
+      chatAppend("noticePrimary", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "에 입장함 ㅋ")
       currentRoom = roomName;
 
   
     })
       
-    socket.on('leaveRoom', function(roomName, name){
-      chatAppend(0, "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "을 나감 ㅋ")
-      currentRoom = undefined;
+    socket.on('leaveRoom', function(roomName, name, me){
+      chatAppend("noticeDanger", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "을 나감 ㅋ")
+      if(me){
+        currentRoom = undefined;
+      }
+      
     })
       
 

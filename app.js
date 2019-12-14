@@ -11,7 +11,7 @@ app.engine('html', require('ejs').renderFile);
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname + '/public'));
 
-var temp = "";
+
 
 app.get('/main', (req, res) => {  
 	temp = "main";
@@ -41,7 +41,7 @@ io.on('connection', function(socket){
 	socket.emit('refreshMain', info);
 
 
-	console.log(temp);
+
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
@@ -49,7 +49,17 @@ io.on('connection', function(socket){
 		for (key in info){
         
 			for (i in info[key]){
-			  if(info[key][i] == socket.name) info[key].splice(i,1); 
+			  if(info[key][i] == socket.name){
+				var temp = key;
+
+				
+
+				socket.emit('joinRoom', temp, socket.name, 1);
+				socket.broadcast.to(temp).emit('joinRoom', temp, socket.name, 0);
+
+				info[key].splice(i,1); 
+				  
+			  }
 			}
 
 		}
