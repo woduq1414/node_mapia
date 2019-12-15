@@ -27,11 +27,11 @@ app.get('/chat/:room', (req, res) => {
 var count=1;
 
 
-var info = {"room1" : [],
-			"room2" : [],
-			"room3" : [],
-			"room4" : [],
-			"room5" : []
+var info = {"r1" : [],
+			"r2" : [],
+			"r3" : [],
+			"r4" : [],
+			"r5" : []
 			};
 
 io.on('connection', function(socket){
@@ -39,9 +39,6 @@ io.on('connection', function(socket){
 
 	console.log('user connected: ', socket.id);
 	socket.emit('refreshMain', info);
-
-
-
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');

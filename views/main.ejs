@@ -20,7 +20,10 @@
                   name:
                   <h3 id="currentName"></h3>
                   <input id="inputName" type="text">
-                  <button id="setName">Change</button>
+                  <button class="btn btn-primary" id="setName">Change</button>
+                  <hr>
+                  <button class="btn btn-primary" style="width:100%">Room +</button>
+
                   <div id="roomContainer">
       
                   </div>
@@ -31,8 +34,8 @@
 
             </div>
             <div style="height : 10%">
-              <textarea id="chatArea" style="width:80%;height:100%;float:left;" ></textarea>
-              <button id="chatSend" style="width:20%;height:100%;float:left;">Send</button>
+              <input type="text" id="chatArea" style="width:80%;height:100%;float:left;" ></input>
+              <button  class="btn btn-primary" id="chatSend" style="width:20%;height:100%;float:left;">Send</button>
             </div>
           </div>
         </div>
@@ -75,13 +78,19 @@
     var socket = io(); 
     var currentRoom;
 
-    $(document).on("click", "#chatSend", function(){
-
+    function chatSend(){
       var name = $('#currentName').text();
       var text = $('#chatArea').val();
       socket.emit('sendChat', currentRoom, name, text);
+      $('#chatArea').val('');
+    }
 
+
+    $(document).on("click", "#chatSend", function(){
+      chatSend();
     })
+    $("#chatArea").keyup(function(e){if(e.keyCode == 13)  chatSend(); });
+
 
     socket.on('receiveChat', function(name, text){
       chatAppend("chat", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span> : " + text);
