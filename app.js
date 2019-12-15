@@ -27,13 +27,16 @@ app.get('/chat/:room', (req, res) => {
 var count=1;
 
 
-var info = {"r1" : [],
-			"r2" : [],
-			"r3" : [],
-			"r4" : [],
-			"r5" : []
+var info = {"r1" : {"members" : []},
+			"r2" : {"members" : []},
+			"r3" : {"members" : []},
+			"r4" : {"members" : []},
+			"r5" : {"members" : []}
 			};
 
+
+
+			
 io.on('connection', function(socket){
 
 
@@ -45,16 +48,16 @@ io.on('connection', function(socket){
 		
 		for (key in info){
         
-			for (i in info[key]){
-			  if(info[key][i] == socket.name){
+			for (i in info[key]["members"]){
+			  if(info[key]["members"][i] == socket.name){
 				var temp = key;
 
 				
 
-				socket.emit('joinRoom', temp, socket.name, 1);
-				socket.broadcast.to(temp).emit('joinRoom', temp, socket.name, 0);
+				socket.emit('leaveRoom', temp, socket.name, 1);
+				socket.broadcast.to(temp).emit('leaveRoom', temp, socket.name, 0);
 
-				info[key].splice(i,1); 
+				info[key]["members"].splice(i,1); 
 				  
 			  }
 			}
@@ -62,15 +65,15 @@ io.on('connection', function(socket){
 		}
 		io.emit('refreshMain', info);
 	});
-	
+
 
 	socket.on('changeName', (before, after) => {
 		var f = 0;
 		var temp;
 
 		for (key in info){
-			for (i in info[key]){
-				if(info[key][i] == after && after && f == 0) {
+			for (i in info[key]["members"]){
+				if(info[key]["members"][i] == after && after && f == 0) {
 					socket.emit('failSetName');
 
 					f = 1;
@@ -80,10 +83,10 @@ io.on('connection', function(socket){
 		if (f == 0){
 			for (key in info){
         
-				for (i in info[key]){
-				  if(info[key][i] == before) {
+				for (i in info[key]["members"]){
+				  if(info[key]["members"][i] == before) {
 					temp = key;
-					info[key][i] = after; 
+					info[key]["members"][i] = after; 
 					
 
 				  }
@@ -109,24 +112,24 @@ io.on('connection', function(socket){
 			console.log(info, socket.name)
 			for (key in info){
 			
-				for (i in info[key]){
-					if(info[key][i] == socket.name && roomName != key ){
+				for (i in info[key]["members"]){
+					if(info[key]["members"][i] == socket.name && roomName != key ){
 						
 						var temp = key;
 						var temp2 = i;
 						socket.leave(temp)
 
 						io.to(temp).emit('leaveRoom', temp, name);
-						info[temp].splice(temp2,1);
+						info[temp]["members"].splice(temp2,1);
 						
 					}
 				}
 
 			}
 			
-			if (!info[roomName].includes(name) && name != ""){
+			if (!info[roomName]["members"].includes(name) && name != ""){
 				//console.log(key, roomName)
-				info[roomName].push(name);
+				info[roomName]["members"].push(name);
 
 
 				socket.join(roomName, () => {
@@ -147,6 +150,7 @@ io.on('connection', function(socket){
 
 		io.to(roomName).emit('receiveChat', name, text);
 	})
+	
 	
 
 })

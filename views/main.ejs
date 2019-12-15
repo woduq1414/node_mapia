@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>즐거운 채팅방</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src='/socket.io/socket.io.js'></script>
     <script
     src="https://code.jquery.com/jquery-3.4.1.js"
@@ -12,15 +13,14 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>chat</h1>
     <div class="container" >
-        <div style="height:80%">
-          <div style="overflow-y:scroll;width:25%;height:100%;float: left;">
+        <div style="height:97%">
+          <div style="overflow-y:auto;width:25%;height:100%;float: left;">
                 <div>
                   name:
                   <h3 id="currentName"></h3>
                   <input id="inputName" type="text">
-                  <button class="btn btn-primary" id="setName">Change</button>
+                  <button class="btn btn-primary" id="setName">Set</button>
                   <hr>
                   <button class="btn btn-primary" style="width:100%">Room +</button>
 
@@ -30,7 +30,7 @@
                 </div>
           </div>
           <div style="width:75%;height:100%;float: left;">
-            <div style="height : 90%;overflow-y:scroll;" id="chatting" readonly=''>
+            <div style="height : 90%;overflow-y:auto;" id="chatting" readonly=''>
 
             </div>
             <div style="height : 10%">
@@ -44,6 +44,7 @@
 
   </body>
   <script>
+  
 
     function getColor(text){
       var hash = 0, len = text.length;
@@ -78,6 +79,10 @@
     var socket = io(); 
     var currentRoom;
 
+    function getMyName(){
+      return $('#currentName').text();
+    }
+  
     function chatSend(){
       var name = $('#currentName').text();
       var text = $('#chatArea').val();
@@ -97,7 +102,7 @@
     })
 
     socket.on('noticeChangeName', function(before, after){
-      console.log("d")
+  
       chatAppend("noticePrimary", "<span style='font-weight:1000;color:#" + getColor(before) + "'>" + before + "</span>님이 " + "<span style='font-weight:1000;color:#" + getColor(after) + "'>" + after + "</span>로 이름 바꿈 ㅋ");
     })
 
@@ -148,18 +153,31 @@
 
 
     socket.on('refreshMain', function(data){
+      $('[data-toggle="tooltip"]').tooltip('hide')
       console.log(data);
       var string = "<hr>";
       for (key in data){
-        
-        string += "<div class='room'> <h1 class='roomName'>" + key + "</h1>"
-        for (i in data[key]){
-          string += "<h3 >" + data[key][i] + "</h3>"
+        var members = "접속자 : " + data[key]["members"].length + "명";
+        for (i in data[key]["members"]){
+          members += "<br> <span>" + data[key]["members"][i] + "</span>"
         }
+
+        if(data[key]["members"].includes(getMyName())){
+          string += `<div class='room alert alert-warning'
+          data-toggle='tooltip' data-placement='bottom' data-html='true' title='${members}'> <h1 class='roomName'>${key}</h1>`
+        }else{
+          string += `<div class='room alert alert-info'
+          data-toggle='tooltip' data-placement='bottom' data-html='true' title='${members}'> <h1 class='roomName'>${key}</h1>`
+        }
+        
+
+        
         string += "</div>"
         string += "<hr>"
       }
       $('#roomContainer').html(string);
+      
+      $('[data-toggle="tooltip"]').tooltip()
     })
 
   </script>
