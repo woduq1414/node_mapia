@@ -8,7 +8,6 @@ app.set('views', './views');
 app.set('view engine', 'ejs');
 app.engine('html', require('ejs').renderFile);
 
-//app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname + '/public'));
 
 
@@ -21,7 +20,6 @@ app.get('/main', (req, res) => {
 app.get('/chat/:room', (req, res) => {  
 	temp = "chat";
 	res.render('chat.ejs');
-	//console.log(req.params.room);
 });
 
 var count=1;
@@ -117,10 +115,25 @@ io.on('connection', function(socket){
 			io.to(temp).emit('noticeChangeName', before, after);
 		}
 		
-		
-		
 		io.emit('refreshMain', info);
 
+	})
+
+	socket.on('changeRoomName', function(before, after){
+		info[after] = info[before];
+		delete info[before];
+		console.log( io.sockets.adapter.rooms[before].sockets, after);
+		let beforeList = io.sockets.adapter.rooms[before].sockets;
+
+		for (socketID in beforeList){
+			let sock = io.sockets.connected[socketID];
+			sock.leave(before)
+			sock.join(after)
+
+		}
+		io.to(after).emit('changeRoomName', before, after)
+	
+		io.emit('refreshMain', info);
 	})
 
 	socket.on('joinRoom', (roomName, name) => {
@@ -185,7 +198,7 @@ io.on('connection', function(socket){
 
 	socket.on('sendChat', function(roomName, name, text){
 
-		io.to(roomName).emit('receiveChat', roomName, name, text);
+		io.to(roomName).emit('receiveChat', socket.id, roomName, name, text);
 	})
 	
 	

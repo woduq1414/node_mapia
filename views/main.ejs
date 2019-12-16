@@ -32,19 +32,28 @@
                   </div>
                 </div>
           </div>
-          <div style="width:75%;height:100%;float: left;">
-            <div style="height : 90%;overflow-y:auto;" id="chatting" readonly=''>
-
+          <div id="chatContainer" style="width:75%;height:100%;float: left;">
+            <div style="height:0px" id="chatRoomManage">
             </div>
-            <div style="height : 10%">
+            <div>
+              <div style="overflow-y:auto;" id="chatting" readonly=''>
+
+              </div>
+              <div style="height : 40px" id="chatSendArea">
               <input type="text" id="chatArea" style="width:80%;height:100%;float:left;" ></input>
               <button  class="btn btn-primary" id="chatSend" style="width:20%;height:100%;float:left;">Send</button>
+              </div>
             </div>
+            
           </div>
         </div>
        
     </div>
-
+    <div id="popup-content" class="hide" style="display:none">
+        <button class='btn btn-primary OK'>OK</button>  
+        <h1>Simple popover with a close button.</h1>
+        
+    </div>
   </body>
   <script>
   
@@ -94,11 +103,59 @@
       $('#chatArea').val('');
     }
 
+    if(!currentRoom){
+      $('#chatContainer').css('visibility', 'hidden');
+    }else{
+      $('#chatContainer').css('visibility', 'visible');
+    }
+
+
+    $(document).on("click", "#chatRoomManage", function(){
+      Swal.fire({
+        title: 'Room Manage',
+        html: `<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">방 이름</span>
+  </div>
+  <input type="text" id="roomNameArea" class="form-control" placeholder="방 이름" aria-label="방 이름" aria-describedby="basic-addon1" value="${currentRoom}">
+</div>`,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Apply'
+      }).then((result) => {
+        let before = currentRoom
+        let after = $('#roomNameArea').val()
+        if (before != after){
+          socket.emit('changeRoomName', before, after)
+        }
+        
+       
+      })
+    })
+
+    socket.on('changeRoomName', function(before,after){
+      chatAppend("noticePrimary", `방의 이름이 ${before}에서 ${after}로 변경됨 ㅋ`);
+    })
+
+    socket.on('a',function(data){
+      console.log(data);
+    })
 
     $(document).on("click", "#chatSend", function(){
       chatSend();
     })
     $("#chatArea").keyup(function(e){if(e.keyCode == 13)  chatSend(); });
+
+    $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#chatRoomManage").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+    $(window).resize(function(){
+      $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#chatRoomManage").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+    })
+
+
+    $(document).on("click", ".chatName", function(){
+
+    })
 
 
     $(document).on("click", "#makeRoom", function(){
@@ -130,14 +187,95 @@
     socket.on('newRoomMaster', function(roomName, name){
 
       chatAppend("noticePrimary", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "의 방장이 됨 ㅋ");
+
+      if(name === getMyName()){
+        $('#chatRoomManage').html(`<div class="alert alert-secondary" style="width:100%;height:40px">방 관리</div>`)
+        $('#chatRoomManage').css('height', "40px")
+        $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#chatRoomManage").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+      }else{
+        $('#chatRoomManage').html(`<div class="alert alert-secondary" style="width:100%;height:0px">방 관리</div>`)
+        $('#chatRoomManage').css('height', "0px")
+        $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#chatRoomManage").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+     
+      }
+
     })
 
 
-    socket.on('receiveChat', function(roomName, name, text){
+    socket.on('receiveChat', function(socketID, roomName, name, text){
       if(info[roomName].members[0] == name){
-        chatAppend("chat", "<span style='font-weight:1000;color:#" + getColor(name) + "'>  <i class='fas fa-crown'></i> " + name + "</span> : " + text);
+        chatAppend("chat", `<span data-toggle="popover" data-placement="bottom"  data-html="true"
+                            class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'><i class='fas fa-crown'></i> ${name}</span> : ${text}`)
+        let $pop =  $('.'+ socketID)
+        $pop.popover({
+            placement: 'bottom',
+            trigger: 'click',
+            html: true,
+            sanitize: false,
+            title: `<span>${name}</span>   <a class="close"><i style="font-size:20px" class="fas fa-times"></i></a>`,
+            content: 
+            `
+                  <button class="btn btn-primary mandate" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >방장 위임</button>
+                  <button class="btn btn-danger kick" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >나가 ㅋ</button>
+            `
+            
+        }).on('shown.bs.popover', function(e) {
+          
+            var current_popover = '#' + $(e.target).attr('aria-describedby');
+            var $cur_pop = $(current_popover);
+          
+            $cur_pop.find('.close').click(function(){
+                //console.log('close triggered');
+                $pop.popover('hide');
+            });
+          
+            $cur_pop.find('.mandate').click(function(){
+                //console.log('OK triggered');
+                $pop.popover('hide');
+            });
+            $cur_pop.find('.kick').click(function(){
+                //console.log('OK triggered');
+                $pop.popover('hide');
+            });
+        });
+
+
       }else{
-        chatAppend("chat", "<span style='font-weight:1000;color:#" + getColor(name) + "'>  <i class='fas fa-crown'></i> " + name + "</span> : " + text);
+        chatAppend("chat", `<span data-toggle="popover" data-placement="bottom"  data-html="true"
+                            class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'>${name}</span> : ${text}`)
+        let $pop =  $('.'+ socketID)
+        $pop.popover({
+            placement: 'bottom',
+            trigger: 'click',
+            html: true,
+            sanitize: false,
+            title: `<span>${name}</span>   <a class="close"><i style="font-size:20px" class="fas fa-times"></i></a>`,
+            content: 
+            `
+                  <button class="btn btn-primary mandate" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >방장 위임</button>
+                  <button class="btn btn-danger kick" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >나가 ㅋ</button>
+            `
+            
+        }).on('shown.bs.popover', function(e) {
+          
+            var current_popover = '#' + $(e.target).attr('aria-describedby');
+            var $cur_pop = $(current_popover);
+          
+            $cur_pop.find('.close').click(function(){
+                //console.log('close triggered');
+                $pop.popover('hide');
+            });
+          
+            $cur_pop.find('.mandate').click(function(){
+                //console.log('OK triggered');
+                $pop.popover('hide');
+            });
+            $cur_pop.find('.kick').click(function(){
+                //console.log('OK triggered');
+                $pop.popover('hide');
+            });
+        });
+      
       }
      
     })
@@ -162,7 +300,24 @@
       
       chatAppend("noticePrimary", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "에 입장함 ㅋ")
       currentRoom = roomName;
+      
+      if(info[roomName].members[0] === getMyName()){
+        $('#chatRoomManage').html(`<div class="alert alert-secondary" style="width:100%;height:40px">방 관리</div>`)
+        $('#chatRoomManage').css('height', "40px")
+        $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#chatRoomManage").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+     
+      }else{
+        $('#chatRoomManage').html(`<div class="alert alert-secondary" style="width:100%;height:0px">방 관리</div>`)
+        $('#chatRoomManage').css('height', "0px")
+        $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#chatRoomManage").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+     
+      }
 
+      if(!currentRoom){
+        $('#chatContainer').css('visibility', 'hidden');
+      }else{
+        $('#chatContainer').css('visibility', 'visible');
+      }
   
     })
       
@@ -172,6 +327,11 @@
         currentRoom = undefined;
       }
       
+      if(!currentRoom){
+        $('#chatContainer').css('visibility', 'hidden');
+      }else{
+        $('#chatContainer').css('visibility', 'visible');
+      }
     })
       
 
@@ -211,10 +371,10 @@
 
         if(data[key]["members"].includes(getMyName())){
           string += `<div class='room alert alert-warning'
-          data-toggle='tooltip' data-placement='bottom' data-html='true' title="${members}"> <h1 class='roomName'>${key}</h1>`
+          data-toggle='tooltip' data-placement='bottom' data-html='true' title="${members}"> <h4 class='roomName'>${key}</h4>`
         }else{
           string += `<div class='room alert alert-info'
-          data-toggle='tooltip' data-placement='bottom' data-html='true' title="${members}"> <h1 class='roomName'>${key}</h1>`
+          data-toggle='tooltip' data-placement='bottom' data-html='true' title="${members}"> <h4 class='roomName'>${key}</h4>`
         }
         
 
@@ -223,6 +383,8 @@
         string += "<hr>"
       }
       $('#roomContainer').html(string);
+
+      
       
       $('[data-toggle="tooltip"]').tooltip()
     })
