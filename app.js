@@ -27,18 +27,25 @@ app.get('/chat/:room', (req, res) => {
 var count=1;
 
 
-var info = {"r1" : {"members" : []},
-			"r2" : {"members" : []},
-			"r3" : {"members" : []},
-			"r4" : {"members" : []},
-			"r5" : {"members" : []}
-			};
+// var info = {"r1" : {"members" : []},
+// 			"r2" : {"members" : []},
+// 			"r3" : {"members" : []},
+// 			"r4" : {"members" : []},
+// 			"r5" : {"members" : []}
+// 			};
+var info = {}
 
 
 
-			
+
+
+
 io.on('connection', function(socket){
 
+	function newRoomMaster(roomName){
+		//socket.broadcast.to(roomName).emit('newRoomMaster', roomName, "aa");
+		io.to(roomName).emit('newRoomMaster', roomName, info[roomName].members[0]);
+	}
 
 	console.log('user connected: ', socket.id);
 	socket.emit('refreshMain', info);
@@ -51,14 +58,25 @@ io.on('connection', function(socket){
 			for (i in info[key]["members"]){
 			  if(info[key]["members"][i] == socket.name){
 				var temp = key;
-
-				
-
 				socket.emit('leaveRoom', temp, socket.name, 1);
 				socket.broadcast.to(temp).emit('leaveRoom', temp, socket.name, 0);
 
+				if (info[temp].members[0] == socket.name){
+						
+					newRoomMaster(temp);
+				}
+
+				
+
 				info[key]["members"].splice(i,1); 
-				  
+				if(info[key].members.length == 0){
+					console.log(key)
+					delete info[key]
+
+				}
+
+
+
 			  }
 			}
 
@@ -120,8 +138,22 @@ io.on('connection', function(socket){
 						socket.leave(temp)
 
 						io.to(temp).emit('leaveRoom', temp, name);
-						info[temp]["members"].splice(temp2,1);
 						
+
+						
+						
+						if (info[key]["members"].splice(i,1)[0] == socket.name){
+							newRoomMaster(temp);
+						}
+
+				
+
+						if(info[key].members.length == 0){
+
+							delete info[key]
+
+						}
+
 					}
 				}
 
@@ -135,23 +167,34 @@ io.on('connection', function(socket){
 				socket.join(roomName, () => {
 					socket.emit('joinRoom', roomName, name, 1);
 					socket.broadcast.to(roomName).emit('joinRoom', roomName, name, 0);
+					if (info[roomName].members[0] == name){
+						
+						newRoomMaster(roomName);
+					}
 				});
 			}
-
+			
+			
 			
 			io.emit('refreshMain', info);
 		}
 
-		
+
 	});
 
 
 	socket.on('sendChat', function(roomName, name, text){
 
-		io.to(roomName).emit('receiveChat', name, text);
+		io.to(roomName).emit('receiveChat', roomName, name, text);
 	})
 	
 	
+	socket.on('makeRoom', function(roomName){
+
+		console.log(roomName)
+		info[roomName] = {"members" : []} 
+		
+	})
 
 })
 

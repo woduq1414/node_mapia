@@ -13,3 +13,8 @@
 	padding-bottom : 4px !important;
 	margin-bottom : 0px !important;	 
 }
+
+.alert.room{
+	padding-left : 4px;
+	padding-right : 4px;
+}

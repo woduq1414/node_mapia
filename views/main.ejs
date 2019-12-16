@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
+
   </head>
   <body>
     <div class="container" >
@@ -22,7 +25,7 @@
                   <input id="inputName" type="text">
                   <button class="btn btn-primary" id="setName">Set</button>
                   <hr>
-                  <button class="btn btn-primary" style="width:100%">Room +</button>
+                  <button class="btn btn-primary" id="makeRoom" style="width:100%">Room +</button>
 
                   <div id="roomContainer">
       
@@ -78,6 +81,7 @@
 
     var socket = io(); 
     var currentRoom;
+    var info;
 
     function getMyName(){
       return $('#currentName').text();
@@ -97,8 +101,45 @@
     $("#chatArea").keyup(function(e){if(e.keyCode == 13)  chatSend(); });
 
 
-    socket.on('receiveChat', function(name, text){
-      chatAppend("chat", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span> : " + text);
+    $(document).on("click", "#makeRoom", function(){
+      Swal.fire({
+        title: 'Room Name',
+        text: '방을 만들면 현재 있던 방은 나가야함 ㅋ',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Make & Enter',
+        showLoaderOnConfirm: true,
+        preConfirm: (roomName) => {
+
+          if(getMyName()){
+            socket.emit('makeRoom', roomName);
+            socket.emit('joinRoom', roomName, getMyName());
+          }
+          
+          
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      }).then((result) => {
+        
+      })
+    })
+
+    socket.on('newRoomMaster', function(roomName, name){
+
+      chatAppend("noticePrimary", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "의 방장이 됨 ㅋ");
+    })
+
+
+    socket.on('receiveChat', function(roomName, name, text){
+      if(info[roomName].members[0] == name){
+        chatAppend("chat", "<span style='font-weight:1000;color:#" + getColor(name) + "'>  <i class='fas fa-crown'></i> " + name + "</span> : " + text);
+      }else{
+        chatAppend("chat", "<span style='font-weight:1000;color:#" + getColor(name) + "'>  <i class='fas fa-crown'></i> " + name + "</span> : " + text);
+      }
+     
     })
 
     socket.on('noticeChangeName', function(before, after){
@@ -153,21 +194,27 @@
 
 
     socket.on('refreshMain', function(data){
+      info = data;
       $('[data-toggle="tooltip"]').tooltip('hide')
       console.log(data);
       var string = "<hr>";
       for (key in data){
         var members = "접속자 : " + data[key]["members"].length + "명";
         for (i in data[key]["members"]){
-          members += "<br> <span>" + data[key]["members"][i] + "</span>"
+          if (i == 0){
+            members += "<br> <span> <i class='fas fa-crown'></i> " + data[key]["members"][i] + "</span>"
+          }else{
+            members += "<br> <span>" + data[key]["members"][i] + "</span>"
+          }
+         
         }
 
         if(data[key]["members"].includes(getMyName())){
           string += `<div class='room alert alert-warning'
-          data-toggle='tooltip' data-placement='bottom' data-html='true' title='${members}'> <h1 class='roomName'>${key}</h1>`
+          data-toggle='tooltip' data-placement='bottom' data-html='true' title="${members}"> <h1 class='roomName'>${key}</h1>`
         }else{
           string += `<div class='room alert alert-info'
-          data-toggle='tooltip' data-placement='bottom' data-html='true' title='${members}'> <h1 class='roomName'>${key}</h1>`
+          data-toggle='tooltip' data-placement='bottom' data-html='true' title="${members}"> <h1 class='roomName'>${key}</h1>`
         }
         
 
