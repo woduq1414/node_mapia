@@ -196,6 +196,42 @@ io.on('connection', function(socket){
 	});
 
 
+	socket.on('mandateRoomMaster', function(roomName, socketID){
+		
+		let name = io.sockets.connected[socketID].name;
+		for(i in info[roomName].members){
+			if(info[roomName].members[i] == name){
+				info[roomName].members.splice(i,1);
+			}
+		}
+		info[roomName].members.unshift(name);
+		newRoomMaster(roomName)
+		io.emit('refreshMain', info);
+	})
+
+
+	socket.on('kick', function(roomName, socketID)
+	{
+		let sock = io.sockets.connected[socketID]
+		let name = sock.name;
+
+		sock.emit('kickedRoom', roomName, name, 1);
+
+		io.to(roomName).emit('kickedRoom', roomName, name, 0);
+
+		sock.leave(roomName);
+
+
+		for(i in info[roomName].members){
+			if(info[roomName].members[i] == name){
+				info[roomName].members.splice(i,1);
+			}
+		}
+
+		io.emit('refreshMain', info);
+		
+	})
+
 	socket.on('sendChat', function(roomName, name, text){
 
 		io.to(roomName).emit('receiveChat', socket.id, roomName, name, text);
@@ -209,6 +245,11 @@ io.on('connection', function(socket){
 		
 	})
 
+
+	socket.on('requestName', function(socketID){
+		let sock = io.sockets.connected[socketID];
+		socket.emit("getName", sock.name);
+	})
 })
 
 

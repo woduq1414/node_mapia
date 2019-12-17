@@ -15,15 +15,19 @@
     <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
 
   </head>
-  <body>
+  <body style="overflow-y:hidden">
     <div class="container" >
-        <div style="height:97%">
+        <div style="height:99%">
           <div style="overflow-y:auto;width:25%;height:100%;float: left;">
                 <div>
                   name:
                   <h3 id="currentName"></h3>
-                  <input id="inputName" type="text">
-                  <button class="btn btn-primary" id="setName">Set</button>
+                  <div class="input-group mb-3">
+                      <input id="inputName" type="text" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="setName">
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button" id="setName">Set</button>
+                      </div>
+                  </div>
                   <hr>
                   <button class="btn btn-primary" id="makeRoom" style="width:100%">Room +</button>
 
@@ -92,7 +96,42 @@
     var currentRoom;
     var info;
 
+    // function bar(data, timeout = 10000) {
+    // return new Promise((resolve, reject) => {
+    //     let timer;
+
+    //     socket.emit('requestName', socket.id);
+
+    //     function responseHandler(message) {
+    //         // resolve promise with the value we got
+    //         resolve(message);
+    //         clearTimeout(timer);
+    //     }
+
+    //     socket.once('getName', responseHandler); 
+
+    //     // set timeout so if a response is not received within a
+    //     // reasonable amount of time, the promise will reject
+    //     timer = setTimeout(() => {
+    //         reject(new Error("timeout waiting for msg"));
+    //         socket.removeListener('getName', responseHandler);
+    //     }, timeout);
+
+    // });
+    // }
+
+    // bar().then(message => {
+    //   // you can use message here and only in here
+    // });
+
+
     function getMyName(){
+      // socket.emit('requestName', socket.id)
+      // socket.on('getName', (name) => {
+      //   socket.remoxveListener('getName');
+      //   console.log(name)
+      //   return name;
+      // });
       return $('#currentName').text();
     }
   
@@ -128,6 +167,7 @@
         let after = $('#roomNameArea').val()
         if (before != after){
           socket.emit('changeRoomName', before, after)
+          currentRoom = after;
         }
         
        
@@ -205,80 +245,59 @@
     socket.on('receiveChat', function(socketID, roomName, name, text){
       if(info[roomName].members[0] == name){
         chatAppend("chat", `<span data-toggle="popover" data-placement="bottom"  data-html="true"
-                            class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'><i class='fas fa-crown'></i> ${name}</span> : ${text}`)
-        let $pop =  $('.'+ socketID)
-        $pop.popover({
-            placement: 'bottom',
-            trigger: 'click',
-            html: true,
-            sanitize: false,
-            title: `<span>${name}</span>   <a class="close"><i style="font-size:20px" class="fas fa-times"></i></a>`,
-            content: 
-            `
-                  <button class="btn btn-primary mandate" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >방장 위임</button>
-                  <button class="btn btn-danger kick" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >나가 ㅋ</button>
-            `
-            
-        }).on('shown.bs.popover', function(e) {
-          
-            var current_popover = '#' + $(e.target).attr('aria-describedby');
-            var $cur_pop = $(current_popover);
-          
-            $cur_pop.find('.close').click(function(){
-                //console.log('close triggered');
-                $pop.popover('hide');
-            });
-          
-            $cur_pop.find('.mandate').click(function(){
-                //console.log('OK triggered');
-                $pop.popover('hide');
-            });
-            $cur_pop.find('.kick').click(function(){
-                //console.log('OK triggered');
-                $pop.popover('hide');
-            });
-        });
+        class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'><i class='fas fa-crown'></i> ${name}</span> : ${text}`)
+        
+        
+        
 
 
       }else{
         chatAppend("chat", `<span data-toggle="popover" data-placement="bottom"  data-html="true"
                             class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'>${name}</span> : ${text}`)
-        let $pop =  $('.'+ socketID)
-        $pop.popover({
-            placement: 'bottom',
-            trigger: 'click',
-            html: true,
-            sanitize: false,
-            title: `<span>${name}</span>   <a class="close"><i style="font-size:20px" class="fas fa-times"></i></a>`,
-            content: 
-            `
-                  <button class="btn btn-primary mandate" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >방장 위임</button>
-                  <button class="btn btn-danger kick" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >나가 ㅋ</button>
-            `
-            
-        }).on('shown.bs.popover', function(e) {
-          
-            var current_popover = '#' + $(e.target).attr('aria-describedby');
-            var $cur_pop = $(current_popover);
-          
-            $cur_pop.find('.close').click(function(){
-                //console.log('close triggered');
-                $pop.popover('hide');
-            });
-          
-            $cur_pop.find('.mandate').click(function(){
-                //console.log('OK triggered');
-                $pop.popover('hide');
-            });
-            $cur_pop.find('.kick').click(function(){
-                //console.log('OK triggered');
-                $pop.popover('hide');
-            });
-        });
+        
       
       }
-     
+      if(info[roomName].members[0] == getMyName()){
+          let $pop =  $('.'+ socketID)
+          $pop.popover({
+              placement: 'bottom',
+              trigger: 'click',
+              html: true,
+              sanitize: false,
+              title: `<span>${name}</span>   <a class="close"><i style="font-size:20px" class="fas fa-times"></i></a>`,
+              content: 
+              `
+                    <button data="${socketID}" class="btn btn-primary mandate" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >방장 위임</button>
+                    <button data="${socketID}" class="btn btn-danger kick" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >나가 ㅋ</button>
+              `
+              
+          }).on('shown.bs.popover', function(e) {
+            
+              var current_popover = '#' + $(e.target).attr('aria-describedby');
+              var $cur_pop = $(current_popover);
+            
+              $cur_pop.find('.close').click(function(){
+                  //console.log('close triggered');
+                  $pop.popover('hide');
+              });
+              $cur_pop.find('.mandate').click(function(){
+                  //console.log('close triggered');
+                  $pop.popover('hide');
+              });
+              $cur_pop.find('.kick').click(function(){
+                  //console.log('close triggered');
+                  $pop.popover('hide');
+              });
+              
+          });
+      }
+
+
     })
+
+
+
+
 
     socket.on('noticeChangeName', function(before, after){
   
@@ -292,6 +311,19 @@
       socket.emit('joinRoom', roomName, $('#currentName').text());
 
     })
+
+
+    $(document).on("click", ".mandate", function(){
+      let socketID = $(this).attr('data')
+      socket.emit('mandateRoomMaster', currentRoom, socketID )
+      
+    })
+    $(document).on("click", ".kick", function(){
+      let socketID = $(this).attr('data')
+      socket.emit('kick', currentRoom, socketID )
+      
+    })
+
 
     socket.on('joinRoom', function(roomName, name, me){
       if (me){
@@ -322,6 +354,7 @@
     })
       
     socket.on('leaveRoom', function(roomName, name, me){
+      console.log(roomName, name, me);
       chatAppend("noticeDanger", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 " + roomName + "을 나감 ㅋ")
       if(me){
         currentRoom = undefined;
@@ -334,6 +367,27 @@
       }
     })
       
+    socket.on('kickedRoom', function(roomName, name, me){
+      console.log(roomName, name, me);
+      chatAppend("noticeDanger", "<span style='font-weight:1000;color:#" + getColor(name) + "'>" + name + "</span>님이 강퇴당함 ㅋㅋㅋㅋㅋㅋㅋ")
+      if(me){
+        currentRoom = undefined;
+        Swal.fire({
+          icon: 'error',
+          title: 'ㅋㅋㅋㅋㅋㅋㅋ',
+          text: '강퇴 당함 ㅋ'
+        })
+      }
+      
+      if(!currentRoom){
+        $('#chatContainer').css('visibility', 'hidden');
+      }else{
+        $('#chatContainer').css('visibility', 'visible');
+      }
+    })
+      
+
+
 
     socket.on('failSetName', function(){
       alert("이미 있는 이름임ㅋ");
