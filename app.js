@@ -207,13 +207,15 @@ io.on('connection', function(socket){
 		for(i in info[roomName].members){
 			if(info[roomName].members[i] == name){
 				info[roomName].members.splice(i,1);
+				info[roomName].members.unshift(name);
+				io.emit('refreshMain', info);
+				newRoomMaster(roomName, socketID)
+				break;
 			}
 		}
-		info[roomName].members.unshift(name);
 		
-		io.emit('refreshMain', info);
-
-		newRoomMaster(roomName, socketID)
+		
+		
 	})
 
 
@@ -248,7 +250,7 @@ io.on('connection', function(socket){
 	socket.on('makeRoom', function(roomName){
 
 		console.log(roomName)
-		info[roomName] = {"members" : []} 
+		if(!info.hasOwnProperty(roomName)) info[roomName] = {"members" : []} 
 		
 	})
 
