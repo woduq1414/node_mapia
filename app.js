@@ -40,9 +40,9 @@ var info = {}
 
 io.on('connection', function(socket){
 
-	function newRoomMaster(roomName){
+	function newRoomMaster(roomName, socketID){
 		//socket.broadcast.to(roomName).emit('newRoomMaster', roomName, "aa");
-		io.to(roomName).emit('newRoomMaster', roomName, info[roomName].members[0]);
+		io.to(roomName).emit('newRoomMaster', roomName, info[roomName].members[0], socketID);
 	}
 
 	console.log('user connected: ', socket.id);
@@ -56,12 +56,12 @@ io.on('connection', function(socket){
 			for (i in info[key]["members"]){
 			  if(info[key]["members"][i] == socket.name){
 				var temp = key;
-				socket.emit('leaveRoom', temp, socket.name, 1);
-				socket.broadcast.to(temp).emit('leaveRoom', temp, socket.name, 0);
+				socket.emit('leaveRoom', temp, socket.name, socket.id, 1);
+				socket.broadcast.to(temp).emit('leaveRoom', temp, socket.name, socket.id, 0);
 
 				if (info[temp].members[0] == socket.name){
-						
-					newRoomMaster(temp);
+					io.emit('refreshMain', info);
+					newRoomMaster(temp, socket.id);
 				}
 
 				
@@ -112,7 +112,9 @@ io.on('connection', function(socket){
 			}
 			socket.name = after; 
 			socket.emit('successSetName');
-			io.to(temp).emit('noticeChangeName', before, after);
+			io.emit('refreshMain', info);
+
+			io.to(temp).emit('noticeChangeName', before, after, socket.id);
 		}
 		
 		io.emit('refreshMain', info);
@@ -150,13 +152,14 @@ io.on('connection', function(socket){
 						var temp2 = i;
 						socket.leave(temp)
 
-						io.to(temp).emit('leaveRoom', temp, name);
+						io.to(temp).emit('leaveRoom', temp, name, socket.id);
 						
 
 						
 						
 						if (info[key]["members"].splice(i,1)[0] == socket.name){
-							newRoomMaster(temp);
+							io.emit('refreshMain', info);
+							newRoomMaster(temp, socket.id);
 						}
 
 				
@@ -178,10 +181,10 @@ io.on('connection', function(socket){
 
 
 				socket.join(roomName, () => {
-					socket.emit('joinRoom', roomName, name, 1);
-					socket.broadcast.to(roomName).emit('joinRoom', roomName, name, 0);
+					socket.emit('joinRoom', roomName, name, socket.id, 1);
+					socket.broadcast.to(roomName).emit('joinRoom', roomName, name, socket.id, 0);
 					if (info[roomName].members[0] == name){
-						
+						io.emit('refreshMain', info);
 						newRoomMaster(roomName);
 					}
 				});
@@ -198,15 +201,19 @@ io.on('connection', function(socket){
 
 	socket.on('mandateRoomMaster', function(roomName, socketID){
 		
-		let name = io.sockets.connected[socketID].name;
+		let sock = io.sockets.connected[socketID]
+		console.log(socketID, "!!!!!!!!!!!!!!!")
+		let name = sock.name;
 		for(i in info[roomName].members){
 			if(info[roomName].members[i] == name){
 				info[roomName].members.splice(i,1);
 			}
 		}
 		info[roomName].members.unshift(name);
-		newRoomMaster(roomName)
+		
 		io.emit('refreshMain', info);
+
+		newRoomMaster(roomName, socketID)
 	})
 
 
@@ -215,9 +222,9 @@ io.on('connection', function(socket){
 		let sock = io.sockets.connected[socketID]
 		let name = sock.name;
 
-		sock.emit('kickedRoom', roomName, name, 1);
+		sock.emit('kickedRoom', roomName, name, sock.id, 1);
 
-		io.to(roomName).emit('kickedRoom', roomName, name, 0);
+		io.to(roomName).emit('kickedRoom', roomName, name, sock.id, 0);
 
 		sock.leave(roomName);
 
