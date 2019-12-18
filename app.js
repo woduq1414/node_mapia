@@ -45,8 +45,21 @@ io.on('connection', function(socket){
 		io.to(roomName).emit('newRoomMaster', roomName, info[roomName].members[0], socketID);
 	}
 
+	function refreshMain(info){
+		//let temp = info;
+		let temp = JSON.parse(JSON.stringify(info));
+		
+
+		for (roomName in temp){
+			if(temp[roomName].password) temp[roomName].password = true
+			else temp[roomName].password = false
+		}
+		io.emit('refreshMain', temp);
+	}
+
 	console.log('user connected: ', socket.id);
-	socket.emit('refreshMain', info);
+	
+	refreshMain(info);
 
 	socket.on('disconnect', () => {
 		console.log('user disconnected');
@@ -60,7 +73,7 @@ io.on('connection', function(socket){
 				socket.broadcast.to(temp).emit('leaveRoom', temp, socket.name, socket.id, 0);
 
 				if (info[temp].members[0] == socket.name){
-					io.emit('refreshMain', info);
+					refreshMain(info);
 					newRoomMaster(temp, socket.id);
 				}
 
@@ -79,8 +92,17 @@ io.on('connection', function(socket){
 			}
 
 		}
-		io.emit('refreshMain', info);
+		refreshMain(info);
 	});
+
+	socket.on('checkPassword', function(roomName, password){
+		if(info[roomName].password == password){
+			socket.emit('checkPassword', roomName, true);
+		}else{
+			socket.emit('checkPassword', roomName, false);
+		}
+		console.log(info[roomName].password, password);
+	})
 
 
 	socket.on('changeName', (before, after) => {
@@ -112,13 +134,12 @@ io.on('connection', function(socket){
 			}
 			socket.name = after; 
 			socket.emit('successSetName');
-			io.emit('refreshMain', info);
+			refreshMain(info);
 
 			io.to(temp).emit('noticeChangeName', before, after, socket.id);
 		}
 		
-		io.emit('refreshMain', info);
-
+		refreshMain(info);
 	})
 
 	socket.on('changeRoomName', function(before, after){
@@ -135,13 +156,36 @@ io.on('connection', function(socket){
 		}
 		io.to(after).emit('changeRoomName', before, after)
 	
-		io.emit('refreshMain', info);
+		refreshMain(info);
 	})
+	
+
+	socket.on('changePassword', function(roomName, password){
+		
+		
+		if(info[roomName].password != password){
+			info[roomName].password = password;
+			if(password == ""){
+				io.to(roomName).emit('changePassword', roomName, 0);
+			}else{
+				io.to(roomName).emit('changePassword', roomName, 1);
+			}
+			
+		}
+
+		
+	
+		refreshMain(info);
+	})
+
 
 	socket.on('joinRoom', (roomName, name) => {
 
 		
 		if(name){
+
+
+
 			console.log(info, socket.name)
 			for (key in info){
 			
@@ -158,7 +202,7 @@ io.on('connection', function(socket){
 						
 						
 						if (info[key]["members"].splice(i,1)[0] == socket.name){
-							io.emit('refreshMain', info);
+							refreshMain(info);
 							newRoomMaster(temp, socket.id);
 						}
 
@@ -184,7 +228,7 @@ io.on('connection', function(socket){
 					socket.emit('joinRoom', roomName, name, socket.id, 1);
 					socket.broadcast.to(roomName).emit('joinRoom', roomName, name, socket.id, 0);
 					if (info[roomName].members[0] == name){
-						io.emit('refreshMain', info);
+						refreshMain(info);
 						newRoomMaster(roomName);
 					}
 				});
@@ -192,7 +236,7 @@ io.on('connection', function(socket){
 			
 			
 			
-			io.emit('refreshMain', info);
+			refreshMain(info);
 		}
 
 
@@ -208,7 +252,7 @@ io.on('connection', function(socket){
 			if(info[roomName].members[i] == name){
 				info[roomName].members.splice(i,1);
 				info[roomName].members.unshift(name);
-				io.emit('refreshMain', info);
+				refreshMain(info);
 				newRoomMaster(roomName, socketID)
 				break;
 			}
@@ -224,20 +268,18 @@ io.on('connection', function(socket){
 		let sock = io.sockets.connected[socketID]
 		let name = sock.name;
 
-		sock.emit('kickedRoom', roomName, name, sock.id, 1);
-
-		io.to(roomName).emit('kickedRoom', roomName, name, sock.id, 0);
-
-		sock.leave(roomName);
-
+		
 
 		for(i in info[roomName].members){
 			if(info[roomName].members[i] == name){
+				sock.emit('kickedRoom', roomName, name, sock.id, 1);
+				io.to(roomName).emit('kickedRoom', roomName, name, sock.id, 0);
+				sock.leave(roomName);
 				info[roomName].members.splice(i,1);
 			}
 		}
 
-		io.emit('refreshMain', info);
+		refreshMain(info);
 		
 	})
 
@@ -247,11 +289,12 @@ io.on('connection', function(socket){
 	})
 	
 	
-	socket.on('makeRoom', function(roomName){
+	socket.on('makeRoom', function(roomName, password){
 
 		console.log(roomName)
-		if(!info.hasOwnProperty(roomName)) info[roomName] = {"members" : []} 
-		
+		if(!info.hasOwnProperty(roomName)){
+			info[roomName] = {"members" : [], "password" : password} 
+		}
 	})
 
 
