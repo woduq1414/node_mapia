@@ -81,7 +81,7 @@ io.on('connection', function(socket){
 
 				info[key]["members"].splice(i,1); 
 				if(info[key].members.length == 0){
-					console.log(key)
+
 					delete info[key]
 
 				}
@@ -101,7 +101,7 @@ io.on('connection', function(socket){
 		}else{
 			socket.emit('checkPassword', roomName, false);
 		}
-		console.log(info[roomName].password, password);
+
 	})
 
 
@@ -145,7 +145,7 @@ io.on('connection', function(socket){
 	socket.on('changeRoomName', function(before, after){
 		info[after] = info[before];
 		delete info[before];
-		console.log( io.sockets.adapter.rooms[before].sockets, after);
+
 		let beforeList = io.sockets.adapter.rooms[before].sockets;
 
 		for (socketID in beforeList){
@@ -246,7 +246,6 @@ io.on('connection', function(socket){
 	socket.on('mandateRoomMaster', function(roomName, socketID){
 		
 		let sock = io.sockets.connected[socketID]
-		console.log(socketID, "!!!!!!!!!!!!!!!")
 		let name = sock.name;
 		for(i in info[roomName].members){
 			if(info[roomName].members[i] == name){
@@ -278,7 +277,10 @@ io.on('connection', function(socket){
 				info[roomName].members.splice(i,1);
 			}
 		}
+		if(info[roomName].members.length == 0){
+			delete info[roomName]
 
+		}
 		refreshMain(info);
 		
 	})
@@ -291,7 +293,7 @@ io.on('connection', function(socket){
 	
 	socket.on('makeRoom', function(roomName, password){
 
-		console.log(roomName)
+
 		if(!info.hasOwnProperty(roomName)){
 			info[roomName] = {"members" : [], "password" : password} 
 		}
