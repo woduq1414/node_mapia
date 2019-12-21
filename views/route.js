@@ -37,7 +37,7 @@ router.post('/signup', function(req, res, next) {
       if (!user) { return res.send(info.message) }
       req.logIn(user, function(err) {
         if (err) { return next(err); }
-        return res.send("success");
+        return res.send('success');
       });
     })(req, res, next);
   });
@@ -48,7 +48,7 @@ router.post('/login', function(req, res, next) {
       if (!user) { return res.send("incorrect") }
       req.logIn(user, function(err) {
         if (err) { return next(err); }
-        return res.send("correct");
+        return res.send(`${user.name}님 안녕하세요!`);
       });
     })(req, res, next);
   });
