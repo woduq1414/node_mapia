@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title>즐거운 채팅방</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src='/socket.io/socket.io.js'></script>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.js"
+    integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
+
+  </head>
+  <body style="overflow-y:hidden">
+    아이디<input id="signupId">
+    비번<input id="signupPassword">
+    이름<input id="signupName" value="익명">
+    <button id="signup" class="btn btn-primary">signup</button>
+
+    <hr>
+
+    아이디<input id="loginId">
+    비번<input id="loginPassword">
+    <button id="login" class="btn btn-primary">login</button>
+  </body>
+  <script>
+        $(document).on("click", "#signup", function(){
+            let postData = {signupID : $('#signupId').val(), signupPW : $('#signupPassword').val(), signupName : $('#signupName').val()}
+            $.post("/signup", postData,function(data){
+                alert(data);
+            })
+        })
+
+        $(document).on("click", "#login", function(){
+            let postData = {id : $('#loginId').val(), pw : $('#loginPassword').val()}
+            $.post("/login", postData,function(result){
+                alert(result);
+            })
+        })
+  </script>
+</html>

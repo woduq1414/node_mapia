@@ -345,29 +345,7 @@
        
         }
       })
-      // Swal.fire({
-      //   title: 'Room Name',
-      //   text: '방을 만들면 현재 있던 방은 나가야함 ㅋ',
-      //   input: 'text',
-      //   inputAttributes: {
-      //     autocapitalize: 'off'
-      //   },
-      //   showCancelButton: true,
-      //   confirmButtonText: 'Make & Enter',
-      //   showLoaderOnConfirm: true,
-      //   preConfirm: (roomName) => {
 
-      //     if(getMyName()){
-      //       socket.emit('makeRoom', roomName, password);
-      //       socket.emit('joinRoom', roomName, getMyName());
-      //     }
-          
-          
-      //   },
-      //   allowOutsideClick: () => !Swal.isLoading()
-      // }).then((result) => {
-        
-      // })
     })
 
     socket.on('newRoomMaster', function(roomName, name, socketID){

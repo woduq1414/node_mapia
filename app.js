@@ -1,8 +1,35 @@
 var express = require('express');
 var app = express();
+const session = require('express-session'); // 세션 설정
 var http = require('http').Server(app); 
 var io = require('socket.io')(http);    
 var path = require('path');
+var route = require('./views/route');
+var bodyParser = require('body-parser');                                                                     
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : true}));
+
+
+
+
+
+var mongoose = require('mongoose');
+
+
+
+const passport = require('passport'); // 여기와
+const passportConfig = require('./views/passport'); // 여기
+app.use(session({ secret: '비밀코드', resave: true, saveUninitialized: false })); // 세션 활성화
+app.use(passport.initialize()); // passport 구동
+app.use(passport.session()); // 세션 연결
+passportConfig(); // 이 부분 추가
+
+
+
+app.use('/', route);
+
+
+
 
 app.set('views', './views');
 app.set('view engine', 'ejs');
@@ -12,15 +39,50 @@ app.use(express.static(__dirname + '/public'));
 
 
 
+// app.post('/login', passport.authenticate('local', {
+//   failureRedirect: '/login'
+// }), (req, res) => {
+//   //res.redirect('/main');
+//   res.setHeader('Location', 'https://google.com');
+// 	res.end();
+// })
+
+
 app.get('/main', (req, res) => {  
 	temp = "main";
 	res.render('main.ejs');
 });
 
-app.get('/chat/:room', (req, res) => {  
+app.get('/index', (req, res) => {  
 	temp = "chat";
-	res.render('chat.ejs');
+	res.render('index.ejs');
 });
+
+
+
+
+// app.post('/login', async(req, res) => {
+// 	let id = req.body.id
+// 	let password = req.body.password
+// 	// let result = await userModel.findOne({
+// 	// 	where: {
+// 	// 	  id : id
+// 	// 	}
+// 	// });
+// 	userModel.findOne({'id':id}, function(err,docs){
+		
+// 		let dbPassword = docs.password;
+// 		if(password == dbPassword){
+// 			console.log("yes")
+// 			res.redirect("/main");
+// 		}else{
+// 			console.log("no")
+			
+// 		}
+// 	});
+// 	//console.log(result)
+	
+// })
 
 var count=1;
 
