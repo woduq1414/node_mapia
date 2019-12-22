@@ -18,27 +18,34 @@
   <body style="overflow-y:hidden">
     아이디<input id="signupId">
     비번<input id="signupPassword">
-    이름<input id="signupName" value="익명">
-    <button id="signup" class="btn btn-primary">signup</button>
+    이름<input id="signupName" value="익명" placeholder="이름">
+    <button id="signup" class="btn btn-primary">signup</button> 비번 평문으로 저장됨 ㅋ
 
     <hr>
 
     아이디<input id="loginId">
     비번<input id="loginPassword">
-    <button id="login" class="btn btn-primary">login</button>
+    <button id="login" class="btn btn-primary">login</button> 
   </body>
   <script>
         $(document).on("click", "#signup", function(){
             let postData = {signupID : $('#signupId').val(), signupPW : $('#signupPassword').val(), signupName : $('#signupName').val()}
             $.post("/signup", postData,function(data){
                 alert(data);
+                
             })
         })
 
         $(document).on("click", "#login", function(){
             let postData = {id : $('#loginId').val(), pw : $('#loginPassword').val()}
             $.post("/login", postData,function(result){
-                alert(result);
+                if(result['success']){
+                    console.log(result['name']);
+                    location.href = "main";
+                }else{
+                    alert("실패");
+                }
+                
             })
         })
   </script>

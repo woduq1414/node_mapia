@@ -4,10 +4,13 @@ const session = require('express-session'); // 세션 설정
 var http = require('http').Server(app); 
 var io = require('socket.io')(http);    
 var path = require('path');
+var connect = require('connect')
 var route = require('./views/route');
-var bodyParser = require('body-parser');                                                                     
+var bodyParser = require('body-parser');         
+var sessionStore = require('sessionstore') ;                                                           
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
+
 
 
 
@@ -24,7 +27,7 @@ app.use(passport.initialize()); // passport 구동
 app.use(passport.session()); // 세션 연결
 passportConfig(); // 이 부분 추가
 
-
+const userModel2 = require('./views/user');
 
 app.use('/', route);
 
@@ -38,24 +41,72 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.static(__dirname + '/public'));
 
 
+// var MongoClient = require('mongodb').MongoClient;
+// var url = 'mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority';
+// var db;
+// var users;
+// MongoClient.connect(url, function (err, database) {
+//    if (err) {
+//       console.error('MongoDB 연결 실패', err);
+//       return;
+//    }
 
-// app.post('/login', passport.authenticate('local', {
-//   failureRedirect: '/login'
-// }), (req, res) => {
-//   //res.redirect('/main');
-//   res.setHeader('Location', 'https://google.com');
-// 	res.end();
-// })
+//    db = database;
+
+//    console.log(database)
+// 	users = db.Collection('users');
+// });
 
 
+
+
+
+sessionID = '';
+sessionName = '';
+sess = {};
 app.get('/main', (req, res) => {  
-	temp = "main";
-	res.render('main.ejs');
+	if(req.user){
+		sessionID = req.user.id;
+		const MongoClient = require('mongodb').MongoClient;
+			const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority";
+			//const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test";
+			const client = new MongoClient(uri, { useNewUrlParser: true });
+			var user;
+			client.connect(err => {
+				user = client.db("test").collection("users");
+				user.findOne({ id: sessionID }, function (err, result) {
+					if (err) {
+					console.error('UpdateOne Error ', err);
+					return;
+					}
+					sessionName = result.name;
+					console.log("!!!!!!!!!!!!!",sessionName);
+					res.render('main.ejs', {name : sessionName});
+
+					
+				});
+				client.close();
+		});
+	}else{
+		res.redirect("/index");
+	}
+	
+	
+
+
+	
+	
+	
 });
 
 app.get('/index', (req, res) => {  
-	temp = "chat";
-	res.render('index.ejs');
+	if(req.user){
+		//res.redirect("/main");
+		res.render('index.ejs');
+	}else{
+		res.render('index.ejs');
+	}
+	
 });
 
 
@@ -94,13 +145,19 @@ var count=1;
 // 			"r5" : {"members" : []}
 // 			};
 var info = {}
-
-
-
+var users = {}
 
 
 
 io.on('connection', function(socket){
+
+	if(sessionID){
+		users[socket.id] = sessionID;
+
+	}
+	
+	console.log(users);
+	io.emit('refreshUser', users);
 
 	function newRoomMaster(roomName, socketID){
 		//socket.broadcast.to(roomName).emit('newRoomMaster', roomName, "aa");
@@ -127,7 +184,7 @@ io.on('connection', function(socket){
 		console.log('user disconnected');
 		
 		for (key in info){
-        
+		
 			for (i in info[key]["members"]){
 			  if(info[key]["members"][i] == socket.name){
 				var temp = key;
@@ -148,14 +205,23 @@ io.on('connection', function(socket){
 
 				}
 
-
+				
 
 			  }
 			}
 
 		}
+		
+		delete users[socket.id];
+		io.emit('refreshUser', users);
+	
+		console.log(users);
 		refreshMain(info);
 	});
+
+	socket.on('initName', function(name){
+		socket.name = name;
+	})
 
 	socket.on('checkPassword', function(roomName, password){
 		if(info[roomName].password == password){
@@ -182,7 +248,7 @@ io.on('connection', function(socket){
 		}
 		if (f == 0){
 			for (key in info){
-        
+		
 				for (i in info[key]["members"]){
 				  if(info[key]["members"][i] == before) {
 					temp = key;
@@ -199,6 +265,63 @@ io.on('connection', function(socket){
 			refreshMain(info);
 
 			io.to(temp).emit('noticeChangeName', before, after, socket.id);
+			
+			//console.log("ASD", before, after ,"sdf");
+
+			// userModel2.findOneAndUpdate({name:before}, { $set:  {name:after} }, function(){
+			// 	console.log(after);
+			// });
+			// userModel2.findOne({'name': before }, function (err, doc) {
+
+			// 	console.log(err, doc);
+			// 	doc.name = 'jason bourne';
+			// 	doc.save(function (err) {
+			// 				if (err) {
+			// 					throw err;
+			// 				}
+			// 				else {
+								
+			// 				}
+			// 	});
+			// });
+			// userModel2.findOne({'name': before}, function(err, user) {
+			// 	if(err) {
+			// 		throw err;
+			// 	}
+			// 	else {
+			// 		user.name = after;
+					
+			// 		user.save(function (err) {
+			// 			if (err) {
+			// 				throw err;
+			// 			}
+			// 			else {
+			// 				//
+			// 				console.log(user[name])
+			// 				console.log(user)
+			// 			}
+			// 		});
+					
+			// 	}
+			// 	console.log("SAD", user)
+			// });
+			const MongoClient = require('mongodb').MongoClient;
+			const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority";
+			//const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test";
+			const client = new MongoClient(uri, { useNewUrlParser: true });
+			var users;
+			client.connect(err => {
+				users = client.db("test").collection("users");
+				users.updateOne({ name: before }, { $set: { name: after } }, function (err, result) {
+					if (err) {
+					console.error('UpdateOne Error ', err);
+					return;
+					}
+					//console.log('UpdateOne 성공 ');
+				});
+				client.close();
+			});
+			
 		}
 		
 		refreshMain(info);
@@ -367,6 +490,7 @@ io.on('connection', function(socket){
 		socket.emit("getName", sock.name);
 	})
 })
+
 
 
 

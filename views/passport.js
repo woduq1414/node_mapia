@@ -39,16 +39,27 @@ module.exports = () => {
  
         return done(null, false, { message: '중복된 아이디' });
       } 
-           
-      const newUser = new userModel();
-      newUser.id = id; // 넘겨받은 정보들을 세팅합니다.
-      newUser.password = password; // generateHash을 통해 비밀번호를 hash화 합니다.
-      newUser.name = req.body.signupName;
-      newUser.date = Date.now();
-      newUser.save(function (err) { // 저장합니다.
-        if (err) throw err;
-        return done(null, newUser); // serializeUser에 값을 넘겨줍니다.
-      });
+ 
+      userModel.findOne({'name': req.body.signupName}, function (err, user) { // 넘겨받은 email을 통해 검색합니다.
+        if (err) return done(null);
+        // flash를 통해서 메세지를 넘겨줍니다.   
+        if (user){
+   
+          return done(null, false, { message: '중복된 이름' });
+        } else{
+            const newUser = new userModel();
+            newUser.id = id; // 넘겨받은 정보들을 세팅합니다.
+            newUser.password = password; // generateHash을 통해 비밀번호를 hash화 합니다.
+            newUser.name = req.body.signupName;
+            newUser.date = Date.now();
+            newUser.save(function (err) { // 저장합니다.
+              if (err) throw err;
+              return done(null, newUser); // serializeUser에 값을 넘겨줍니다.
+            });
+        }
+
+      })
+     
     })
   }));
 

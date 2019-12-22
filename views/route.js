@@ -1,5 +1,5 @@
 const passport = require('passport');
-const userModel = require('./user.js');
+const userModel2 = require('./user.js');
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
@@ -48,11 +48,21 @@ router.post('/login', function(req, res, next) {
       if (!user) { return res.send("incorrect") }
       req.logIn(user, function(err) {
         if (err) { return next(err); }
-        return res.send(`${user.name}님 안녕하세요!`);
+        return res.send({"success" : true, "name":`${user.name}`, "id" : `${user.id}`});
       });
     })(req, res, next);
   });
 
+router.post('/getName', (req, res) => { 
+    //console.log(req.body.id); 
+	userModel2.findOne({'id': req.body.id}, function(err,user){
+
+        //console.log(user.length);
+        //console.log(user.responseJSON);
+        res.send(user);
+        
+    });
+});
 
 
 

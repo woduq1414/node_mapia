@@ -21,7 +21,7 @@
           <div style="overflow-y:auto;width:25%;height:100%;float: left;">
                 <div>
                   name:
-                  <h3 id="currentName"></h3>
+                  <h3 id="currentName"><%= name %> </h3>
                   <div class="input-group mb-3">
                       <input id="inputName" type="text" class="form-control" placeholder="Name" aria-label="Name" aria-describedby="setName">
                       <div class="input-group-append">
@@ -66,6 +66,7 @@
   </body>
   <script>
   
+    
 
     function getColor(text){
       var hash = 0, len = text.length;
@@ -97,9 +98,16 @@
 
 
 
-    var socket = io(); 
+    //var socket = io(); 
+    
+    var socket = io({transports: ['websocket'], upgrade: false});
+    
     var currentRoom;
     var info;
+    var users;
+    var currentName = $('#currentName').text().trim();
+    //socket.emit('initName', currentName);
+
 
     // function bar(data, timeout = 10000) {
     // return new Promise((resolve, reject) => {
@@ -178,17 +186,27 @@
       
 
     function getMyName(){
-      // socket.emit('requestName', socket.id)
-      // socket.on('getName', (name) => {
-      //   socket.remoxveListener('getName');
-      //   console.log(name)
-      //   return name;
+
+
+      // $.ajax({
+      //     type: "POST",
+      //     url: "/getName",
+      //     data: {'id' : users[socket.id]},
+      //     async: false,
+      //     success:function(data){
+      //         //console.log(data)
+      //         currentName = data.name.trim();
+      //     }
       // });
-      return $('#currentName').text();
+      // console.count("getMyName")
+
+
+      return currentName;
+
     }
   
     function chatSend(){
-      var name = $('#currentName').text();
+      var name = $('#currentName').text().trim();
       var text = $('#chatArea').val();
       socket.emit('sendChat', currentRoom, name, text);
       $('#chatArea').val('');
@@ -248,6 +266,11 @@
         }
        
       })
+    })
+
+    socket.on('refreshUser', function(data){
+      users = data;
+      console.log(users);
     })
 
 
@@ -539,13 +562,14 @@
 
     socket.on('successSetName', function(){
       $('#currentName').text($('#inputName').val())
+      currentName = $('#inputName').val()
     })
 
     $(document).on("click", "#setName", function(){
 
-      var a = $('#currentName').text();
+      var a = $('#currentName').text().trim();
       var b = $('#inputName').val()
-      
+
       socket.emit('changeName', a, b)
       
     })
