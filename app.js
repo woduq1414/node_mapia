@@ -334,13 +334,15 @@ io.on('connection', function(socket){
 		let beforeList = io.sockets.adapter.rooms[before].sockets;
 
 		for (socketID in beforeList){
+			
 			let sock = io.sockets.connected[socketID];
+			
 			sock.leave(before)
 			sock.join(after)
 
 		}
 		io.to(after).emit('changeRoomName', before, after)
-	
+		console.log(io.sockets.adapter.rooms[after].sockets);
 		refreshMain(info);
 	})
 	

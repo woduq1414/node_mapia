@@ -106,7 +106,7 @@
     var info;
     var users;
     var currentName = $('#currentName').text().trim();
-    //socket.emit('initName', currentName);
+    socket.emit('initName', currentName);
 
 
     // function bar(data, timeout = 10000) {
@@ -286,6 +286,7 @@
 
 
     socket.on('changeRoomName', function(before,after){
+      currentRoom = after;
       chatAppend("noticePrimary", `방의 이름이 ${before}에서 ${after}로 변경됨 ㅋ`);
     })
 
