@@ -3,9 +3,7 @@
 	cursor : pointer;
 }
 
-.container {
-	border : 5px solid black;
-}
+
 
 
 .alert {
@@ -21,11 +19,21 @@
 
 }
 
-div #chatRoomManage{
+div #roomMasterArea{
 	cursor:pointer;
 
 }
 
 .chatName{
 	cursor:pointer;
+}
+
+.roomName {
+	font-size : 20px;
+}
+
+hr.tooltipHR {
+	background-color : white !important;
+	margin-top : 4px;
+	margin-bottom : 4px; 
 }

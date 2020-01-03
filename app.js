@@ -168,10 +168,15 @@ io.on('connection', function(socket){
 		//let temp = info;
 		let temp = JSON.parse(JSON.stringify(info));
 		
+	
 
 		for (roomName in temp){
 			if(temp[roomName].password) temp[roomName].password = true
 			else temp[roomName].password = false
+
+			// if(temp[roomName].isPlaying){
+			// 	delete temp[roomName];
+			// }
 		}
 		io.emit('refreshMain', temp);
 	}
@@ -221,6 +226,7 @@ io.on('connection', function(socket){
 
 	socket.on('initName', function(name){
 		socket.name = name;
+		console.log("SDFASDF", socket.name)
 	})
 
 	socket.on('checkPassword', function(roomName, password){
@@ -366,68 +372,124 @@ io.on('connection', function(socket){
 	})
 
 
+	socket.on('changeRoomLimit', function(roomName, before, after){
+		
+		
+		if(info[roomName].members.length <= after){
+			info[roomName].limit = after;
+			io.to(roomName).emit('changeRoomLimit', before, after);
+		}else{
+			socket.emit('changeRoomLimitErr');
+		}
+
+		
+	
+		refreshMain(info);
+	})
+
 	socket.on('joinRoom', (roomName, name) => {
 
 		
 		if(name){
 
-
-
-			console.log(info, socket.name)
-			for (key in info){
-			
-				for (i in info[key]["members"]){
-					if(info[key]["members"][i] == socket.name && roomName != key ){
-						
-						var temp = key;
-						var temp2 = i;
-						socket.leave(temp)
-
-						io.to(temp).emit('leaveRoom', temp, name, socket.id);
-						
-
-						
-						
-						if (info[key]["members"].splice(i,1)[0] == socket.name){
-							refreshMain(info);
-							newRoomMaster(temp, socket.id);
-						}
-
+			if(info[roomName].limit > info[roomName].members.length){
+				console.log(info, socket.name)
+				for (key in info){
 				
+					for (i in info[key]["members"]){
+						if(info[key]["members"][i] == socket.name && roomName != key ){
+							
+							var temp = key;
+							var temp2 = i;
+							socket.leave(temp)
 
-						if(info[key].members.length == 0){
+							io.to(temp).emit('leaveRoom', temp, name, socket.id);
+							
 
-							delete info[key]
+							
+							
+							if (info[key]["members"].splice(i,1)[0] == socket.name){
+								refreshMain(info);
+								newRoomMaster(temp, socket.id);
+							}
+
+					
+
+							if(info[key].members.length == 0){
+
+								delete info[key]
+
+							}
 
 						}
-
 					}
+
 				}
+				
+				if (!info[roomName]["members"].includes(name) && name != ""){
+					//console.log(key, roomName)
+					info[roomName]["members"].push(name);
 
+
+					socket.join(roomName, () => {
+						socket.emit('joinRoom', roomName, name, socket.id, 1);
+						socket.broadcast.to(roomName).emit('joinRoom', roomName, name, socket.id, 0);
+						if (info[roomName].members[0] == name){
+							refreshMain(info);
+							newRoomMaster(roomName, socket.id);
+						}
+					});
+				}
+				
+				
+				
+				refreshMain(info);
+			}else{
+				
+				socket.emit('exceedRoomLimit', roomName);
 			}
-			
-			if (!info[roomName]["members"].includes(name) && name != ""){
-				//console.log(key, roomName)
-				info[roomName]["members"].push(name);
 
-
-				socket.join(roomName, () => {
-					socket.emit('joinRoom', roomName, name, socket.id, 1);
-					socket.broadcast.to(roomName).emit('joinRoom', roomName, name, socket.id, 0);
-					if (info[roomName].members[0] == name){
-						refreshMain(info);
-						newRoomMaster(roomName);
-					}
-				});
-			}
 			
-			
-			
-			refreshMain(info);
 		}
 
 
 	});
+
+
+	socket.on('leaveRoom', function(roomName){
+		console.log("leaveroom!!", roomName);
+
+		for (i in info[roomName]["members"]){
+			if(info[roomName]["members"][i] == socket.name){
+
+				socket.leave(roomName)
+				
+				io.to(roomName).emit('leaveRoom', roomName, socket.name, socket.id, 0);
+				socket.emit('leaveRoom', roomName, socket.name, socket.id, 1);
+				
+
+				
+				
+				if (info[roomName]["members"].splice(i,1)[0] && i == 0){
+					console.log("SDFSADFSDAFSADF", socket.name)
+					newRoomMaster(roomName, socket.id);
+				}
+
+		
+
+				if(info[roomName].members.length == 0){
+
+					delete info[roomName]
+
+				}
+				refreshMain(info);
+			}
+		}
+
+
+
+
+	})
 
 
 	socket.on('mandateRoomMaster', function(roomName, socketID){
@@ -452,6 +514,7 @@ io.on('connection', function(socket){
 	socket.on('kick', function(roomName, socketID)
 	{
 		let sock = io.sockets.connected[socketID]
+		console.log(socketID);
 		let name = sock.name;
 
 		
@@ -478,11 +541,11 @@ io.on('connection', function(socket){
 	})
 	
 	
-	socket.on('makeRoom', function(roomName, password){
+	socket.on('makeRoom', function(roomName, password, roomLimit){
 
 
 		if(!info.hasOwnProperty(roomName)){
-			info[roomName] = {"members" : [], "password" : password} 
+			info[roomName] = {"members" : [], "password" : password, "limit" : roomLimit, "isPlaying" : 0} 
 		}
 	})
 
@@ -491,6 +554,17 @@ io.on('connection', function(socket){
 		let sock = io.sockets.connected[socketID];
 		socket.emit("getName", sock.name);
 	})
+
+
+
+	socket.on('enterGame', function(roomName){
+		info[roomName].isPlaying = 1;
+		refreshMain(info);
+
+		io.to(roomName).emit('enterGame');
+	})
+
+
 })
 
 

@@ -53,6 +53,12 @@ router.post('/login', function(req, res, next) {
     })(req, res, next);
   });
 
+  router.get('/logout', function(req, res){                                                                          
+    req.logout();
+    res.redirect('/index');
+  });
+
+
 router.post('/getName', (req, res) => { 
     //console.log(req.body.id); 
 	userModel2.findOne({'id': req.body.id}, function(err,user){
