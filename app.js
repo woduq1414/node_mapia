@@ -159,9 +159,8 @@ io.on('connection', function(socket){
 			refreshMain(info);
 
 			io.to(roomName).emit('endGame');
-		}else{
-			clearInterval(timer[roomName]);
 		}
+		
 		
 	}
 
@@ -258,8 +257,8 @@ io.on('connection', function(socket){
 
 				info[key]["members"].splice(i,1); 
 				if(info[key].members.length == 0){
-
 					delete info[key]
+					clearInterval(timer[key]);
 
 				}
 
@@ -471,7 +470,7 @@ io.on('connection', function(socket){
 							if(info[key].members.length == 0){
 
 								delete info[key]
-
+								
 							}
 
 						}
@@ -537,7 +536,7 @@ io.on('connection', function(socket){
 				if(info[roomName].members.length == 0){
 
 					delete info[roomName]
-
+					clearInterval(timer[roomName]);
 				}
 				refreshMain(info);
 			}
