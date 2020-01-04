@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon -x node app.js || (sleep 10; touch app.js)"
+    "start": "node app.js"
   },
   "dependencies": {
     "babel-loader": "^8.0.6",
