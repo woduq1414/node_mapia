@@ -52,6 +52,18 @@
 
                 
           </div>
+          <div id="leftGameContainer"  style="width:25%;height:100%;float: left;">
+            <div id="upperGameContainer">
+              <div id="dateStatus" style="text-align:center" class="alert alert-danger"></div>
+              <div id="timeStatus" style="text-align:center" class="alert alert-secondary"></div>
+            </div>
+            
+            <div id="gameMembers" style="width:100%; overflow-y:auto;"></div>
+            <div id='exitGame' class='alert alert-danger' style='cursor:pointer; height:40px; width:100%; font-size:20px; text-align:center'>나가기</div>
+          </div>
+
+
+          
           <div id="chatContainer" style="width:75%;height:100%;float: left;">
             <div style="height:0px" id="roomMasterArea">
             </div>
@@ -76,4 +88,5 @@
     </div>
   </body>
   <script src="/javascripts/main.js"> </script>
+  <script src="/javascripts/game.js"> </script>
 </html>

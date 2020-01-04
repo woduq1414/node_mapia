@@ -146,10 +146,57 @@ var count=1;
 // 			};
 var info = {}
 var users = {}
-
+var timeLimit = {}
 
 
 io.on('connection', function(socket){
+
+
+	function endGame(roomName){
+		if(info.hasOwnProperty(roomName)){
+			info[roomName].isPlaying = 0;
+			refreshMain(info);
+
+			io.to(roomName).emit('endGame');
+		}
+		
+	}
+
+	function initGame(roomName){
+
+		console.log("a");
+		setDate(roomName, 1,"night");
+
+
+		
+	}
+
+
+	function setDate(roomName, date, time){
+
+		if(time == "night"){
+
+			io.to(roomName).emit('getGameMembers', info[roomName].members);
+
+			io.to(roomName).emit('getDateStatus', date + "번째 밤")
+
+
+			timeLimit[roomName] = 20;
+			io.to(roomName).emit('getTimeStatus', timeLimit[roomName]);
+			var timer = setInterval(function(){
+				
+				timeLimit[roomName]--;
+				io.to(roomName).emit('getTimeStatus', timeLimit[roomName]);
+				if(timeLimit[roomName] <= 0){
+					clearInterval(timer);
+					endGame(roomName);
+				}
+			}, 1000)
+		}
+		
+	}
+
+
 
 	if(sessionID){
 		users[socket.id] = sessionID;
@@ -161,7 +208,10 @@ io.on('connection', function(socket){
 
 	function newRoomMaster(roomName, socketID){
 		//socket.broadcast.to(roomName).emit('newRoomMaster', roomName, "aa");
-		io.to(roomName).emit('newRoomMaster', roomName, info[roomName].members[0], socketID);
+		if(!info[roomName].isPlaying){
+			io.to(roomName).emit('newRoomMaster', roomName, info[roomName].members[0], socketID);
+		}
+		
 	}
 
 	function refreshMain(info){
@@ -442,7 +492,11 @@ io.on('connection', function(socket){
 				}
 				
 				
-				
+				// info[roomName]["members"].push("1");
+				// info[roomName]["members"].push("2");
+				// info[roomName]["members"].push("3");
+				// info[roomName]["members"].push("4");
+
 				refreshMain(info);
 			}else{
 				
@@ -535,8 +589,9 @@ io.on('connection', function(socket){
 		
 	})
 
-	socket.on('sendChat', function(roomName, name, text){
-
+	socket.on('sendChat', function(roomName, socketID, text){
+		let sock = io.sockets.connected[socketID]
+		let name = sock.name;
 		io.to(roomName).emit('receiveChat', socket.id, roomName, name, text);
 	})
 	
@@ -557,12 +612,23 @@ io.on('connection', function(socket){
 
 
 
-	socket.on('enterGame', function(roomName){
+	socket.on('startGame', function(roomName){
 		info[roomName].isPlaying = 1;
 		refreshMain(info);
 
-		io.to(roomName).emit('enterGame');
+		io.to(roomName).emit('startGame');
+
+		initGame(roomName);
+
+		
+		
 	})
+
+
+	socket.on('endGame', function(roomName){
+		endgame(roomName);
+	})
+
 
 
 })

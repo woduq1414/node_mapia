@@ -1,22 +1,50 @@
    
 
-    function getColor(text){
-        var hash = 0, len = text.length;
-        if (text.length === 0) {
-            return hash;
-        }
-        for (i = 0; i < len; i++) {
-            charC = text.charCodeAt(i);
-            hash = ((hash<<5)-hash)+charC;
-            hash = hash & hash; 
-        }
-        
-        hash = hash * hash
-        hash = hash % 16777216
-        hash = hash.toString(16)
-        return hash;
+      function getColor(text){
+          var hash = 0, len = text.length;
+          if (text.length === 0) {
+              return hash;
+          }
+          for (i = 0; i < len; i++) {
+              charC = text.charCodeAt(i);
+              hash = ((hash<<5)-hash)+charC;
+              hash = hash & hash; 
+          }
+          
+          hash = hash * hash
+          hash = hash % 16777216
+          hash = hash.toString(16)
+          return hash;
       }
   
+      function getMyName(){
+  
+  
+        // $.ajax({
+        //     type: "POST",
+        //     url: "/getName",
+        //     data: {'id' : users[socket.id]},
+        //     async: false,
+        //     success:function(data){
+        //         //console.log(data)
+        //         currentName = data.name.trim();
+        //     }
+        // });
+        // console.count("getMyName")
+  
+  
+        return currentName;
+  
+      }
+    
+      function chatSend(){
+        var name = $('#currentName').text().trim();
+        var text = $('#chatArea').val();
+        socket.emit('sendChat', currentRoom, socket.id, text);
+        $('#chatArea').val('');
+      }
+
+      
       function chatAppend(type, text){
         if(type == "noticePrimary"){
           $('#chatting').append("<div class='alert alert-primary' style='text-align:center'>" + text + "</div>");
@@ -27,52 +55,6 @@
         }
         $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
       }
-  
-  
-  
-      //var socket = io(); 
-      
-      var socket = io({transports: ['websocket'], upgrade: false});
-      
-      var currentRoom;
-      var info;
-      var users;
-      var currentName = $('#currentName').text().trim();
-      
-      $(document).ready(function(){
-        $('#exitRoom').css('visibility', 'hidden');
-        socket.emit('initName', currentName);
-        $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
-      })
-  
-      // function bar(data, timeout = 10000) {
-      // return new Promise((resolve, reject) => {
-      //     let timer;
-  
-      //     socket.emit('requestName', socket.id);
-  
-      //     function responseHandler(message) {
-      //         // resolve promise with the value we got
-      //         resolve(message);
-      //         clearTimeout(timer);
-      //     }
-  
-      //     socket.once('getName', responseHandler); 
-  
-      //     // set timeout so if a response is not received within a
-      //     // reasonable amount of time, the promise will reject
-      //     timer = setTimeout(() => {
-      //         reject(new Error("timeout waiting for msg"));
-      //         socket.removeListener('getName', responseHandler);
-      //     }, timeout);
-  
-      // });
-      // }
-  
-      // bar().then(message => {
-      //   // you can use message here and only in here
-      // });
-  
   
       function namePopover(roomName){
   
@@ -119,52 +101,45 @@
         }
       };
   
+      //var socket = io(); 
+      
+      var socket = io({transports: ['websocket'], upgrade: false});
+      
+      var currentRoom;
+      var info;
+      var users;
+      var currentName = $('#currentName').text().trim();
+      
+      $(document).ready(function(){
+        if(!currentRoom){
+          $('#chatContainer').css('visibility', 'hidden');
+        }else{
+          $('#chatContainer').css('visibility', 'visible');
+        }
+
+        $("#leftContainer").css('display', 'block');
+        $("#leftGameContainer").css('display', 'none');
+
+        $('#exitRoom').css('visibility', 'hidden');
+        socket.emit('initName', currentName);
+        $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
+      })
+  
+  
+  
+      
+  
         
   
-      function getMyName(){
+     
   
-  
-        // $.ajax({
-        //     type: "POST",
-        //     url: "/getName",
-        //     data: {'id' : users[socket.id]},
-        //     async: false,
-        //     success:function(data){
-        //         //console.log(data)
-        //         currentName = data.name.trim();
-        //     }
-        // });
-        // console.count("getMyName")
-  
-  
-        return currentName;
-  
-      }
-    
-      function chatSend(){
-        var name = $('#currentName').text().trim();
-        var text = $('#chatArea').val();
-        socket.emit('sendChat', currentRoom, name, text);
-        $('#chatArea').val('');
-      }
-  
-      if(!currentRoom){
-        $('#chatContainer').css('visibility', 'hidden');
-  //       $('#chatContainer').html(`<div class="jumbotron jumbotron-fluid">
-  //   <div class="container">
-  //     <h1 class="display-4">Fluid jumbotron</h1>
-  //     <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
-  //   </div>
-  // </div>`);
-      }else{
-        $('#chatContainer').css('visibility', 'visible');
-      }
+      
   
       //$("#changeRoomNameArea").keyup(function(e){if(e.keyCode == 13)  $(this).parents('swal2-content').next().find('button').trigger("click") });
   
   
       $(document).on("click", "#startGame", function(){
-        socket.emit('enterGame', currentRoom);
+        socket.emit('startGame', currentRoom);
       })
   
   
@@ -235,42 +210,8 @@
         })
       })
   
-  
-      socket.on('refreshUser', function(data){
-        users = data;
-        console.log(users);
-      })
-  
-  
-      socket.on('changePassword', function(roomName, type){
-        if(type == 0){
-          chatAppend("noticePrimary", `${roomName}의 비밀번호가 해제됨 ㅋ`);
-        }else{
-          chatAppend("noticePrimary", `${roomName}의 비밀번호가 변경됨 ㅋ`);
-        }
-      })
-  
-      socket.on('changeRoomLimit', function(before, after){
-        chatAppend("noticePrimary", `방의 최대 인원이 ${before}에서 ${after}로 변경됨 ㅋ`);
-      })
-  
-      socket.on('changeRoomLimitErr', function(){
-        Swal.fire({
-          icon: 'error',
-          title: '저런',
-          text: '현재 인원보다 최대 인원이 작으면 안됨ㅋ'
-        })
-      })
-  
-      socket.on('changeRoomName', function(before,after){
-        currentRoom = after;
-        chatAppend("noticePrimary", `방의 이름이 ${before}에서 ${after}로 변경됨 ㅋ`);
-      })
-  
-      socket.on('a',function(data){
-        console.log(data);
-      })
-  
+
+
       $(document).on("click", "#chatSend", function(){
         chatSend();
       })
@@ -311,6 +252,42 @@
         socket.emit('leaveRoom', currentRoom);
       })
   
+      $(document).on("click", "#exitGame", function(){
+        
+        $('#chatting').html('');
+
+        let roomName = currentRoom
+
+        if(info[roomName].members[0] === getMyName()){
+            $('#roomMasterArea').html(`<div id="chatRoomManage" class="btn btn-secondary" style="margin-right:0px ; width:80%;height:40px">방 관리</div><div id="startGame" class="btn btn-danger" style="width:20%;height:40px">게임 시작</div>`)
+            $('#roomMasterArea').css('height', "40px")
+            $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#roomMasterArea").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+        }else{
+            $('#roomMasterArea').html(`<div class="alert alert-secondary" style="width:100%;height:0px">방 관리</div>`)
+            $('#roomMasterArea').css('height', "0px")
+            $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#roomMasterArea").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
+
+        }
+
+        if(!currentRoom){
+            $('#chatContainer').css('visibility', 'hidden');
+            $('#exitRoom').css('visibility', 'hidden');
+        }else{
+            $('#chatContainer').css('visibility', 'visible');
+            $('#exitRoom').css('visibility', 'visible');
+        }
+
+
+
+        namePopover(roomName);
+
+        $("#leftContainer").css('display', 'block');
+        $("#leftGameContainer").css('display', 'none'); 
+
+        $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
+      
+        socket.emit('leaveRoom', currentRoom);
+      })
   
       $(document).on("click", ".logout", function(){
         location.href = "/logout"
@@ -374,6 +351,87 @@
         })
   
       })
+
+      $(document).on("click", ".room", function(){
+  
+        var roomName = $(this).children('.roomName').text();
+        if (roomName != currentRoom){
+          if(info[roomName].password){
+            Swal.fire({
+              title: 'Password',
+              text: '비번',
+              input: 'password',
+              inputAttributes: {
+                autocapitalize: 'off'
+              },
+              showCancelButton: true,
+              confirmButtonText: 'Make & Enter',
+              showLoaderOnConfirm: true,
+              preConfirm: (password) => {
+                console.log(roomName, password)
+                socket.emit('checkPassword', roomName, password);
+                
+                
+                
+              },
+              allowOutsideClick: () => !Swal.isLoading()
+            })
+          }else{
+            socket.emit('joinRoom', roomName, getMyName());
+          }
+        }
+        
+  
+      })
+  
+      $(document).on("click", ".mandate", function(){
+        let socketID = $(this).attr('data')
+        socket.emit('mandateRoomMaster', currentRoom, socketID )
+        
+      })
+      $(document).on("click", ".kick", function(){
+        let socketID = $(this).attr('data')
+        socket.emit('kick', currentRoom, socketID )
+        
+      })
+
+
+      socket.on('refreshUser', function(data){
+        users = data;
+        console.log(users);
+      })
+  
+  
+      socket.on('changePassword', function(roomName, type){
+        if(type == 0){
+          chatAppend("noticePrimary", `${roomName}의 비밀번호가 해제됨 ㅋ`);
+        }else{
+          chatAppend("noticePrimary", `${roomName}의 비밀번호가 변경됨 ㅋ`);
+        }
+      })
+  
+      socket.on('changeRoomLimit', function(before, after){
+        chatAppend("noticePrimary", `방의 최대 인원이 ${before}에서 ${after}로 변경됨 ㅋ`);
+      })
+  
+      socket.on('changeRoomLimitErr', function(){
+        Swal.fire({
+          icon: 'error',
+          title: '저런',
+          text: '현재 인원보다 최대 인원이 작으면 안됨ㅋ'
+        })
+      })
+  
+      socket.on('changeRoomName', function(before,after){
+        currentRoom = after;
+        chatAppend("noticePrimary", `방의 이름이 ${before}에서 ${after}로 변경됨 ㅋ`);
+      })
+  
+      socket.on('a',function(data){
+        console.log(data);
+      })
+  
+      
   
       socket.on('newRoomMaster', function(roomName, name, socketID){
   
@@ -424,40 +482,7 @@
       })
   
   
-      $(document).on("click", ".room", function(){
-  
-        var roomName = $(this).children('.roomName').text();
-        if (roomName != currentRoom){
-          if(info[roomName].password){
-            Swal.fire({
-              title: 'Password',
-              text: '비번',
-              input: 'password',
-              inputAttributes: {
-                autocapitalize: 'off'
-              },
-              showCancelButton: true,
-              confirmButtonText: 'Make & Enter',
-              showLoaderOnConfirm: true,
-              preConfirm: (password) => {
-                console.log(roomName, password)
-                socket.emit('checkPassword', roomName, password);
-                
-                
-                
-              },
-              allowOutsideClick: () => !Swal.isLoading()
-            })
-          }else{
-            socket.emit('joinRoom', roomName, getMyName());
-          }
-        }
-        
-  
-  
-        
-  
-      })
+      
   
   
       socket.on('checkPassword', function(roomName, isCorrect){
@@ -484,19 +509,19 @@
       })
   
   
+      $(document).on("click", "#setName", function(){
   
-      $(document).on("click", ".mandate", function(){
-        let socketID = $(this).attr('data')
-        socket.emit('mandateRoomMaster', currentRoom, socketID )
+        var a = $('#currentName').text().trim();
+        var b = $('#inputName').val()
+  
+        socket.emit('changeName', a, b)
         
       })
-      $(document).on("click", ".kick", function(){
-        let socketID = $(this).attr('data')
-        socket.emit('kick', currentRoom, socketID )
-        
-      })
+     
   
   
+      
+
       socket.on('joinRoom', function(roomName, name, socketID, me){
         if (me){
           $('#chatting').html('');
@@ -581,14 +606,7 @@
         currentName = $('#inputName').val()
       })
   
-      $(document).on("click", "#setName", function(){
-  
-        var a = $('#currentName').text().trim();
-        var b = $('#inputName').val()
-  
-        socket.emit('changeName', a, b)
-        
-      })
+      
   
   
       socket.on('refreshMain', function(data){
@@ -638,11 +656,4 @@
         $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
       })
   
-      socket.on('enterGame', function(){
-        $('#roomMasterArea').html(`<div class="alert alert-secondary" style="width:100%;height:0px">방 관리</div>`)
-        $('#roomMasterArea').css('height', "0px")
-        $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#roomMasterArea").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
-        $("#chatting").html('');
-        $("#roomMasterArea").html('');
-        $("#leftContainer").html('');
-      })
+      
