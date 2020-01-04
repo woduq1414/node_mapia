@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js",
-    "build": "webpack --mode development"
+    "start": "nodemon -x node app.js || (sleep 10; touch app.js)"
   },
   "dependencies": {
     "babel-loader": "^8.0.6",
