@@ -147,6 +147,7 @@ var count=1;
 var info = {}
 var users = {}
 var timeLimit = {}
+var timer = {}
 
 
 io.on('connection', function(socket){
@@ -158,6 +159,8 @@ io.on('connection', function(socket){
 			refreshMain(info);
 
 			io.to(roomName).emit('endGame');
+		}else{
+			clearInterval(timer[roomName]);
 		}
 		
 	}
@@ -183,12 +186,12 @@ io.on('connection', function(socket){
 
 			timeLimit[roomName] = 20;
 			io.to(roomName).emit('getTimeStatus', timeLimit[roomName]);
-			var timer = setInterval(function(){
+			timer[roomName] = setInterval(function(){
 				
 				timeLimit[roomName]--;
 				io.to(roomName).emit('getTimeStatus', timeLimit[roomName]);
 				if(timeLimit[roomName] <= 0){
-					clearInterval(timer);
+					clearInterval(timer[roomName]);
 					endGame(roomName);
 				}
 			}, 1000)
