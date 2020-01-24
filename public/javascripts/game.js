@@ -3,26 +3,28 @@ $(window).resize(function(){
     $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) -  parseFloat($("#upperGameContainer").css("height")) -  40 + "px"))
 })
 socket.on('refreshMain', function(data2){
+    if(currentRoom){
+        let data = data2[currentRoom].members;
 
-    let data = data2[currentRoom].members;
-
-    $('#gameMembers').html('');
-    for(let i in data){
-        $('#gameMembers').append(`
-        <div memberData="${data[i]}" class="card member" style="float:left;display:inline-block;">
-            <img src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png" class="card-img-top" alt="...">
-            <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px">
-                <div style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
-                    ${data[i]}
-                </div>    
-            
-            </div>
-        </div>`
-      )
+        $('#gameMembers').html('');
+        for(let i in data){
+            $('#gameMembers').append(`
+            <div member-data="${data[i]}" class="card member" style="float:left;display:inline-block;cursor:pointer">
+                <img src="../images/icon_player.png" class="card-img-top" alt="...">
+                <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px">
+                    <div style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
+                        ${data[i]}
+                    </div>    
+                
+                </div>
+            </div>`
+        )
+        }
+        $('#gameMembers').find('img').on('load', function(){
+            $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) -  parseFloat($("#upperGameContainer").css("height")) -  40 + "px"))
+        });
     }
-    $('#gameMembers').find('img').on('load', function(){
-        $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) -  parseFloat($("#upperGameContainer").css("height")) -  40 + "px"))
-    });
+    
 
 })
 
@@ -39,20 +41,23 @@ socket.on('startGame', function(){
   })
 
 socket.on('getTimeStatus', function(time){
+
     $('#timeStatus').html(time);
+    
 })
 
 
-socket.on('getDateStatus', function(date){
-    $('#dateStatus').html(date);
+socket.on('getDateStatus', function(n,dayORnight){
+    $('#dateStatus').html(n + " 번째 " + dayORnight);
+    chatAppend("noticeDanger", dayORnight + "이 되었습니다.")
 })
 
 socket.on('getGameMembers', function(data){
     $('#gameMembers').html('');
     for(let i in data){
         $('#gameMembers').append(`
-        <div memberData="${data[i]}" class="card member" style="float:left;display:inline-block;">
-            <img src="https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/user_male2-512.png" class="card-img-top" alt="...">
+        <div member-data="${data[i]}" class="card member" style="float:left;display:inline-block;cursor:pointer">
+            <img src="../images/icon_player.png" class="card-img-top" alt="...">
             <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px">
                 <div style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
                     ${data[i]}
@@ -67,6 +72,27 @@ socket.on('getGameMembers', function(data){
     });
 
 })
+
+
+socket.on('initJob', function(job){
+    alert(job);
+})
+
+socket.on('selectPlayerAvailable', function(message){
+    chatAppend('noticePrimary', message);
+
+    $(".member").on("click", function(){
+        socket.emit('selectPlayer', currentRoom, $(this).attr('member-data'))
+    });
+
+})
+
+socket.on('selectPlayerUnvailable', function(message){
+
+    $(".member").off("click");
+
+})
+
 
 
 
@@ -103,4 +129,6 @@ socket.on('endGame', function(){
     $("#leftGameContainer").css('display', 'none'); 
 
     $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
+
+    chatAppend("noticeDanger", "게임이 끝났습니다.");
 })
