@@ -52,6 +52,8 @@
           $('#chatting').append("<div class='alert alert-light' style='text-align:left'>" + text + "</div>");
         }else if(type == "noticeDanger"){
           $('#chatting').append("<div class='alert alert-danger' style='text-align:center'>" + text + "</div>");
+        }else if(type == "vote"){
+          $('#chatting').append("<div class='alert alert-light' style='text-align:center; color : red'>" + text + "</div>");
         }
         $("#chatting").scrollTop($("#chatting")[0].scrollHeight);
       }
@@ -451,10 +453,10 @@
       })
   
   
-      socket.on('receiveChat', function(socketID, roomName, name, text){
+      socket.on('receiveChat', function(socketID, roomName, name, text, type){
         if(info[roomName].members[0] == name && !info[roomName].isPlaying){
           chatAppend("chat", `<span data-toggle="popover" data-placement="bottom"  data-html="true" data-sname='${name}' data-sid='${socketID}'
-          class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'><i class='fas fa-crown'></i> ${name}</span> : ${text}`)
+          class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'><i class='fas fa-crown'></i> ${name}</span> : <span class='${type}Chat'>${text}</span>`)
           
           
           
@@ -462,16 +464,48 @@
   
         }else{
           chatAppend("chat", `<span data-toggle="popover" data-placement="bottom"  data-html="true" data-sname='${name}' data-sid='${socketID}'
-                              class='chatName ${socketID}' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'>${name}</span> : ${text}`)
+                              class='chatName ${socketID} ${type}Name' style='cursor:pointer;font-weight:1000;color:#${getColor(name)}'>${name}</span> : <span class='${type}Chat'>${text}</span>`)
           
         
         }
+
+        if(currentName != name && !isFocus && !info[roomName].isPlaying){
+          Push.create(name, {
+            body: text,
+            icon: '/images/icon_player.png',
+            timeout: 3000,
+            onClick: function () {
+                window.focus();
+                this.close();
+            }
+          });
+          var audio = document.getElementById('audio_play'); 
+          if (audio.paused) { 
+              audio.play(); 
+          }else{ 
+              audio.pause(); 
+              audio.currentTime = 0 
+              audio.play(); 
+          } 
+
+          
+        }
+
+
         namePopover(roomName);
   
   
       })
   
-  
+      var isFocus = 1;
+
+      $(window).focus(function() {
+        isFocus = 1;
+      });
+
+      $(window).blur(function() {
+        isFocus = 0;
+      });
   
   
   

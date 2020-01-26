@@ -2,30 +2,46 @@
 $(window).resize(function(){
     $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) -  parseFloat($("#upperGameContainer").css("height")) -  40 + "px"))
 })
-socket.on('refreshMain', function(data2){
-    if(currentRoom){
-        let data = data2[currentRoom].members;
 
-        $('#gameMembers').html('');
-        for(let i in data){
+socket.on('refreshRoom', function(data2){
+    let data = data2.members;
+
+    $('#gameMembers').html('');
+    for(let i in data){
+        if(data2.alive.includes(data[i])){
             $('#gameMembers').append(`
             <div member-data="${data[i]}" class="card member" style="float:left;display:inline-block;cursor:pointer">
                 <img src="../images/icon_player.png" class="card-img-top" alt="...">
-                <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px">
-                    <div style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
+                <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px;">
+                    <div class="${currentName == data[i] ? 'myName' : ''}" style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
                         ${data[i]}
                     </div>    
                 
                 </div>
             </div>`
-        )
+            
+            )
+        }else{
+            $('#gameMembers').append(`
+            <div member-data="${data[i]}" class="card member dead" style="float:left;display:inline-block;">
+                <img src="../images/icon_player.png" class="card-img-top" alt="...">
+                <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px">
+                    <div class="${currentName == data[i] ? 'myName' : ''}" style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
+                        ${data[i]}
+                    </div>    
+                
+                </div>
+            </div>`
+            
+            )
         }
-        $('#gameMembers').find('img').on('load', function(){
-            $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) -  parseFloat($("#upperGameContainer").css("height")) -  40 + "px"))
-        });
+       
+        // 
     }
     
-
+    $('#gameMembers').find('img').on('load', function(){
+        $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) -  parseFloat($("#upperGameContainer").css("height")) -  40 + "px"))
+    });
 })
 
 
@@ -52,37 +68,40 @@ socket.on('getDateStatus', function(n,dayORnight){
     chatAppend("noticeDanger", dayORnight + "이 되었습니다.")
 })
 
-socket.on('getGameMembers', function(data){
-    $('#gameMembers').html('');
-    for(let i in data){
-        $('#gameMembers').append(`
-        <div member-data="${data[i]}" class="card member" style="float:left;display:inline-block;cursor:pointer">
-            <img src="../images/icon_player.png" class="card-img-top" alt="...">
-            <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px">
-                <div style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
-                    ${data[i]}
-                </div>    
-            
-            </div>
-        </div>`
-      )
-    }
-    $('#gameMembers').find('img').on('load', function(){
-        $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) -  parseFloat($("#upperGameContainer").css("height")) -  40 + "px"))
-    });
 
+socket.on('gameMessage', function(message){
+    chatAppend("noticePrimary", message);
+})
+
+
+socket.on('appeal', function(player){
+    chatAppend("noticePrimary", `<span style='font-weight:1000;color:#${getColor(player)}'>${player}</span> - 최후의 변론`);
 })
 
 
 socket.on('initJob', function(job){
-    alert(job);
+    //alert(job);
 })
 
-socket.on('selectPlayerAvailable', function(message){
+socket.on('selectPlayerAvailable', function(message, aliveMember){
     chatAppend('noticePrimary', message);
 
     $(".member").on("click", function(){
-        socket.emit('selectPlayer', currentRoom, $(this).attr('member-data'))
+
+        if(aliveMember.includes($(this).attr('member-data'))){
+            if(!$(this).hasClass("selected")){
+                $('.member').css("border", "0px");
+                $('.selected').removeClass('selected');
+                $(this).addClass('selected');
+                $(this).css("border", "5px solid red");
+                socket.emit('selectPlayer', currentRoom, $(this).attr('member-data'));
+            }else{
+               
+            }
+        }
+        
+        
+        
     });
 
 })
@@ -94,6 +113,43 @@ socket.on('selectPlayerUnvailable', function(message){
 })
 
 
+socket.on('votedPlayer', function(player){
+    chatAppend('vote', `${player}`)
+});
+
+socket.on('mafiaAbility', function(memberName){
+    chatAppend("noticeDanger", memberName + "(이)가 마피아에 의해 죽었습니다.");
+    $(`.member[member-data=${memberName}]`).addClass("dead");
+});
+
+socket.on('voteResult', function(memberName, isDie){
+    if(isDie){
+        chatAppend("noticeDanger", memberName + "(이)가 투표로 처형당했습니다.");
+        $(`.member[member-data=${memberName}]`).addClass("dead");
+    }else{
+        chatAppend("noticeDanger", memberName + "(이)가 투표에서 살아남았습니다.");
+    }
+    
+});
+
+socket.on('finalVote', function(member){
+    $('#finalVoteModal div.modal-body').html(`<span style="font-weight:500;color:#${getColor(member)};">${member} - 처형</span>`);
+    $('#finalVoteModal').modal();
+
+    $('#agreeVote').on("click", function(){
+        socket.emit('selectPlayer', currentRoom, 1);
+    })
+    $('#disagreeVote').on("click", function(){
+        socket.emit('selectPlayer', currentRoom, 0);
+    })
+})
+
+
+socket.on('endFinalVote', function(){
+    $('#agreeVote').off("click");
+    $('#disagreeVote').off("click");
+    $('#finalVoteModal').modal('hide');
+})
 
 
 socket.on('endGame', function(){

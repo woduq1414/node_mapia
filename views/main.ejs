@@ -13,6 +13,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
+    <script src="/javascripts/push.min.js"></script>
 
   </head>
   <body style="overflow-y:hidden">
@@ -86,6 +87,31 @@
         <h1>Simple popover with a close button.</h1>
         
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="finalVoteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+
+      <!-- Add .modal-dialog-centered to .modal-dialog to vertically center the modal -->
+      <div class="modal-dialog modal-dialog-centered" role="document">
+
+
+        <div class="modal-content">
+          <!-- <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          </div> -->
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer" style="text-align:center; display:inline-block">
+            <button type="button" class="btn btn-danger" id="agreeVote" data-dismiss="modal" style="width:47%;margin-right:1%">찬성</button>
+            <button type="button" class="btn btn-secondary" id="disagreeVote"  data-dismiss="modal" style="width:47%;margin-left:1%">반대</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <audio id='audio_play' src='/audio/clearly.mp3'></audio> 
   </body>
   <script src="/javascripts/main.js"> </script>
   <script src="/javascripts/game.js"> </script>

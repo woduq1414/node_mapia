@@ -38,7 +38,57 @@ hr.tooltipHR {
 	margin-bottom : 4px; 
 }
 
+.mafiaName {
+	background-color: darkgrey;
+	color : white !important;
 
+	background-color:black;
+	font-style:italic;
+	border-right: 3px solid red;
+	border-left : 3px solid red;
+	padding-left : 15px;
+	padding-right : 15px;
+	border-radius : 5px;
+}
+
+
+.mafiaChat {
+	background-color : rgb(194, 96, 120);
+	padding-left : 5px;
+	padding-right : 10px;
+	color : white;
+	border-radius : 5px;
+}
+
+
+.deadName {
+	background-color: rgb(199, 199, 199);
+	color : white !important;
+	padding-left : 15px;
+	padding-right : 15px;
+	border-radius : 5px;
+}
+
+
+.deadChat {
+	background-color : rgb(199, 199, 199);
+	padding-left : 5px;
+	padding-right : 10px;
+	color : black;
+	border-radius : 5px;
+}
+
+
+.myName {
+
+	background-color : rgb(241, 241, 241);
+	border-radius : 5px;
+}
+
+.dead {
+	cursor:not-allowed !important;
+	background-color:gray !important;
+}
 
 @media screen and (min-width: 769px) {
 	/* 데스크탑에서 사용될 스타일을 여기에 작성합니다. */
