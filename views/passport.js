@@ -14,7 +14,8 @@ var User = new Schema({
 	id: String,
 	password: String,
 	name: String,
-	date: Date
+  date: Date,
+  config : Object
 });
 var userModel = mongoose.model('User', User);
 
@@ -52,6 +53,7 @@ module.exports = () => {
             newUser.password = password; // generateHash을 통해 비밀번호를 hash화 합니다.
             newUser.name = req.body.signupName;
             newUser.date = Date.now();
+            newUser.config = {};
             newUser.save(function (err) { // 저장합니다.
               if (err) throw err;
               return done(null, newUser); // serializeUser에 값을 넘겨줍니다.

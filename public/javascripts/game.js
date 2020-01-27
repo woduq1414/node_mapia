@@ -122,6 +122,14 @@ socket.on('mafiaAbility', function(memberName){
     $(`.member[member-data=${memberName}]`).addClass("dead");
 });
 
+
+socket.on('doctorAbility', function(memberName){
+    chatAppend("noticePrimary", memberName + "(이)가 의사의 치료를 받고 살아났습니다.");
+
+});
+
+
+
 socket.on('voteResult', function(memberName, isDie){
     if(isDie){
         chatAppend("noticeDanger", memberName + "(이)가 투표로 처형당했습니다.");
@@ -133,7 +141,7 @@ socket.on('voteResult', function(memberName, isDie){
 });
 
 socket.on('finalVote', function(member){
-    $('#finalVoteModal div.modal-body').html(`<span style="font-weight:500;color:#${getColor(member)};">${member} - 처형</span>`);
+    $('#finalVoteModal div.modal-body').html(`<span style="font-weight:800;font-size:20px;color:#${getColor(member)};">${member}</span> - 처형`);
     $('#finalVoteModal').modal();
 
     $('#agreeVote').on("click", function(){

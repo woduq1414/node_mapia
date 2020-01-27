@@ -1,5 +1,23 @@
    
 
+
+  //  var docV = document.documentElement;
+  //  // 전체화면 설정
+  //  function openFullScreenMode() {
+  //      if (docV.requestFullscreen)
+  //          docV.requestFullscreen();
+  //      else if (docV.webkitRequestFullscreen) // Chrome, Safari (webkit)
+  //          docV.webkitRequestFullscreen();
+  //      else if (docV.mozRequestFullScreen) // Firefox
+  //          docV.mozRequestFullScreen();
+  //      else if (docV.msRequestFullscreen) // IE or Edge
+  //          docV.msRequestFullscreen();
+  //  }
+
+  //  openFullScreenMode();
+
+
+
       function getColor(text){
           var hash = 0, len = text.length;
           if (text.length === 0) {
@@ -111,6 +129,11 @@
       var info;
       var users;
       var currentName = $('#currentName').text().trim();
+      var config = {};
+      config.VolumeSFX = 0.5;
+      config.checkPushAlarm = 1;
+      config.checkChattingSFX = 1;
+
       
       $(document).ready(function(){
         if(!currentRoom){
@@ -470,23 +493,29 @@
         }
 
         if(currentName != name && !isFocus && !info[roomName].isPlaying){
-          Push.create(name, {
-            body: text,
-            icon: '/images/icon_player.png',
-            timeout: 3000,
-            onClick: function () {
-                window.focus();
-                this.close();
-            }
-          });
-          var audio = document.getElementById('audio_play'); 
-          if (audio.paused) { 
-              audio.play(); 
-          }else{ 
-              audio.pause(); 
-              audio.currentTime = 0 
-              audio.play(); 
-          } 
+          if(config.checkPushAlarm){
+            Push.create(name, {
+              body: text,
+              icon: '/images/icon_player.png',
+              timeout: 3000,
+              onClick: function () {
+                  window.focus();
+                  this.close();
+              }
+            });
+          }
+          if(config.checkChattingSFX){
+            var audio = document.getElementById('audio_play'); 
+            audio.volume = config.VolumeSFX;
+            if (audio.paused) { 
+                audio.play(); 
+            }else{ 
+                audio.pause(); 
+                audio.currentTime = 0 
+                audio.play(); 
+            } 
+          }
+          
 
           
         }
@@ -690,4 +719,42 @@
         $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
       })
   
-      
+      $('.config').on("click", function(){
+
+          Swal.fire({
+            title: 'Config',
+            html: `
+            <label for="VolumeSFX">효과음 크기</label>
+            <input type="range" class="custom-range" id="VolumeSFX" min="0" max="1" step="0.1" value="${config.VolumeSFX}">
+            
+            <hr>
+            <div class="custom-control custom-switch">
+              
+              <input type="checkbox" class="custom-control-input" id="checkPushAlarm" ${config.checkPushAlarm ? "checked" : ""}>
+              <label class="custom-control-label" for="checkPushAlarm">화면을 보고 있지 않을 때 채팅 푸쉬 알림</label>
+            </div>
+            <div class="custom-control custom-switch">
+              
+              <input type="checkbox" class="custom-control-input" id="checkChattingSFX" ${config.checkChattingSFX ? "checked" : ""}>
+              <label class="custom-control-label" for="checkChattingSFX">화면을 보고 있지 않을 때 채팅 효과음</label>
+            </div>
+            
+    `,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Apply',
+            inputAttributes: {
+              autocapitalize: 'off'
+            },
+            preConfirm : () => {
+             
+              config.VolumeSFX = $('#VolumeSFX').val();
+              config.checkPushAlarm = $('#checkPushAlarm').is(":checked")
+              config.checkChattingSFX = $('#checkChattingSFX').is(":checked")
+            
+            }
+           
+          })
+
+      })

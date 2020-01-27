@@ -1,0 +1,25 @@
+body {
+	background-color : #190d16 !important;
+}
+
+
+@media screen and (min-width: 1200px) {
+	/* 데스크탑에서 사용될 스타일을 여기에 작성합니다. */
+
+	#leftContainer, #leftGameContainer{
+		width:325px !important;
+	}
+ }
+
+
+.logout, #makeRoom, .config, .room {
+    border-radius: 0 !important;
+}
+
+#currentName {
+    color : white !important;
+}
+
+hr {
+    background-color : gray;
+}
