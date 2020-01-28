@@ -1,4 +1,11 @@
 // nodemon --ignore 'game.js' 'main.js'
+require('dotenv').config();
+const config = {
+	DB_USER : process.env.DB_USER,
+	DB_PASSWORD : process.env.DB_PASSWORD
+}
+
+
 
 var express = require('express');
 var app = express();
@@ -44,7 +51,7 @@ app.use(express.static(__dirname + '/public'));
 
 
 // var MongoClient = require('mongodb').MongoClient;
-// var url = 'mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority';
+// const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`;
 // var db;
 // var users;
 // MongoClient.connect(url, function (err, database) {
@@ -66,12 +73,26 @@ app.use(express.static(__dirname + '/public'));
 sessionID = '';
 sessionName = '';
 sess = {};
-app.get('/main', (req, res) => {  
+
+function randomString(len) {
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz가나다라마바사아자차카타파하";
+	var string_length = len;
+	var randomstring = '';
+	for (var i=0; i<string_length; i++) {
+		var rnum = Math.floor(Math.random() * chars.length);
+		randomstring += chars.substring(rnum,rnum+1);
+	}
+	//document.randform.randomfield.value = randomstring;
+	return randomstring;
+}
+
+app.get('/main', (req, res) => {
+	let loginPass = 1;  
 	if(req.user){
 		sessionID = req.user.id;
 		const MongoClient = require('mongodb').MongoClient;
-			const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority";
-			//const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test";
+			const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`;
+
 			const client = new MongoClient(uri, { useNewUrlParser: true });
 			var user;
 			client.connect(err => {
@@ -82,13 +103,15 @@ app.get('/main', (req, res) => {
 					return;
 					}
 					sessionName = result.name;
-					console.log("!!!!!!!!!!!!!",sessionName);
+					console.log(`${sessionName} 로그인`);
 					res.render('main.ejs', {name : sessionName});
 
 					
 				});
 				client.close();
 		});
+	}else if(loginPass){
+		res.render('main.ejs', {name : randomString(8)});
 	}else{
 		res.redirect("/index");
 	}
@@ -155,13 +178,29 @@ var timer = {}
 io.on('connection', function(socket){
 
 
-	function endGame(roomName){
+	function endGame(roomName, winner){
+		
 		if(info.hasOwnProperty(roomName)){
 			info[roomName].isPlaying = 0;
 			clearInterval(timer[roomName]);
-			refreshMain(info);
+			io.to(roomName).emit('noticeGameResult', winner, RESULT_TIME);
 
-			io.to(roomName).emit('endGame');
+
+			
+
+			timeLimit[roomName] = RESULT_TIME;
+			io.to(roomName).emit('getTimeStatus', timeLimit[roomName]);
+			timer[roomName] = setInterval(function(){
+				
+				timeLimit[roomName]--;
+				io.to(roomName).emit('getTimeStatus', timeLimit[roomName]);
+				if(timeLimit[roomName] <= 0){
+					clearInterval(timer[roomName]);
+					refreshMain(info);
+					io.to(roomName).emit('endGame');
+
+				}
+			}, 1000)
 		}
 		
 		
@@ -191,17 +230,7 @@ io.on('connection', function(socket){
 		function shuffle(a) { var j, x, i; for (i = a.length; i; i -= 1) { j = Math.floor(Math.random() * i); x = a[i - 1]; a[i - 1] = a[j]; a[j] = x; } }
 
 		
-		function randomString(len) {
-			var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-			var string_length = len;
-			var randomstring = '';
-			for (var i=0; i<string_length; i++) {
-				var rnum = Math.floor(Math.random() * chars.length);
-				randomstring += chars.substring(rnum,rnum+1);
-			}
-			//document.randform.randomfield.value = randomstring;
-			return randomstring;
-		}
+		
 	
 
 
@@ -210,13 +239,52 @@ io.on('connection', function(socket){
 		let jobList = new Array();
 		
 
-		for (let i = 0;  i < Object.size(roomMember);  i++){
-			//jobList[i] = "citizen";
-			jobList.push("citizen")
+		if(info[roomName].type == "normal"){
+			let maxMember = Object.size(roomMember);
+			function addJob(jobName, n){
+				for(let i = 0; i < n; i++){
+					jobList.push(jobName)
+				}
+				return n;
+			}
+			maxMember -= addJob("mafia", Math.floor(maxMember / 4));
+			maxMember -= addJob("police", 1);
+			maxMember -= addJob("doctor", 1);
+			
+			let specialJob = ["soldier", "politician"];
+			let temp = specialJob;
+			for (let i = 0;  i < maxMember;  i++){
+				//jobList[i] = "citizen";
+				if(temp.length > 0){
+					shuffle(temp);
+					jobList.push(temp.pop())
+				}else{
+					jobList.push("citizen")
+				}
+				
+
+				
+			}
+			shuffle(jobList);
+
+		}else{
+			for (let i = 0;  i < Object.size(roomMember);  i++){
+				//jobList[i] = "citizen";
+				jobList.push("citizen")
+			}
+			jobList[0] = "mafia"
+			jobList[1] = "politician"
+			jobList[2] = "soldier";
 		}
-		jobList[0] = "mafia"
-		jobList[1] = "doctor"
 		
+
+		
+
+		
+
+
+
+
 
 		let i = 0;
 
@@ -241,7 +309,7 @@ io.on('connection', function(socket){
 		for(socketID in roomMember){
 			//console.log(memberID);
 			let sock = io.sockets.connected[socketID];
-			info[roomName].gameState.job[sock.name] = {"socketID" : sock.id, "jobName" : jobList[i], "selected" : ""};
+			info[roomName].gameState.job[sock.name] = {"socketID" : sock.id, "jobName" : jobList[i], "selected" : "", "ability" : 1};
 			
 			if(jobList[i] == "mafia"){
 				sock.join(mafiaRoomName)
@@ -269,11 +337,13 @@ io.on('connection', function(socket){
 	}
 
 	function getJobOwner(roomName, jobName){
+		let temp = [];
 		for(memberName in info[roomName].gameState.job){
 			if(info[roomName].gameState.job[memberName].jobName == jobName){
-				return memberName;
+				temp.push(memberName);
 			}
 		}
+		return temp;
 	}
 
 	function getSelected(roomName, memberName){
@@ -289,6 +359,10 @@ io.on('connection', function(socket){
 		return info[roomName].gameState.job[memberName].jobName;
 	}
 
+	function hasAbility(roomName, memberName){
+		return info[roomName].gameState.job[memberName].ability;
+	}
+
 
 	function getAliveMember(roomName){
 		let temp = [];
@@ -302,8 +376,9 @@ io.on('connection', function(socket){
 
 
 	function actionNight(roomName){
-		let mafiaName = getJobOwner(roomName, "mafia");
-		let doctorName = getJobOwner(roomName, "doctor");
+		let mafiaName = getJobOwner(roomName, "mafia")[0];
+		let doctorName = getJobOwner(roomName, "doctor")[0];
+		let soldierName = getJobOwner(roomName, "soldier")[0];
 		if(mafiaName){
 			let mafiaSelected = getSelected(roomName, mafiaName);
 			let doctorSelected = getSelected(roomName, doctorName);
@@ -311,7 +386,10 @@ io.on('connection', function(socket){
 			if(mafiaSelected){
 
 				if(doctorSelected == mafiaSelected){
-					io.to(roomName).emit('mafiaAbility', mafiaSelected);
+					io.to(roomName).emit('doctorAbility', mafiaSelected);
+				}else if(mafiaSelected == soldierName && hasAbility(roomName, soldierName)){
+					io.to(roomName).emit('soldierAbility', mafiaSelected);
+					info[roomName].gameState.job[soldierName].ability = 0;
 				}else{
 					io.to(roomName).emit('mafiaAbility', mafiaSelected);
 	
@@ -334,14 +412,40 @@ io.on('connection', function(socket){
 
 	}
 
+	function isGameEnd(roomName){
+		let aliveMember = getAliveMember(roomName);
+		let citizenTeam = 0;
+		let mafiaTeam = 0;
+		for(i in aliveMember){
+			if(getJobName(roomName, aliveMember[i]) == "mafia"){
+				mafiaTeam += 1;
+			}else{
+				citizenTeam += 1;
+			}
+		}
+		if(1){
+			return "";
+		}else{
+			if(mafiaTeam == 0){
+				return "citizenWin"
+			}else if(mafiaTeam >= citizenTeam){
+				return "mafiaWin"
+			}else{
+				return "";
+			}
+		}
+		
+	}
+
 
 	function setDate(roomName, date, time){
 
-		NIGHT_TIME = 3;
+		NIGHT_TIME = 15;
 		DAY_TIME = 3;
 		VOTE_TIME = 3;
 		APPEAL_TIME = 3;
 		FINAL_TIME = 7;
+		RESULT_TIME = 5;
 
 		if(time == "night"){
 
@@ -367,6 +471,9 @@ io.on('connection', function(socket){
 				if(info[roomName].gameState.job[sock.name].jobName == "doctor"){
 					sock.emit('selectPlayerAvailable', "살릴 사람을 지목해주세요.", getAliveMember(roomName))
 				}
+				if(info[roomName].gameState.job[sock.name].jobName == "police"){
+					sock.emit('selectPlayerAvailable', "조사할 사람을 지목해주세요.", getAliveMember(roomName))
+				}
 			}
 
 
@@ -381,7 +488,18 @@ io.on('connection', function(socket){
 				if(timeLimit[roomName] <= 0){
 					clearInterval(timer[roomName]);
 
-					setDate(roomName, date, "day")
+
+					actionNight(roomName);
+
+					let winner = isGameEnd(roomName);
+					if(winner){
+						endGame(roomName, winner);
+					}else{
+						setDate(roomName, date, "day")
+					}
+
+
+					
 
 
 					//endGame(roomName);
@@ -403,7 +521,7 @@ io.on('connection', function(socket){
 			io.to(roomName).emit('getDateStatus', date, "낮")
 
 			
-			actionNight(roomName);
+			
 
 
 
@@ -466,9 +584,18 @@ io.on('connection', function(socket){
 			let voted = {};
 			for(member in info[roomName].gameState.job){
 				if(voted.hasOwnProperty(getSelected(roomName, member))){
-					voted[getSelected(roomName, member)] += 1;
+					if(getJobName(roomName, member) == "politician"){
+						voted[getSelected(roomName, member)] += 2;
+					}else{
+						voted[getSelected(roomName, member)] += 1;
+					}
+					
 				}else{
-					voted[getSelected(roomName, member)] = 1;
+					if(getJobName(roomName, member) == "politician"){
+						voted[getSelected(roomName, member)] = 2;
+					}else{
+						voted[getSelected(roomName, member)] = 1;
+					}
 				}
 			}
 			console.log(voted);
@@ -524,7 +651,14 @@ io.on('connection', function(socket){
 					}
 				}, 1000)
 			}else{
-				setDate(roomName, date + 1, "night")
+
+				let winner = isGameEnd(roomName);
+				if(winner){
+					endGame(roomName, winner);
+				}else{
+					setDate(roomName, date + 1, "night")
+				}
+			
 				
 			}
 
@@ -568,9 +702,17 @@ io.on('connection', function(socket){
 					for(member in info[roomName].gameState.job){
 						if(getJobName(roomName, member) != "dead"){
 							if(getSelected(roomName, member) == 1){
-								agree += 1;
+								if(getJobName(roomName, member) == "politician"){
+									agree += 2;
+								}else{
+									agree += 1;
+								}
 							}else{
-								disagree += 1;
+								if(getJobName(roomName, member) == "politician"){
+									disagree += 2;
+								}else{
+									disagree += 1;
+								}
 							}
 						}
 						
@@ -578,19 +720,32 @@ io.on('connection', function(socket){
 					console.log(agree, disagree);
 					
 					if(agree >= disagree){
+						if(getJobName(roomName, member) == "politician"){
+							io.to(roomName).emit('politicianAbility', execution);
+							io.to(roomName).emit('voteResult', execution, 0);
+						}else{
+							io.to(roomName).emit('voteResult', execution, 1);
 
-						io.to(roomName).emit('voteResult', execution, 1);
-
-						info[roomName].gameState.job[execution].jobName = "dead";
-						socketID = info[roomName].gameState.job[execution].socketID;
-						let sock = io.sockets.connected[socketID];
-						sock.join(info[roomName].roomKey.dead);
-						sock.join(info[roomName].roomKey.mafia);
+							info[roomName].gameState.job[execution].jobName = "dead";
+							socketID = info[roomName].gameState.job[execution].socketID;
+							let sock = io.sockets.connected[socketID];
+							sock.join(info[roomName].roomKey.dead);
+							sock.join(info[roomName].roomKey.mafia);
+						}
+						
 					}else{
 						io.to(roomName).emit('voteResult', execution, 0);
 					}
 
-					setDate(roomName, date + 1, "night")
+
+
+					let winner = isGameEnd(roomName);
+					if(winner){
+						endGame(roomName, winner);
+					}else{
+						setDate(roomName, date + 1, "night")
+					}
+					
 					
 
 					
@@ -702,13 +857,13 @@ io.on('connection', function(socket){
 		delete users[socket.id];
 		io.emit('refreshUser', users);
 	
-		console.log(users);
+		//console.log(users);
 		refreshMain(info);
 	});
 
 	socket.on('initName', function(name){
 		socket.name = name;
-		console.log("SDFASDF", socket.name)
+		//console.log("SDFASDF", socket.name)
 	})
 
 	socket.on('checkPassword', function(roomName, password){
@@ -794,8 +949,8 @@ io.on('connection', function(socket){
 			// 	console.log("SAD", user)
 			// });
 			const MongoClient = require('mongodb').MongoClient;
-			const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority";
-			//const uri = "mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test";
+			const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`;
+
 			const client = new MongoClient(uri, { useNewUrlParser: true });
 			var users;
 			client.connect(err => {
@@ -830,7 +985,7 @@ io.on('connection', function(socket){
 
 		}
 		io.to(after).emit('changeRoomName', before, after)
-		console.log(io.sockets.adapter.rooms[after].sockets);
+		//console.log(io.sockets.adapter.rooms[after].sockets);
 		refreshMain(info);
 	})
 	
@@ -875,7 +1030,7 @@ io.on('connection', function(socket){
 		if(name){
 
 			if(info[roomName].limit > info[roomName].members.length){
-				console.log(info, socket.name)
+				//console.log(info, socket.name)
 				for (key in info){
 				
 					for (i in info[key]["members"]){
@@ -943,7 +1098,7 @@ io.on('connection', function(socket){
 
 
 	socket.on('leaveRoom', function(roomName){
-		console.log("leaveroom!!", roomName);
+		//console.log("leaveroom!!", roomName);
 
 		for (i in info[roomName]["members"]){
 			if(info[roomName]["members"][i] == socket.name){
@@ -957,7 +1112,7 @@ io.on('connection', function(socket){
 				
 				
 				if (info[roomName]["members"].splice(i,1)[0] && i == 0){
-					console.log("SDFSADFSDAFSADF", socket.name)
+					//console.log("SDFSADFSDAFSADF", socket.name)
 					newRoomMaster(roomName, socket.id);
 				}
 
@@ -1002,7 +1157,7 @@ io.on('connection', function(socket){
 	socket.on('kick', function(roomName, socketID)
 	{
 		let sock = io.sockets.connected[socketID]
-		console.log(socketID);
+		//console.log(socketID);
 		let name = sock.name;
 
 		
@@ -1050,13 +1205,9 @@ io.on('connection', function(socket){
 				io.to(info[roomName].roomKey.dead).emit('receiveChat', socket.id, roomName, name, text, "dead");
 			}
 
-
-			
-			
 			
 		}
 
-		
 	})
 	
 	
@@ -1064,7 +1215,7 @@ io.on('connection', function(socket){
 
 
 		if(!info.hasOwnProperty(roomName)){
-			info[roomName] = {"members" : [], "password" : password, "limit" : roomLimit, "isPlaying" : 0, "gameState" : {"time" : "", "job" : {}, "appeal" : ""}, "roomKey" : {}} 
+			info[roomName] = {"members" : [], "password" : password, "limit" : roomLimit, "isPlaying" : 0, "gameState" : {"time" : "", "job" : {}, "appeal" : ""}, "roomKey" : {}, "type" : ""} 
 		}1
 	})
 
@@ -1094,19 +1245,39 @@ io.on('connection', function(socket){
 	})
 
 
-	socket.on('selectPlayer', function(roomName, player){
-		console.log(`${socket.name} 이  ${player} 을 지목..`);
+	socket.on('selectPlayer', function(roomName, selected){
+		console.log(`${socket.name} 이  ${selected} 을 지목..`);
 
 		if(info[roomName].gameState.time == "vote"){
 			if(!getSelected(roomName, socket.name)){
-				info[roomName].gameState.job[socket.name].selected = player;
-				io.to(roomName).emit('votedPlayer', player);
+				info[roomName].gameState.job[socket.name].selected = selected;
+				io.to(roomName).emit('votedPlayer', selected);
 				socket.emit('selectPlayerUnvailable', "");
 			}
 		}else if(info[roomName].gameState.time == "night"){
-			info[roomName].gameState.job[socket.name].selected = player;
+			info[roomName].gameState.job[socket.name].selected = selected;
+			if(getJobName(roomName, socket.name) == "mafia"){
+				let mafiaList = getJobOwner(roomName, "mafia");
+				if(mafiaList.length > 1){
+					for(let i in mafiaList){
+						let socketID = info[roomName].gameState.job[mafiaList[i]].socketID;
+						let sock = io.sockets.connected[socketID];
+						sock.emit('mafiaSelected', selected);
+						info[roomName].gameState.job[mafiaList[i]].selected = selected;
+					}
+					
+				}
+
+			}else if(getJobName(roomName, socket.name) == "police"){
+				if(getJobName(roomName, selected) == "mafia"){
+					socket.emit('policeResult', selected, 1);
+				}else{
+					socket.emit('policeResult', selected, 0);
+				}
+				socket.emit('selectPlayerUnvailable', "");
+			}
 		}else if(info[roomName].gameState.time == "final"){
-			info[roomName].gameState.job[socket.name].selected = player;
+			info[roomName].gameState.job[socket.name].selected = selected;
 		}
 
 		

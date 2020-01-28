@@ -66,6 +66,8 @@
       function chatAppend(type, text){
         if(type == "noticePrimary"){
           $('#chatting').append("<div class='alert alert-primary' style='text-align:center'>" + text + "</div>");
+        }else if(type == "noticeWarning"){
+          $('#chatting').append("<div class='alert alert-warning' style='text-align:center'>" + text + "</div>");
         }else if(type == "chat"){
           $('#chatting').append("<div class='alert alert-light' style='text-align:left'>" + text + "</div>");
         }else if(type == "noticeDanger"){

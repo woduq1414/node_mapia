@@ -80,7 +80,7 @@ socket.on('appeal', function(player){
 
 
 socket.on('initJob', function(job){
-    //alert(job);
+    chatAppend("noticeWarning", `당신은 ${job}입니다.`);
 })
 
 socket.on('selectPlayerAvailable', function(message, aliveMember){
@@ -126,6 +126,15 @@ socket.on('mafiaAbility', function(memberName){
 socket.on('doctorAbility', function(memberName){
     chatAppend("noticePrimary", memberName + "(이)가 의사의 치료를 받고 살아났습니다.");
 
+});
+
+socket.on('soldierAbility', function(memberName){
+    chatAppend("noticePrimary", memberName + "(이)가 마피아의 공격을 버텨냈습니다! 장하다 국군 장병!");
+
+});
+
+socket.on('politicianAbility', function(memberName){
+    chatAppend("noticePrimary", `정치인은 투표로 죽지 않습니다. 장하다 정치인!`);
 });
 
 
@@ -195,4 +204,45 @@ socket.on('endGame', function(){
     $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
 
     chatAppend("noticeDanger", "게임이 끝났습니다.");
+
+    
+
+
+    
+})
+
+
+socket.on('noticeGameResult', function(winner, resultTime){
+    if(winner == "mafiaWin"){
+        chatAppend("noticePrimary", "마피아 팀이 승리하였습니다.");
+    }else if(winner == "citizenWin"){
+        chatAppend("noticePrimary", "시민 팀이 승리하였습니다.");
+    }
+    chatAppend("noticePrimary", `${resultTime}초 후 로비로 복귀합니다.`);
+})
+
+
+socket.on('policeResult', function(selected, result){
+    if(result){
+        chatAppend("noticeDanger", `${selected}는 마피아입니다.`)
+    }else{
+        chatAppend("noticePrimary", `${selected}는 마피아가 아닙니다.`)
+    }
+})
+
+
+
+socket.on('mafiaSelected', function(selected){
+    $temp = $(`.member[member-data=${selected}]`);
+
+    if(!$temp.hasClass("selected")){
+        $('.member').css("border", "0px");
+        $('.selected').removeClass('selected');
+        $temp.addClass('selected');
+        $temp.css("border", "5px solid red");
+        
+    }else{
+        
+    }
+
 })

@@ -3,7 +3,13 @@ const LocalStrategy = require('passport-local').Strategy;
 
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://woduq1414:woduq1219!@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority', {useNewUrlParser: true});
+require('dotenv').config();
+const config = {
+	DB_USER : process.env.DB_USER,
+	DB_PASSWORD : process.env.DB_PASSWORD
+}
+
+mongoose.connect(`mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`, {useNewUrlParser: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, "connection error:"));
 db.once('open', () => {
