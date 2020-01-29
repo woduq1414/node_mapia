@@ -1,0 +1,642 @@
+html, body{
+    margin: 0;
+    background-color: #190D16;
+    height: 100%;
+    font-family: 'Nanum Barun Gothic'; /*KoreanGD10R 하고 싶은데 돈이 없어서 못 함 ㅠㅠ*/
+    font-size: 18px;
+}
+
+form{
+    padding: 0px 0px 0px 0px;
+    margin: 0px;
+}
+
+/* SCROLL BAR */
+::-webkit-scrollbar{width: 6px;}
+::-webkit-scrollbar-track {background-color: rgb(72,72,70);}
+::-webkit-scrollbar-thumb {background-color:rgba(0,0,0,0.3); border-radius: 10px;}
+::-webkit-scrollbar-thumb:hover {background: #888888;}
+
+/* LEFT PANEL */
+#leftPanel{
+    width: 330px;
+    height: 100%;
+    float: left;
+    background-color: #3A3A3A;
+}
+    #myInfo{
+        width: 100%;
+        height: 140px;
+        float: left;
+    }
+        #myInfoWrap{
+            width: calc(100% - 60px);
+            height: calc(100% - 75px);
+            padding-top: 35px;
+            padding-left: 30px;
+            padding-right: 30px;
+            padding-bottom: 40px;
+        }
+            #myInfoTopArea{
+                width: 100%;
+            }
+                #myInfoTable{
+                    width: 100%;
+                }
+                    #myInfoName{
+                        width: 240px;
+                        text-align: center;
+                        color: #fff;
+                        font-size: 24px;
+                        padding-left: 25px;
+                    }
+                    #userImg{
+                        width: 21px;
+                        cursor: pointer;
+                    }
+            #myInfoBottomArea{
+                width: 100%;
+                padding-top: 20px;
+            }
+                #myInfoLevelName{
+                    float: left;
+                    color: #70A77E;
+                    font-size: 15px;
+                }
+                #myInfoLevelBarWrap{
+                    float: left;
+                    padding-left: 15px;
+                    padding-right: 5px;
+                    padding-top: 2px;
+                }
+                #myInfoLevelBar{
+                    float: left;
+                    width: 180px;
+                    height: 12px;
+                    background-color: #C8C8C8;
+                    border-radius: 6px;
+                }
+                #myInfoLevelBarContent{
+                    float: left;
+                    height: 12px;
+                    background-color: #70A77E;
+                    border-radius: 6px;
+                }
+                #myInfoLevel{
+                    float: right;
+                    color: #fff;
+                    font-size: 16px;
+                }
+
+    /* SELECT */
+    #select{
+        width: 100%;
+        height: 50px;
+        float: left;
+    }
+        #selectNote{
+            width: 100%;
+            height: 50px;
+            float: left;
+            cursor: pointer;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        #selectGame{
+            width: 50%;
+            height: 50px;
+            float: left;
+            cursor: pointer;
+            border-top-left-radius: 20px;
+        }
+        #selectMemberControl{
+            width: 50%;
+            height: 50px;
+            float: left;
+            cursor: pointer;
+            border-top-left-radius: 20px;
+        }
+        #selectFriend{
+            width: 50%;
+            height: 50px;
+            float: right;
+            cursor: pointer;
+            border-top-right-radius: 20px;
+        }
+        .selectedChoosePanel{
+            background-color: #2E2E2E;
+            color: #DC656D;
+        }
+        .unselectedChoosePanel{
+            background-color: #434343;
+            color: #A7A7A7;
+        }
+        .selectWrap{
+            position: relative;
+            transform: translateY(-50%);
+            top: 50%;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 16.5px;
+        }
+        .invisible{
+            display: none;
+        }
+    /* SELECT */
+
+    /* GAMEPANEL */
+    #gamePanel{
+        float: left;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+        #selectRoomPanel{
+            float: left;
+            overflow-y: scroll;
+        }
+            .selectedPanel{
+                width: 100%;
+                height: calc(100% - 270px);
+            }
+
+            .room{
+                width: 100%;
+                height: 75px;
+                margin-bottom: 2px;
+                cursor: pointer;
+            }
+            .fullRoom{
+                background: rgb(77,38,38);
+                background: linear-gradient(90deg, rgba(77,38,38,1) 0%, rgba(129,56,56,1) 85%, rgba(72,70,70,1) 100%);
+            }
+            .midRoom{
+                background: rgb(77,68,38);
+                background: linear-gradient(90deg, rgba(77,68,38,1) 0%, rgba(129,110,56,1) 85%, rgba(72,72,70,1) 100%);
+            }
+            .looseRoom{
+                background: rgb(38,77,55);
+                background: linear-gradient(90deg, rgba(38,77,55,1) 0%, rgba(56,129,86,1) 85%, rgba(72,70,70,1) 100%);
+            }
+
+            .roomWrap{
+                padding-left: 25px;
+                padding-right: 15px;
+                padding-top: 18px;
+                padding-bottom: 15px;
+            }
+                .leftRoomArea{
+                    width: 210px;
+                    height: calc(100% - 33px);
+                    float: left;
+                }
+                    .roomName{
+                        width: 100%; 
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        word-wrap: normal;
+                        overflow: hidden;
+                        float: left;
+                        color: #fff;
+                        font-size: 16px;
+                        font-weight: normal;
+                        font-family: 'Nanum Barun Gothic';
+                    }
+                    .roomMember{
+                        width: 100%;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        word-wrap: normal;
+                        overflow: hidden;
+                        font-size: 14px;
+                        padding-top: 5px;
+                    }
+                    div.fullRoom div.roomMember{
+                        color: #AA7F7F;
+                    }
+                    div.midRoom div.roomMember{
+                        color: #AAA77F;
+                    }
+                    div.looseRoom div.roomMember{
+                        color: #7FAA89;
+                    }
+
+                .rightRoomArea{
+                    width: 60px;
+                    height: calc(100% - 33px);
+                    float: left;
+                }
+                    .rightRoomTable{
+                        float: right;
+                        margin-top: -3px;
+                    }
+                        .joinRoom{
+                            width: 25px;
+                            float: right;
+                        }
+                        .roomCondition{
+                            font-size: 12px;
+                            float: right;
+                            padding-top: 2px;
+                        }
+                        div.fullRoom div.roomCondition{
+                            color: #D19A9A;
+                        }
+                        div.midRoom div.roomCondition{
+                            color: #D1C29A;
+                        }
+                        div.looseRoom div.roomCondition{
+                            color: #9AD1A8;
+                        }
+    /* GAMEPANEL */
+
+    /* MEMBERPANEL */
+    #memberPanel{
+        float: left;
+        overflow-y: scroll;
+    }
+        .memberBox{
+            width: 100%;
+            height: 100px;
+        }
+            .memberBoxWrap{
+                padding-left: 20px;
+                padding-right: 20px;
+                padding-top: 20px;
+                padding-bottom: 15px;
+            }
+
+            .levelGold{
+                background: rgb(183,149,56);
+                background: linear-gradient(90deg, rgba(183,149,56,1) 0%, rgba(214,182,80,1) 85%, rgba(220,193,101,1) 100%);
+            }
+            .levelDefault{
+                background: rgb(194,189,189);
+                background: linear-gradient(90deg, rgba(194,189,189,1) 0%, rgba(194,194,194,1) 85%, rgba(167,167,167,1) 100%);
+            }
+            .levelCitizen1{
+                background: rgb(0,26,64);
+                background: linear-gradient(90deg, rgba(0,26,64,1) 0%, rgba(33,91,165,1) 85%, rgba(59,104,222,1) 100%);
+            }
+            .levelCitizen2{
+                background: rgb(0,45,112);
+                background: linear-gradient(90deg, rgba(0,45,112,1) 0%, rgba(32,113,219,1) 85%, rgba(75,115,220,1) 100%);
+            }
+            .levelCitizen3{
+                background: rgb(0,59,146);
+                background: linear-gradient(90deg, rgba(0,59,146,1) 0%, rgba(63,115,181,1) 85%, rgba(98,131,220,1) 100%);
+            }
+            .levelCitizen4{
+                background: rgb(26,80,161);
+                background: linear-gradient(90deg, rgba(26,80,161,1) 0%, rgba(56,109,177,1) 50%, rgba(112,141,217,1) 100%);
+            }
+            .levelCitizen5{
+                background: rgb(71,120,194);
+                background: linear-gradient(90deg, rgba(71,120,194,1) 0%, rgba(70,127,201,1) 85%, rgba(94,130,223,1) 100%);
+            }
+            .levelCitizen6{
+                background: rgb(107,154,226);
+                background: linear-gradient(90deg, rgba(107,154,226,1) 0%, rgba(134,186,254,1) 85%, rgba(178,201,255,1) 100%);
+            }
+            .levelMafia1{
+
+            }
+            .levelMafia2{
+
+            }
+            .levelMafia3{
+
+            }
+            .levelMafia4{
+
+            }
+            .levelMafia5{
+
+            }
+            .levelMafia6{
+                
+            }
+    /* MEMBERPANEL */
+
+    /* FRIENDPANEL */
+    #friendPanel{
+        float: left;
+        overflow-y: scroll;
+    }
+        .unselectedPanel{
+            width: 0px;
+            height: 0px;
+            display: none;
+        }
+    /* FRIENDPANEL */
+
+    /* ADD ROOM */
+
+    #addRoomWrap{
+        width: 324px;
+        height: 64px;
+    }
+    #addRoom{
+        width: 284px;
+        height: 44px;
+        background-color: #2E2E2E;
+        cursor: pointer;
+        text-align: center;
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 15px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+    }
+    #addRoomImg{
+        width: 24px;
+        float: left;
+    }
+    #addRoomText{
+        float: left;
+        color: #fff;
+        padding-left: 5px;
+        font-size: 14px;
+        padding-top: 3.5px;
+    }
+
+    /* ADD ROOM */
+
+    /* FOOTER */
+    #footer{
+        width: 100%;
+        height: 80px;
+        float: left;
+        background-color: #2E2E2E;
+    }
+        #footerWrap{
+            position: relative;
+            transform: translateY(-50%);
+            top: 50%;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 16px;
+            color: #D1C29A;
+        }
+            #settingButton{
+                width: 16px;
+                float: right;
+                margin-right: 40px;
+                cursor: pointer;
+            }
+    /* FOOTER */
+/* LEFT PANEL */
+
+/* RIGHT PANEL */
+#rightPanel{
+    width: calc(100% - 330px);
+    height: 100%;
+    float: left;
+}
+
+    /* ROOM CONTROL BOX */
+    #roomControlBox{
+        width: 100%;
+        height: 70px;
+        background-color: #2E2E2E;
+        text-align: center;
+    }
+        #roomTitleBox{
+            width: 100%;
+            position: relative;
+            transform: translateY(-50%);
+            top: 50%;
+            color: #D1C29A;
+            font-size: 22px;
+        }
+        #roomControlWrap{
+            width: 270px;
+            height: 70px;
+            position: absolute;
+            top: 0px;
+            right: 50px;
+        }
+            #startButton{
+                width: 60px;
+                height: 40px;
+                float: left;
+                border-radius: 12px;
+                position: relative;
+                transform: translateY(-50%);
+                top: 50%;
+                background-color: #A83434;
+                color: #FFC2C2;
+                cursor: pointer;
+            }
+            #roomSettingButton{
+                width: 90px;
+                height: 40px;
+                float: left;
+                border-radius: 12px;
+                position: relative;
+                transform: translateY(-50%);
+                top: 50%;
+                background-color: #3C56BF;
+                color: #FFFFFF;
+                margin-left: 15px;
+                margin-right: 15px;
+                cursor: pointer;
+            }
+            #exitButton{
+                width: 90px;
+                height: 40px;
+                float: left;
+                border-radius: 12px;
+                position: relative;
+                transform: translateY(-50%);
+                top: 50%;
+                background-color: #6E6E6E;
+                color: #B4B4B4;
+                cursor: pointer;
+            }
+            .v-mid{
+                position: relative;
+                transform: translateY(-50%);
+                top: 50%;
+            }
+    /* ROOM CONTROL BOX */
+
+    /* GAME AREA */
+    #gameArea{
+        width: 100%;
+        height: calc(100% - 150px);
+        float: right;
+        text-align: center;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+    #gameAreaWrap{
+        padding-top: 25px;
+        padding-left: 50px;
+        padding-right: 50px;
+        text-align: center;
+    }
+        .alertBox{
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #fff;
+        }
+            .name{
+                font-family: 'Nanum Gothic';
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .goldClass{
+                color: #EFE1BA;
+            }
+        .talkBox{
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+            .otherBox{
+                float: left;
+            }
+            .myBox{
+                float: right;
+            }
+            .talkerName{
+                color: #fff;
+            }
+                .crown{
+                    width: 20px;
+                    height: 12px;
+                    display: block;
+                    float: left;
+                    background: url(/images/crown.png) left top;
+                    background-size: 20px;
+                    margin-top: 3px;
+                    margin-right: 5px;
+                }
+                .nameWrap{
+                    float: left;
+                }
+            .talkContentBox{
+                margin-top: 10px;
+            }
+            .goldContentBox{
+                border: 2px solid #C4A342!important;
+            }
+            .otherContentBox{
+                float: left;
+                border-top-left-radius: 0px!important;
+            }
+            .myContentBox{
+                float: right;
+                border-top-right-radius: 0px!important;
+            }
+                .talkContentWrap{
+                    max-width: 450px;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    padding-top: 10px;
+                    padding-bottom: 10px;
+                    background: #fff;
+                    border-radius: 15px;
+                    border: 2px solid #929292;
+                }
+
+        #newMessageAlertBox{
+            width: 400px;
+            height: 40px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            background: rgba(112,112,112,0.8);
+            color: #EFE1BA;
+            text-align: center;
+            position: absolute;
+            left: calc(50% - 50px);
+            right: 50%;
+            bottom: 80px;
+            z-index: 10000;
+            cursor: pointer;
+        }
+        #newMessageAlertContent{
+            font-size: 16px;
+            display: inline-block;
+            position: relative;
+            transform: translateY(-50%);
+            top: 50%;
+        }
+    /* GAME AREA */
+
+    /* CHAT BOX */
+    #chatBox{
+        width: calc(100% - 330px);
+        height: 80px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: #434343;
+    }
+    input::-webkit-input-placeholder {
+        color: #FFFFFF;
+        font-family: 'Nanum Barun Gothic';
+    }
+    #chatArea{
+        width: calc(100% - 200px);
+        height: 50px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        margin-left: 40px;
+        margin-right: 40px;
+        background-color: #434343;
+        color: #fff;
+        outline: none;
+        font-size: 18px;
+        cursor: pointer;
+        border: none;
+        font-family: 'Nanum Barun Gothic';
+    }
+    #chatSend{
+        width: 120px;
+        height: 80px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        color: #fff;
+        background-color: #6D6D6D;
+        border: none;
+        font-family: 'Nanum Barun Gothic';
+        font-size: 18px;
+        cursor: pointer;
+        outline: none;
+    }
+    /* CHAT BOX */
+
+    /* GAME RULE */
+    #gameRule{
+        width: 100%;
+        height: 1000px;
+
+        display: none;
+    }
+    /* GAME RULE */
+
+    /* AD */
+    #ad{
+        width: 100%;
+        height: 80px;
+        background-color: #464646;
+
+        display: none;
+    }
+    #temporaryAdNotice{
+        position: relative;
+        transform: translateY(-50%);
+        top: 50%;
+        margin: 0 auto;
+        text-align: center;
+        font-size: 22px;
+        color: #D1C29A;
+    }
+    #adPNG{
+        width: 100%;
+    }
+    /* AD */
+/* RIGHT PANEL */

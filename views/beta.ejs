@@ -1,0 +1,316 @@
+<html>
+    <head>
+        <!-- META -->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <meta name="description" content="마피아게임">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="마피아게임">
+        <meta property="og:description" content="마피아게임">
+
+        <title>마피아69</title>
+
+        <!-- JS -->
+        <script src='/socket.io/socket.io.js'></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+        <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
+        <script src="/javascripts/push.min.js"></script>
+
+        <!-- FONT -->
+        <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&amp;subset=korean" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&amp;subset=korean" rel="stylesheet">
+        <link href='https://cdn.rawgit.com/openhiun/hangul/14c0f6faa2941116bb53001d6a7dcd5e82300c3f/nanumbarungothic.css' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
+
+        <!-- CSS -->
+        <link rel="stylesheet" type="text/css" href="/stylesheets/mainstyle.css">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/animate.css">
+    </head>
+    <body>
+        <div id="leftPanel">
+            <div id="myInfo">
+                <div id="myInfoWrap">
+                    <div id="myInfoTopArea">
+                        <table id="myInfoTable">
+                            <tr>
+                                <td id="myInfoName">
+                                    <%= name %> 
+                                </td>
+                                <td>
+                                    <img id="userImg" src="/images/user2.png">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="myInfoBottomArea">
+                        <div id="myInfoLevelName">
+                            등급명
+                        </div>
+                        <div id="myInfoLevelBarWrap">
+                            <div id="myInfoLevelBar">
+                                <div id="myInfoLevelBarContent" style="width: 72px;"></div>
+                            </div>
+                        </div>
+                        <div id="myInfoLevel">
+                            35
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="selectPanel">
+                <div id="selectGame" class="selectedChoosePanel">
+                    <div class="selectWrap selectedChoosePanel">
+                        게임 찾기
+                    </div>
+                </div>
+                <div id="selectFriend" class="unselectedChoosePanel">
+                    <div class="selectWrap unselectedChoosePanel">
+                        친구 목록
+                    </div>
+                </div>
+            </div>
+            <div id="gamePanel" class="selectedPanel">
+                <div id="addRoomWrap">
+                    <div id="addRoom">
+                        <div style="display: inline-block; position: relative; transform: translateY(-50%); top: 50%;">
+                            <img src="/images/plus.png" id="addRoomImg">
+                            <div id="addRoomText">방 생성하기</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="roomContainer">
+
+                </div>
+                <!-- <div class="looseRoom room Room1">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 1
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="joinRoom" src="/images/user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (2/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div> -->
+
+            </div>
+            <div id="friendPanel" class="unselectedPanel">
+
+            </div>
+            <footer id="footer">
+                <div id="footerWrap">Copyright ⓒ JJY, 2020 <img id="settingButton" src="/images/cog.png"></div>
+            </footer>
+        </div>
+        <div id="rightPanel">
+            <div id="roomControlBox">
+                <div id="roomTitleBox">
+                    <!-- 현재 게임 방 이름<br>
+                    <span style="font-size: 14px">(7/13)</span> -->
+                </div>
+                <div id="roomControlWrap">
+                    <div id="startButton">
+                        <div class="v-mid">시작</div>
+                    </div>
+                    <div id="roomSettingButton">
+                        <div class="v-mid">방설정</div>
+                    </div>
+                    <div id="exitButton">
+                        <div class="v-mid">나가기</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gameArea">
+                <div id="gameAreaWrap">
+                    <div class="alertBox">
+                        현재 게임 방 이름이 생성되었습니다
+                    </div>
+
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name goldClass">레벨높은사람</span> 님이 입장했습니다
+                    </div>
+
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name goldClass">레벨높은사람</span> 님이 방장으로 승급되었습니다
+                    </div>
+
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name">시민좀하는사람1</span> 님이 입장했습니다
+                    </div>
+                    
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name">시민좀하는사람2</span> 님이 입장했습니다
+                    </div>
+                    
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name">마피아장인급</span> 님이 입장했습니다
+                    </div>
+                    
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name">초보초보</span> 님이 입장했습니다
+                    </div>
+                    
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name">6일차초보</span> 님이 입장했습니다
+                    </div>
+                    
+                    <br>
+
+                    <div class="alertBox">
+                        <span class="name goldClass">전설의고인물</span> 님이 방장으로 승급되었습니다
+                    </div>
+
+                    <br>
+
+                    <div class="talkBox myBox">
+                        <div class="talkerName myBox">
+                            <span class="crown"></span><span class="goldClass nameWrap">레벨높은사람</span>
+                        </div>
+                        <br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap myContentBox goldContentBox">
+                                ㅎㅇㅎㅇ
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="talkBox otherBox">
+                        <div class="talkerName otherBox">
+                            <span class="nameWrap">초보초보</span>
+                        </div>
+                        <br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap otherContentBox">
+                                우와 레벨 엄청 높으시네요
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="talkBox otherBox">
+                        <div class="talkerName otherBox">
+                            <span class="nameWrap goldClass">전설의고인물</span>
+                        </div>
+                        <br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap otherContentBox goldContentBox">
+                                제가 더 높음 ㅋ
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="talkBox otherBox">
+                        <div class="talkerName otherBox">
+                            <span class="nameWrap">마피아장인급</span>
+                        </div>
+                        <br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap otherContentBox">
+                                도대체 게임을 얼마나 한거야 ㄷㄷ;;
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="talkBox otherBox">
+                        <div class="talkerName otherBox">
+                            <span class="nameWrap">시민좀하는사람1</span>
+                        </div>
+                        <br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap otherContentBox">
+                                그래서 언제 시작하나요
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="talkBox otherBox">
+                        <div class="talkerName otherBox">
+                            <span class="nameWrap">시민좀하는사람2</span>
+                        </div>
+                        <br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap otherContentBox">
+                                ㄱㄱ
+                            </div>
+                        </div>
+                        <br><br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap otherContentBox">
+                                빨리 시작합시다
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="talkBox myBox">
+                        <div class="talkerName myBox">
+                            <span class="crown"></span><span class="goldClass nameWrap">레벨높은사람</span>
+                        </div>
+                        <br>
+                        <div class="talkContentBox">
+                            <div class="talkContentWrap myContentBox goldContentBox">
+                                풀방 채우고 시작할게요
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="newMessageAlertBox">
+                        <div id="newMessageAlertContent">새로운 메세지가 있습니다</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="chatBox">
+     
+                    <input type="text" id="chatArea" placeholder="메세지를 입력해주세요" autocomplete="off">
+                    <input type="submit" id="chatSend" value="발송">
+      
+            </div>
+
+
+            <div id="gameRule">
+
+            </div>
+            <div id="ad">
+                <div id="temporaryAdNotice">
+                    <img src="/images/ad.png" id="adPNG">
+                </div>
+            </div>
+        </div>
+        <script src="/javascripts/beta.js"> </script>
+    </body>
+    
+</html>

@@ -1,0 +1,719 @@
+<html>
+    <head>
+        <!-- META -->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <meta name="description" content="마피아게임">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="마피아게임">
+        <meta property="og:description" content="마피아게임">
+
+        <title>마피아게임</title>
+
+        <!-- JS -->
+        <script src='/socket.io/socket.io.js'></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+        <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
+        <script src="/javascripts/push.min.js"></script>
+
+        <!-- FONT -->
+        <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&amp;subset=korean" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&amp;subset=korean" rel="stylesheet">
+        <link href='https://cdn.rawgit.com/openhiun/hangul/14c0f6faa2941116bb53001d6a7dcd5e82300c3f/nanumbarungothic.css' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
+
+        <!-- CSS -->
+        <link rel="stylesheet" type="text/css" href="./mainstyle.css">
+
+    </head>
+    <body>
+        <div id="leftPanel">
+            <div id="myInfo">
+                <div id="myInfoWrap">
+                    <div id="myInfoTopArea">
+                        <table id="myInfoTable">
+                            <tr>
+                                <td id="myInfoName">
+                                    닉네임
+                                </td>
+                                <td>
+                                    <img id="userImg" src="./user2.png">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="myInfoBottomArea">
+                        <div id="myInfoLevelName">
+                            등급명
+                        </div>
+                        <div id="myInfoLevelBarWrap">
+                            <div id="myInfoLevelBar">
+                                <div id="myInfoLevelBarContent" style="width: 72px;"></div>
+                            </div>
+                        </div>
+                        <div id="myInfoLevel">
+                            35
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="selectPanel">
+                <div id="selectGame" class="selectedChoosePanel">
+                    <div class="selectWrap selectedChoosePanel">
+                        게임 찾기
+                    </div>
+                </div>
+                <div id="selectFriend" class="unselectedChoosePanel">
+                    <div class="selectWrap unselectedChoosePanel">
+                        친구 목록
+                    </div>
+                </div>
+            </div>
+            <div id="gamePanel" class="selectedPanel">
+                <div id="addRoomWrap">
+                    <div id="addRoom">
+                        <div style="display: inline-block; position: relative; transform: translateY(-50%); top: 50%;">
+                            <img src="plus.png" id="addRoomImg">
+                            <div id="addRoomText">방 생성하기</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="looseRoom Room Room1">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 1
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (2/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="fullRoom Room Room2">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 2
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (8/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room3">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 3
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (4/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room4">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 4
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (4/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room5">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 5
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (4/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="looseRoom Room Room6">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 6
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (3/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="fullRoom Room Room7">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 7
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (8/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="fullRoom Room Room8">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 8
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (8/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="looseRoom Room Room9">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 9
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (1/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room10">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 10
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (5/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room11">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 11
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (6/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="fullRoom Room Room12">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 12
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (9/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="looseRoom Room Room13">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 13
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (1/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="looseRoom Room Room14">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 14
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (3/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="looseRoom Room Room15">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 15
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (2/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room16">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 16
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (6/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room17">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 17
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (5/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="fullRoom Room Room18">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 18
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (9/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="fullRoom Room Room19">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 19
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (7/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="midRoom Room Room20">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 20
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (4/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="looseRoom Room Room21">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 21
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (3/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="fullRoom Room Room22">
+                    <div class="roomWrap">
+                        <div class="leftRoomArea">
+                            <div class="roomName">
+                                게임 방 이름 22
+                            </div>
+                            <div class="roomMember">
+                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
+                            </div>
+                        </div>
+                        <div class="rightRoomArea">
+                            <table class="rightRoomTable">
+                                <tr>
+                                    <td>
+                                        <img class="inviteRoom" src="user.png">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="roomCondition">
+                                            (7/9)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="friendPanel" class="unselectedPanel">
+
+            </div>
+            <footer id="footer">
+                <div id="footerWrap">Copyright ⓒ JJY, 2020 <img id="settingButton" src="./cog.png"></div>
+            </footer>
+        </div>
+        <div id="rightPanel">
+            <div id="gameRule">
+
+            </div>
+            <div id="ad">
+                <div id="temporaryAdNotice">
+                    <img src="ad.png" id="adPNG">
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
