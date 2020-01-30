@@ -55,15 +55,25 @@
                             </div>
                         </div>
                         <div id="myInfoLevel">
-                            35
+                            <%= level %>
                         </div>
                     </div>
                 </div>
             </div>
             <div id="selectPanel">
-                <div id="selectGame" class="selectedChoosePanel">
+                <div id="selectNote" class="selectedChoosePanel invisible">
+                    <div class="selectWrap selectedChoosePanel">
+                        시민 VS 마피아
+                    </div>
+                </div>
+                <div id="selectGame" class="selectedChoosePanel ">
                     <div class="selectWrap selectedChoosePanel">
                         게임 찾기
+                    </div>
+                </div>
+                <div id="selectMemberControl" class="selectedChoosePanel">
+                    <div class="selectWrap selectedChoosePanel">
+                        참가 인원 관리
                     </div>
                 </div>
                 <div id="selectFriend" class="unselectedChoosePanel">
@@ -84,36 +94,18 @@
                 <div id="roomContainer">
 
                 </div>
-                <!-- <div class="looseRoom room Room1">
-                    <div class="roomWrap">
-                        <div class="leftRoomArea">
-                            <div class="roomName">
-                                게임 방 이름 1
-                            </div>
-                            <div class="roomMember">
-                                참가인원명1, 참가인원명2, 참가인원명3, 참가인원명4
-                            </div>
-                        </div>
-                        <div class="rightRoomArea">
-                            <table class="rightRoomTable">
-                                <tr>
-                                    <td>
-                                        <img class="joinRoom" src="/images/user.png">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="roomCondition">
-                                            (2/9)
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div> -->
+     
 
             </div>
+
+            <div id="memberPanel" class="unselectedPanel">
+                <div class="memberBox levelGold">
+                    <div class="memberBoxWrap">
+                        
+                    </div>
+                </div>
+            </div>
+
             <div id="friendPanel" class="unselectedPanel">
 
             </div>
@@ -303,7 +295,7 @@
 
             <div id="gameRule">
 
-            </div>
+            </div>g
             <div id="ad">
                 <div id="temporaryAdNotice">
                     <img src="/images/ad.png" id="adPNG">
@@ -311,6 +303,7 @@
             </div>
         </div>
         <script src="/javascripts/beta.js"> </script>
+        <script src="/javascripts/betaGame.js"> </script>
     </body>
     
 </html>

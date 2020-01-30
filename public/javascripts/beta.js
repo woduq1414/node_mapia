@@ -1,34 +1,106 @@
 
 
 
-  //  var docV = document.documentElement;
-  //  // 전체화면 설정
-  //  function openFullScreenMode() {
-  //      if (docV.requestFullscreen)
-  //          docV.requestFullscreen();
-  //      else if (docV.webkitRequestFullscreen) // Chrome, Safari (webkit)
-  //          docV.webkitRequestFullscreen();
-  //      else if (docV.mozRequestFullScreen) // Firefox
-  //          docV.mozRequestFullScreen();
-  //      else if (docV.msRequestFullscreen) // IE or Edge
-  //          docV.msRequestFullscreen();
-  //  }
+//  var docV = document.documentElement;
+//  // 전체화면 설정
+//  function openFullScreenMode() {
+//      if (docV.requestFullscreen)
+//          docV.requestFullscreen();
+//      else if (docV.webkitRequestFullscreen) // Chrome, Safari (webkit)
+//          docV.webkitRequestFullscreen();
+//      else if (docV.mozRequestFullScreen) // Firefox
+//          docV.mozRequestFullScreen();
+//      else if (docV.msRequestFullscreen) // IE or Edge
+//          docV.msRequestFullscreen();
+//  }
 
-  //  openFullScreenMode();
+//  openFullScreenMode();
 userClass = {};
 
 
-function RightPanelVisibility(){
-  if(currentRoom){
+
+
+
+function clearChattingArea() {
+  $("#gameAreaWrap").html('');
+  beforeChatName = '';
+}
+
+
+function rightPanelVisibility() {
+  if (currentRoom) {
     $('#rightPanel').css('visibility', 'visible');
+
+    $('#selectGame').addClass("invisible");
+    $('#selectMemberControl').removeClass("invisible");
+
+    let temp = $('#selectFriend.selectedChoosePanel').length == 0;
+
+    $('.selectedChoosePanel').removeClass('selectedChoosePanel').addClass('unselectedChoosePanel')
+    $('.selectedPanel').removeClass('selectedPanel').addClass('unselectedPanel')
     
-  }else{
+
+    if(temp){
+      
+
+      $('#selectMemberControl, #selectMemberControl .selectWrap').removeClass('unselectedChoosePanel')
+      $('#memberPanel').removeClass('unselectedPanel')
+      $('#selectMemberControl, #selectMemberControl .selectWrap').addClass('selectedChoosePanel')
+      $('#memberPanel').addClass('selectedPanel')
+    }else{
+      $('#selectFriend, #selectFriend .selectWrap').removeClass('unselectedChoosePanel')
+      $('#friendPanel').removeClass('unselectedPanel')
+      $('#selectFriend, #selectFriend .selectWrap').addClass('selectedChoosePanel')
+      $('#friendPanel').addClass('selectedPanel')
+    } 
+    
+    
+  } else {
     $('#rightPanel').css('visibility', 'hidden');
+
+    $('#selectGame').removeClass("invisible");
+    $('#selectMemberControl').addClass("invisible");
+    
+    let temp = $('#selectFriend.selectedChoosePanel').length == 0;
+
+    $('.selectedChoosePanel').removeClass('selectedChoosePanel').addClass('unselectedChoosePanel')
+    $('.selectedPanel').removeClass('selectedPanel').addClass('unselectedPanel')
+  
+    
+
+    if(temp){
+      
+
+      $('#selectGame, #selectGame .selectWrap').removeClass('unselectedChoosePanel')
+      $('#gamePanel').removeClass('unselectedPanel')
+      $('#selectGame, #selectGame .selectWrap').addClass('selectedChoosePanel')
+      $('#gamePanel').addClass('selectedPanel')
+    }else{
+      $('#selectFriend, #selectFriend .selectWrap').removeClass('unselectedChoosePanel')
+      $('#friendPanel').removeClass('unselectedPanel')
+      $('#selectFriend, #selectFriend .selectWrap').addClass('selectedChoosePanel')
+      $('#friendPanel').addClass('selectedPanel')
+    } 
+  }
+}
+
+
+function roomManageVisibility() {
+  if (currentRoom && info[currentRoom].members[0] == getMyName()) {
+    $('#startButton').css('visibility', 'visible');
+    $('#roomSettingButton').css('visibility', 'visible');
+   
+
+  } else {
+    $('#startButton').css('visibility', 'hidden');
+    $('#roomSettingButton').css('visibility', 'hidden');
+    
 
   }
 }
 
-function noticeAppend(text){
+
+function noticeAppend(text) {
   let string = `
   <div class="alertBox">
     ${text}
@@ -37,38 +109,129 @@ function noticeAppend(text){
   `
   $('#gameAreaWrap').append(string);
   $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);
+  beforeChatName = '';
 }
 
-function getNameSpan(name){
+function getNameSpan(name) {
   return `<span class="name ${userClass[name]}">${name}</span>`
 }
 
 
 
-function refreshRoomTitleBox(){
+function refreshRoom() {
   $('#roomTitleBox').html(`${currentRoom}<br><span style="font-size: 14px">(${info[currentRoom].members.length}/${info[currentRoom].limit})</span>`)
-}
+  $('#selectMemberControl .selectWrap').html(`참가 인원 관리(${info[currentRoom].members.length})`)
 
-
-
-  function getColor(text){
-    var hash = 0, len = text.length;
-    if (text.length === 0) {
-        return hash;
-    }
-    for (i = 0; i < len; i++) {
-        charC = text.charCodeAt(i);
-        hash = ((hash<<5)-hash)+charC;
-        hash = hash & hash; 
-    }
+  if (!info[currentRoom].isPlaying) {
+    let members = info[currentRoom].members;
+    let string = '';
     
-    hash = hash * hash
-    hash = hash % 16777216
-    hash = hash.toString(16)
-    return hash;
+    for (i in members) {
+      name = members[i];
+      let isRoomMaster = info[roomName].members[0] == name;
+
+      
+      let level = users[name].level;
+      let levelClass;
+      let levelFont;
+
+      if(level >= 100){
+        levelClass = "levelGold";
+      }else if(level >= 80){
+        levelClass = `level${users[name].levelType}1`;
+        levelFont = `level${users[name].levelType}Font1`;
+      }else if(level >= 70){
+        levelClass = `level${users[name].levelType}2`;
+        levelFont = `level${users[name].levelType}Font2`;
+      }else if(level >= 60){
+        levelClass = `level${users[name].levelType}3`;
+        levelFont = `level${users[name].levelType}Font3`;
+      }else if(level >= 40){
+        levelClass = `level${users[name].levelType}4`;
+        levelFont = `level${users[name].levelType}Font4`;
+      }else if(level >= 20){
+        levelClass = `level${users[name].levelType}5`;
+        levelFont = `level${users[name].levelType}Font5`;
+      }else if(level >= 10){
+        levelClass = `level${users[name].levelType}6`;
+        levelFont = `level${users[name].levelType}Font6`;
+      }else{
+        levelClass = `levelDefault`;
+      }
+
+
+
+      
+      string += `
+    
+      <div class="memberBox ${levelClass}" data-sid="${users[name].socketID}">
+          <div class="memberBoxWrap">
+              <div class="memberBoxLeftArea">
+                  <div class="memberBoxLeftTopArea">
+                      ${isRoomMaster ? '<span class="crown spanRight7"></span>' : ''}
+                      <span class="goldClass nameWrap">${name}</span>
+                  </div>
+                  <div class="memberBoxLeftBottomArea">
+                      <span class="kick button">
+                          퇴장시키기
+                      </span>
+                      <div class="bar"></div>
+                      <span class="delegate button">
+                          방장위임
+                      </span>
+                      <span class="bar"></span>
+                      <span class="addToFriend button">
+                          친구추가
+                      </span>
+                      <span class="bar"></span>
+                      <span class="report button">
+                          신고
+                      </span>
+                  </div>
+              </div>
+              <div class="memberBoxRightArea">
+                  <div class="memberBoxRightTopArea">
+                      <div class="memberLevel">
+                          ${level}
+                      </div>
+                  </div>
+                  <div class="memberBoxRightBottomArea">
+                      <div class="memberLevelNameBox">
+                          <div class="memberLevelNameBoxWrap ${levelFont}">
+                              등급명
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+ 
+      `
+    }
+    $('#memberPanel').html(string);
+  }
 }
 
-function getMyName(){
+
+
+function getColor(text) {
+  var hash = 0, len = text.length;
+  if (text.length === 0) {
+    return hash;
+  }
+  for (i = 0; i < len; i++) {
+    charC = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + charC;
+    hash = hash & hash;
+  }
+
+  hash = hash * hash
+  hash = hash % 16777216
+  hash = hash.toString(16)
+  return hash;
+}
+
+function getMyName() {
 
 
   // $.ajax({
@@ -88,93 +251,96 @@ function getMyName(){
 
 }
 
-function chatSend(){
+function chatSend() {
   var name = $('#myInfoName').text().trim();
   var text = $('#chatArea').val();
-  socket.emit('sendChat', currentRoom, socket.id, text);
+  socket.emit('sendChat', currentRoom, text);
   $('#chatArea').val('');
 }
 
 
-function chatAppend(type, text){
-//   if(type == "noticePrimary"){
-//     $('#chatting').append("<div class='alert alert-primary' style='text-align:center'>" + text + "</div>");
-//   }else if(type == "noticeWarning"){
-//     $('#chatting').append("<div class='alert alert-warning' style='text-align:center'>" + text + "</div>");
-//   }else if(type == "chat"){
-//     $('#chatting').append("<div class='alert alert-light' style='text-align:left'>" + text + "</div>");
-//   }else if(type == "noticeDanger"){
-//     $('#chatting').append("<div class='alert alert-danger' style='text-align:center'>" + text + "</div>");
-//   }else if(type == "vote"){
-//     $('#chatting').append("<div class='alert alert-light' style='text-align:center; color : red'>" + text + "</div>");
-//   }
-//   $("#chatting").scrollTop($("#chatting")[0].scrollHeight); 
-    console.log(text);
+function chatAppend(type, text) {
+  //   if(type == "noticePrimary"){
+  //     $('#chatting').append("<div class='alert alert-primary' style='text-align:center'>" + text + "</div>");
+  //   }else if(type == "noticeWarning"){
+  //     $('#chatting').append("<div class='alert alert-warning' style='text-align:center'>" + text + "</div>");
+  //   }else if(type == "chat"){
+  //     $('#chatting').append("<div class='alert alert-light' style='text-align:left'>" + text + "</div>");
+  //   }else if(type == "noticeDanger"){
+  //     $('#chatting').append("<div class='alert alert-danger' style='text-align:center'>" + text + "</div>");
+  //   }else if(type == "vote"){
+  //     $('#chatting').append("<div class='alert alert-light' style='text-align:center; color : red'>" + text + "</div>");
+  //   }
+  //   $("#chatting").scrollTop($("#chatting")[0].scrollHeight); 
+  console.log(text);
 }
 
-function namePopover(roomName){
+function namePopover(roomName) {
 
-  if(info[roomName].members[0] == getMyName() && !info[roomName].isPlaying){
+  if (info[roomName].members[0] == getMyName() && !info[roomName].isPlaying) {
 
-      $('.chatName').each(function(){
-        $temp = $(this)
-        $(this).popover({
-          placement: 'bottom',
-          trigger: 'click',
-          html: true,
-          sanitize: false,
-          title: `<span>${$(this).attr("data-sname")}</span>   <a class="close"><i style="font-size:20px" class="fas fa-times"></i></a>`,
-          content: 
+    $('.chatName').each(function () {
+      $temp = $(this)
+      $(this).popover({
+        placement: 'bottom',
+        trigger: 'click',
+        html: true,
+        sanitize: false,
+        title: `<span>${$(this).attr("data-sname")}</span>   <a class="close"><i style="font-size:20px" class="fas fa-times"></i></a>`,
+        content:
           `
                 <button data="${$(this).attr("data-sid")}" class="btn btn-primary mandate" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >방장 위임</button>
                 <button data="${$(this).attr("data-sid")}" class="btn btn-danger kick" type="button" data-toggle="popover" data-placement="bottom" data-html="true" >나가 ㅋ</button>
           `
-          
-        }).on('shown.bs.popover', function(e) {
-        
-          var current_popover = '#' + $(e.target).attr('aria-describedby');
-          console.log(current_popover)
-          var $cur_pop = $(current_popover);
-        
-          $cur_pop.find('.close').click(function(){
-              //console.log('close triggered');
-              $('.chatName').popover('hide');
-          });
-          $cur_pop.find('.mandate').click(function(){
-              //console.log('close triggered');
-              $('.chatName').popover('hide');
-          });
-          $cur_pop.find('.kick').click(function(){
-              //console.log('close triggered');
-              $('.chatName').popover('hide');
-          });
-          
+
+      }).on('shown.bs.popover', function (e) {
+
+        var current_popover = '#' + $(e.target).attr('aria-describedby');
+        console.log(current_popover)
+        var $cur_pop = $(current_popover);
+
+        $cur_pop.find('.close').click(function () {
+          //console.log('close triggered');
+          $('.chatName').popover('hide');
         });
+        $cur_pop.find('.mandate').click(function () {
+          //console.log('close triggered');
+          $('.chatName').popover('hide');
+        });
+        $cur_pop.find('.kick').click(function () {
+          //console.log('close triggered');
+          $('.chatName').popover('hide');
+        });
+
       });
-     
-  }else{
-    $('.chatName').popover('dispose')
+    });
+
+  } else {
+    //$('.chatName').popover('dispose')
   }
 };
 
 //var socket = io(); 
 
-var socket = io({transports: ['websocket'], upgrade: false});
+var socket = io({ transports: ['websocket'], upgrade: false });
 
 var currentRoom;
 var info;
-var users;
+var users = {};
 var currentName = $('#myInfoName').text().trim();
 var config = {};
+var beforeChatName = '';
+
+
 config.VolumeSFX = 0.5;
 config.checkPushAlarm = 1;
 config.checkChattingSFX = 1;
 
 
-$(document).ready(function(){
-  
+$(document).ready(function () {
 
-  RightPanelVisibility();
+
+  rightPanelVisibility();
   socket.emit('initName', currentName);
 })
 
@@ -182,7 +348,7 @@ $(document).ready(function(){
 
 
 
-  
+
 
 
 
@@ -191,13 +357,13 @@ $(document).ready(function(){
 //$("#changeRoomNameArea").keyup(function(e){if(e.keyCode == 13)  $(this).parents('swal2-content').next().find('button').trigger("click") });
 
 
-$(document).on("click", "#startButton", function(){
+$(document).on("click", "#startButton", function () {
   socket.emit('startGame', currentRoom);
 })
 
 
 
-$(document).on("click", "#roomSettingButton", function(){
+$(document).on("click", "#roomSettingButton", function () {
   Swal.fire({
     title: 'Room Manage',
     html: `
@@ -233,48 +399,49 @@ $(document).on("click", "#roomSettingButton", function(){
       autocapitalize: 'off'
     },
     showClass: {
-        popup: 'animated fadeInUpBig faster'
+      popup: 'animated fadeInUpBig faster'
     },
     hideClass: {
-        popup: 'animated fadeOutDownBig faster'
+      popup: 'animated fadeOutDownBig faster'
     },
-    preConfirm : () => {
-     
+    preConfirm: () => {
+
 
       let passwordCheck = $('#changePasswordCheck').is(":checked")
-      if (passwordCheck){
+      if (passwordCheck) {
         password = $('#changePasswordArea').val();
         socket.emit('changePassword', currentRoom, password)
-      }else{
+      } else {
         password = "";
         socket.emit('changePassword', currentRoom, password)
       }
 
       let before = info[currentRoom].limit
       let after = $('#changeRoomLimitArea').val()
-      if (before != after){
+      if (before != after) {
         socket.emit('changeRoomLimit', currentRoom, before, after)
-        
+
       }
 
 
       before = currentRoom
       after = $('#changeRoomNameArea').val()
-      if (before != after){
+      if (before != after) {
         socket.emit('changeRoomName', before, after)
         currentRoom = after;
       }
     }
-   
+
   })
 })
 
 
 
-$(document).on("click", "#chatSend", function(){
+$(document).on("click", "#chatSend", function () {
   chatSend();
 })
-$("#chatArea").keyup(function(e){if(e.keyCode == 13)  chatSend(); });
+
+$("#chatArea").keydown(function (e) { if (e.keyCode == 13) chatSend(); });
 
 // $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#roomMasterArea").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
 // $(window).resize(function(){
@@ -291,68 +458,54 @@ $("#chatArea").keyup(function(e){if(e.keyCode == 13)  chatSend(); });
 
 
 
-$(document).on("click", "#passwordCheck", function(){
-  if($(this).is(":checked")){
+$(document).on("click", "#passwordCheck", function () {
+  if ($(this).is(":checked")) {
     $('#passwordArea').prop("disabled", false)
-  }else{
+  } else {
     $('#passwordArea').prop("disabled", true)
   }
 })
-$(document).on("click", "#changePasswordCheck", function(){
-  if($(this).is(":checked")){
+$(document).on("click", "#changePasswordCheck", function () {
+  if ($(this).is(":checked")) {
     $('#changePasswordArea').prop("disabled", false)
-  }else{
+  } else {
     $('#changePasswordArea').prop("disabled", true)
   }
 })
 
 
-$(document).on("click", "#exitButton", function(){
+$(document).on("click", "#exitButton", function () {
   socket.emit('leaveRoom', currentRoom);
+  rightPanelVisibility();
+  roomManageVisibility();
 })
 
-$(document).on("click", "#exitGame", function(){
-  
+$(document).on("click", "#exitGame", function () {
+
   $('#chatting').html('');
 
   let roomName = currentRoom
 
-  if(info[roomName].members[0] === getMyName()){
-      $('#roomMasterArea').html(`<div id="chatRoomManage" class="btn btn-secondary" style="margin-right:0px ; width:80%;height:40px">방 관리</div><div id="startGame" class="btn btn-danger" style="width:20%;height:40px">게임 시작</div>`)
-      $('#roomMasterArea').css('height', "40px")
-      $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#roomMasterArea").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
-  }else{
-      $('#roomMasterArea').html(`<div class="alert alert-secondary" style="width:100%;height:0px">방 관리</div>`)
-      $('#roomMasterArea').css('height', "0px")
-      $("#chatting").css("height", (parseFloat($("#chatContainer").css("height")) -  parseFloat($("#roomMasterArea").css("height")) -  parseFloat($("#chatSendArea").css("height"))) + "px")
-
-  }
-
-  if(!currentRoom){
-      $('#chatContainer').css('visibility', 'hidden');
-      $('#exitRoom').css('visibility', 'hidden');
-  }else{
-      $('#chatContainer').css('visibility', 'visible');
-      $('#exitRoom').css('visibility', 'visible');
-  }
+  rightPanelVisibility();
+  roomManageVisibility();
 
 
 
   namePopover(roomName);
 
   $("#leftContainer").css('display', 'block');
-  $("#leftGameContainer").css('display', 'none'); 
+  $("#leftGameContainer").css('display', 'none');
 
-  $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
+  $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) - parseFloat($("#exitRoom").css("height")) - parseFloat($("#upperRoomContainer").css("height"))) + "px")
 
   socket.emit('leaveRoom', currentRoom);
 })
 
-$(document).on("click", ".logout", function(){
+$(document).on("click", ".logout", function () {
   location.href = "/logout"
 })
 
-$(document).on("click", "#addRoom", function(){
+$(document).on("click", "#addRoom", function () {
 
   Swal.fire({
     title: 'Room Name',
@@ -390,39 +543,39 @@ $(document).on("click", "#addRoom", function(){
     },
     showLoaderOnConfirm: true,
     showClass: {
-        popup: 'animated fadeInUpBig faster'
+      popup: 'animated fadeInUpBig faster'
     },
     hideClass: {
-        popup: 'animated fadeOutDownBig faster'
+      popup: 'animated fadeOutDownBig faster'
     },
-    preConfirm : () => {
+    preConfirm: () => {
       let password;
       let roomName = $('#roomNameArea').val()
       let passwordCheck = $('#passwordCheck').is(":checked")
-      if (passwordCheck){
+      if (passwordCheck) {
         password = $('#passwordArea').val()
-      }else{
+      } else {
         password = "";
       }
       let roomLimit = $('#roomLimitArea').val();
-    
+
       console.log(roomName, passwordCheck, password);
-      if(getMyName()){
-          socket.emit('makeRoom', roomName, password, roomLimit);
-          socket.emit('joinRoom', roomName, getMyName());
+      if (getMyName()) {
+        socket.emit('makeRoom', roomName, password, roomLimit);
+        socket.emit('joinRoom', roomName, getMyName());
       }
-   
+
     }
   })
 
 })
 
-$(document).on("click", ".room", function(){
+$(document).on("click", ".room", function () {
 
   var roomName = $(this).attr('room-data')
-  
-  if (roomName != currentRoom){
-    if(info[roomName].password){
+
+  if (roomName != currentRoom) {
+    if (info[roomName].password) {
       Swal.fire({
         title: 'Password',
         text: '비번',
@@ -436,52 +589,52 @@ $(document).on("click", ".room", function(){
         preConfirm: (password) => {
           console.log(roomName, password)
           socket.emit('checkPassword', roomName, password);
-          
-          
-          
+
+
+
         },
         allowOutsideClick: () => !Swal.isLoading()
       })
-    }else{
+    } else {
       socket.emit('joinRoom', roomName, getMyName());
     }
   }
-  
+
 
 })
 
-$(document).on("click", ".mandate", function(){
-  let socketID = $(this).attr('data')
-  socket.emit('mandateRoomMaster', currentRoom, socketID )
-  
-})
-$(document).on("click", ".kick", function(){
-  let socketID = $(this).attr('data')
-  socket.emit('kick', currentRoom, socketID )
-  
-})
+$(document).on("click", ".delegate", function () {
+  let socketID = $(this).parents('.memberBox').attr('data-sid');
+  socket.emit('mandateRoomMaster', currentRoom, socketID)
 
+})
+$(document).on("click", ".kick", function () {
+  let socketID = $(this).parents('.memberBox').attr('data-sid');
+  socket.emit('kick', currentRoom, socketID)
 
-socket.on('refreshUser', function(data){
-  users = data;
-  console.log(users);
 })
 
 
-socket.on('changePassword', function(roomName, type){
-  if(type == 0){
+socket.on('refreshUser', function (data) {
+  //users = data;
+  //console.log(users);
+})
+
+
+socket.on('changePassword', function (roomName, type) {
+  if (type == 0) {
     noticeAppend(`방의 비밀번호가 해제되었습니다.`)
-  }else{
+  } else {
     noticeAppend(`방의 비밀번호가 변경되었습니다.`)
   }
 })
 
-socket.on('changeRoomLimit', function(before, after){
+socket.on('changeRoomLimit', function (before, after) {
   noticeAppend(`방의 최대 인원이 ${before}에서 ${after}로 변경되었습니다.`)
 
 })
 
-socket.on('changeRoomLimitErr', function(){
+socket.on('changeRoomLimitErr', function () {
   Swal.fire({
     icon: 'error',
     title: '저런',
@@ -489,45 +642,66 @@ socket.on('changeRoomLimitErr', function(){
   })
 })
 
-socket.on('changeRoomName', function(before,after){
+socket.on('changeRoomName', function (before, after) {
   currentRoom = after;
   noticeAppend(`방의 이름이 ${before}에서 ${after}로 변경되었습니다.`)
 
 })
 
-socket.on('a',function(data){
+socket.on('a', function (data) {
   console.log(data);
 })
 
 
 
-socket.on('newRoomMaster', function(roomName, name, socketID){
+socket.on('newRoomMaster', function (roomName, name) {
 
   noticeAppend(`${getNameSpan(name)} 님이 방장이 되었습니다.`)
 
- 
+  roomManageVisibility(roomName);
+
   namePopover(roomName);
 })
 
 
-socket.on('receiveChat', function(socketID, roomName, name, text, type, me){
+socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
+
   let string;
   let isRoomMaster = info[roomName].members[0] == name && !info[roomName].isPlaying;
-  string = `
+
+  if (beforeChatName != name) {
+    string = `
   <div class="talkBox ${me ? "myBox" : "otherBox"}">
-      <div class="talkerName ${me ? "myBox" : "otherBox"}">
-        ${isRoomMaster ? '<span class="crown"></span>' : ''}<span class="nameWrap">${name}</span>
-      </div>
-      <br>
-      <div class="talkContentBox">
-          <div class="talkContentWrap ${me ? "myContentBox" : "otherContentBox"}">
-              ${text}
-          </div>
-      </div>
+    
+    <div class="talkerName ${me ? "myBox" : "otherBox"}">
+      ${isRoomMaster ? '<span class="crown"></span>' : ''}<span class="nameWrap">${name}</span>
+    </div>
+    <br>
+    <div class="talkContentBox ">
+        <div class="talkContentWrap ${me ? "myContentBox" : "otherContentBox"} ${type}">
+            ${text}
+        </div>  
+    </div>
   </div>
   `
-  $('#gameAreaWrap').append(string);
-  $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);
+    $('#gameAreaWrap').append($(string).hide().fadeIn(200));
+
+  } else {
+    string = `
+
+    <div class="talkContentBox">
+        <div class="talkContentWrap ${me ? "myContentBox" : "otherContentBox"} ${type}">
+            ${text}
+        </div>
+    </div>
+    `
+    $('.talkbox').last().append($(string).hide().fadeIn(200));
+    //$('.talkbox').last().append(
+
+  }
+
+  $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight + 1000);
+  beforeChatName = name;
 
   // if(currentName != name && !isFocus && !info[roomName].isPlaying){
   //   if(config.checkPushAlarm){
@@ -552,9 +726,9 @@ socket.on('receiveChat', function(socketID, roomName, name, text, type, me){
   //         audio.play(); 
   //     } 
   //   }
-    
 
-    
+
+
   // }
 
 
@@ -565,17 +739,17 @@ socket.on('receiveChat', function(socketID, roomName, name, text, type, me){
 
 var isFocus = 1;
 
-$(window).focus(function() {
+$(window).focus(function () {
   isFocus = 1;
 });
 
-$(window).blur(function() {
+$(window).blur(function () {
   isFocus = 0;
 });
 
 
 
-socket.on('noticeChangeName', function(before, after, socketID){
+socket.on('noticeChangeName', function (before, after, socketID) {
 
   chatAppend("noticePrimary", `<span class="chatName" data-sname='${before}' data-sid='${socketID}' style='font-weight:1000;color:#${getColor(before)}'>${before}</span>님이 <span class="chatName" data-sname='${after}' data-sid='${socketID}' style='font-weight:1000;color:#${getColor(after)}'>${after}</span>로 이름 바꿈 ㅋ`);
   namePopover(currentRoom);
@@ -585,13 +759,13 @@ socket.on('noticeChangeName', function(before, after, socketID){
 
 
 
-socket.on('checkPassword', function(roomName, isCorrect){
+socket.on('checkPassword', function (roomName, isCorrect) {
   console.log(isCorrect);
-  if (isCorrect){
-    
+  if (isCorrect) {
+
     socket.emit('joinRoom', roomName, getMyName());
     //socket.removeListener('checkPassword');
-  }else{
+  } else {
     Swal.fire({
       icon: 'error',
       title: '저런',
@@ -600,7 +774,7 @@ socket.on('checkPassword', function(roomName, isCorrect){
   }
 })
 
-socket.on('exceedRoomLimit', function(roomName){
+socket.on('exceedRoomLimit', function (roomName) {
   Swal.fire({
     icon: 'error',
     title: '저런',
@@ -609,56 +783,64 @@ socket.on('exceedRoomLimit', function(roomName){
 })
 
 
-$(document).on("click", "#setName", function(){
+$(document).on("click", "#setName", function () {
 
   var a = $('#myInfoName').text().trim();
   var b = $('#inputName').val()
 
   socket.emit('changeName', a, b)
-  
+
 })
 
 
 
 
 
-socket.on('joinRoom', function(roomName, name, socketID, me){
-  if (me){
-    $('#gameAreaWrap').html('');
-  }
+socket.on('joinRoom', function (roomName, name, socketID, me, data) {
   
+  if (me) {
+    clearChattingArea();
+  }
+  users = data;
+
 
   noticeAppend(`${getNameSpan(name)} 님이 입장했습니다`)
 
 
   currentRoom = roomName;
-  
-  
-  RightPanelVisibility();
-  refreshRoomTitleBox();
+
+
+  rightPanelVisibility();
+  refreshRoom();
+  roomManageVisibility();
 
   namePopover(roomName);
 
   
+
 })
-  
-socket.on('leaveRoom', function(roomName, name, socketID, me){
+
+socket.on('leaveRoom', function (roomName, name, socketID, me) {
+  delete users[name];
   console.log(roomName, name, me);
   noticeAppend(`${getNameSpan(name)} 님이 퇴장했습니다.`)
 
-  if(me){
+  if (me) {
     currentRoom = undefined;
   }
-  
-  RightPanelVisibility();
 
+  rightPanelVisibility();
+  roomManageVisibility();
   namePopover(roomName);
-})
+
   
-socket.on('kickedRoom', function(roomName, name, socketID, me){
+
+})
+
+socket.on('kickedRoom', function (roomName, name, socketID, me) {
   console.log(roomName, name, me);
   noticeAppend(`${getNameSpan(name)} 님이 방장에 의해 강제퇴장 당했습니다.`)
-  if(me){
+  if (me) {
     currentRoom = undefined;
     Swal.fire({
       icon: 'error',
@@ -666,19 +848,20 @@ socket.on('kickedRoom', function(roomName, name, socketID, me){
       text: '강퇴 당함 ㅋ'
     })
   }
-  
-  RightPanelVisibility();
+
+  rightPanelVisibility();
+  roomManageVisibility();
   namePopover(roomName);
 })
-  
 
 
 
-socket.on('failSetName', function(){
+
+socket.on('failSetName', function () {
   alert("이미 있는 이름임ㅋ");
 })
 
-socket.on('successSetName', function(){
+socket.on('successSetName', function () {
   $('#myInfoName').text($('#inputName').val())
   currentName = $('#inputName').val()
 })
@@ -686,16 +869,16 @@ socket.on('successSetName', function(){
 
 
 
-socket.on('refreshMain', function(data){
+socket.on('refreshMain', function (data) {
   //alert(data);
   info = data;
 
   //$('[data-toggle="tooltip"]').tooltip('hide')
-  
+
   console.log(data);
   var string = "";
-  for (roomName in data){
-    if(data[roomName].isPlaying) continue;
+  for (roomName in data) {
+    if (data[roomName].isPlaying) continue;
 
 
     // if(data[key]["members"].includes(getMyName())){
@@ -714,14 +897,14 @@ socket.on('refreshMain', function(data){
     //   </div>`
     // }
     let dense;
-    if(data[roomName].members.length / data[roomName].limit < 0.5){
-        dense = "looseRoom"
-    }else if(data[roomName].members.length / data[roomName].limit >= 1){
-        dense = "fullRoom"
-    }else if(data[roomName].members.length / data[roomName].limit >= 0.5){
-        dense = "midRoom"
+    if (data[roomName].members.length / data[roomName].limit < 0.5) {
+      dense = "looseRoom"
+    } else if (data[roomName].members.length / data[roomName].limit >= 1) {
+      dense = "fullRoom"
+    } else if (data[roomName].members.length / data[roomName].limit >= 0.5) {
+      dense = "midRoom"
     }
-    
+
     string += `
     <div class="${dense} room Room1" room-data="${roomName}">
         <div class="roomWrap">
@@ -756,21 +939,22 @@ socket.on('refreshMain', function(data){
   //alert(string);
   $('#roomContainer').html(string);
 
-  if(currentRoom){
-    refreshRoomTitleBox();  
+  if (currentRoom) {
+    refreshRoom();
   }
-  
-  
-  RightPanelVisibility();
+
+
+  rightPanelVisibility();
+  //roomManageVisibility();
   //$('[data-toggle=" "]').tooltip()
   //$("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
 })
 
-$('.config').on("click", function(){
+$('.config').on("click", function () {
 
-    Swal.fire({
-      title: 'Config',
-      html: `
+  Swal.fire({
+    title: 'Config',
+    html: `
       <label for="VolumeSFX">효과음 크기</label>
       <input type="range" class="custom-range" id="VolumeSFX" min="0" max="1" step="0.1" value="${config.VolumeSFX}">
       
@@ -787,21 +971,68 @@ $('.config').on("click", function(){
       </div>
       
 `,
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Apply',
-      inputAttributes: {
-        autocapitalize: 'off'
-      },
-      preConfirm : () => {
-       
-        config.VolumeSFX = $('#VolumeSFX').val();
-        config.checkPushAlarm = $('#checkPushAlarm').is(":checked")
-        config.checkChattingSFX = $('#checkChattingSFX').is(":checked")
-      
-      }
-     
-    })
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Apply',
+    inputAttributes: {
+      autocapitalize: 'off'
+    },
+    preConfirm: () => {
 
+      config.VolumeSFX = $('#VolumeSFX').val();
+      config.checkPushAlarm = $('#checkPushAlarm').is(":checked")
+      config.checkChattingSFX = $('#checkChattingSFX').is(":checked")
+
+    }
+
+  })
+
+})
+
+
+socket.on('refreshRoom', function (data) {
+
+})
+
+
+
+
+$('#selectFriend').on("click", function(){
+
+  $('.selectedChoosePanel').removeClass('selectedChoosePanel').addClass('unselectedChoosePanel')
+  $('.selectedPanel').removeClass('selectedPanel').addClass('unselectedPanel')
+
+  $('#selectFriend, #selectFriend .selectWrap').removeClass('unselectedChoosePanel')
+  $('#friendPanel').removeClass('unselectedPanel')
+  $('#selectFriend, #selectFriend .selectWrap').addClass('selectedChoosePanel')
+  $('#friendPanel').addClass('selectedPanel')
+  
+ 
+})
+
+$('#selectMemberControl').on("click", function(){
+
+  $('.selectedChoosePanel').removeClass('selectedChoosePanel').addClass('unselectedChoosePanel')
+  $('.selectedPanel').removeClass('selectedPanel').addClass('unselectedPanel')
+
+  $('#selectMemberControl, #selectMemberControl .selectWrap').removeClass('unselectedChoosePanel')
+  $('#memberPanel').removeClass('unselectedPanel')
+  $('#selectMemberControl, #selectMemberControl .selectWrap').addClass('selectedChoosePanel')
+  $('#memberPanel').addClass('selectedPanel')
+  
+ 
+})
+
+$('#selectGame').on("click", function(){
+
+  $('.selectedChoosePanel').removeClass('selectedChoosePanel').addClass('unselectedChoosePanel')
+  $('.selectedPanel').removeClass('selectedPanel').addClass('unselectedPanel')
+
+  $('#selectGame, #selectGame .selectWrap').removeClass('unselectedChoosePanel')
+  $('#gamePanel').removeClass('unselectedPanel')
+  $('#selectGame, #selectGame .selectWrap').addClass('selectedChoosePanel')
+  $('#gamePanel').addClass('selectedPanel')
+  
+ 
 })

@@ -58,7 +58,7 @@
       function chatSend(){
         var name = $('#currentName').text().trim();
         var text = $('#chatArea').val();
-        socket.emit('sendChat', currentRoom, socket.id, text);
+        socket.emit('sendChat', currentRoom, text);
         $('#chatArea').val('');
       }
 
