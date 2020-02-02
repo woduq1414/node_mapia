@@ -1,49 +1,253 @@
+let mafiaTeam = ["mafia"]
+
+
+$(document).on("click", ".jobCard", function(){
+    var cardId = $(this).attr("id");
+    var timeIn = 250;
+    var timeOut = 150;
+    
+    let temp = $(this).attr('class').split(' ');
+    let beforeSelected;
+    for(i in temp){
+        if(temp[i] != "jobCard" && temp[i] != "hideCard"){
+            beforeSelected = temp[i].replace("Card", "");
+        }
+    }
+    console.log(beforeSelected);
+
+    let type;
+    if($("#noteTooltipWrap").css("display") == "none"){
+        type = 1;
+        var positionX = Math.abs($(this).width() + 15);
+        var positionY = Math.abs($(this).parent().parent().offset().top + (($(this).parent().parent().height() - $("#noteTooltipWrap").innerHeight())/2));
+        $("#noteTooltipWrap").addClass(cardId);
+        $("#"+cardId).addClass("hideCard");
+
+        
+        $("#noteTooltipWrap").removeClass().addClass(cardId);
+
+        $("#noteTooltipWrap").css({left : positionX + "px", top : positionY + "px"}).fadeIn(timeIn);
+    }else{
+        type = 2;
+        console.log($('.selectedNoteTooltip').attr('job'))
+
+        let selectedJob = $('.selectedNoteTooltip').attr('job')
+
+        
+
+        if($("#noteTooltipWrap").attr("class") == cardId){
+            $("#noteTooltipWrap").removeClass();
+            $("#"+cardId).removeClass("hideCard");
+            $("#noteTooltipWrap").fadeOut(timeOut);
+            if(selectedJob){
+                $(this).removeClass().addClass(`jobCard ${selectedJob}Card`)
+                if(mafiaTeam.includes(selectedJob.toLowerCase())){
+                    $(this).parents('.memberNoteBox').addClass('mafiaNoteBox').removeClass('citizenNoteBox')
+                }else{
+                    $(this).parents('.memberNoteBox').addClass('citizenNoteBox').removeClass('mafiaNoteBox')
+                }
+                
+
+            }
+            
+            
+        }else{
+            var positionX = Math.abs($(this).width() + 15);
+            var positionY = Math.abs($(this).parent().parent().offset().top + (($(this).parent().parent().height() - $("#noteTooltipWrap").innerHeight())/2));
+            if(selectedJob){
+                $('.hideCard').removeClass().addClass(`jobCard ${selectedJob}Card`)
+                if(mafiaTeam.includes(selectedJob)){
+                    $('.hideCard').parents('.memberNoteBox').addClass('mafiaNoteBox').removeClass('citizenNoteBox')
+                }else{
+                    $('.hideCard').parents('.memberNoteBox').addClass('citizenNoteBox').removeClass('mafiaNoteBox')
+                }
+            }
+
+            $(".jobCard").removeClass("hideCard");
+            $(this).addClass("hideCard");
+            $("#noteTooltipWrap").fadeOut(timeOut, function(){
+                $("#noteTooltipWrap").removeClass();
+                $("#noteTooltipWrap").addClass(cardId);
+                $("#noteTooltipWrap").css({left : positionX + "px", top : positionY + "px"}).fadeIn(timeIn);
+            });
+        }
+        
+    }
+
+    if(type == 2){
+       return;
+
+    }
+
+
+
+    let temp2 = $(`.noteTooltip${beforeSelected}`);
+    $(".selectedNoteTooltip").removeClass(function (index, className) {
+        let temp = className.match(/(select)\w+/g);
+        if(temp){
+            return temp.join(' ');
+        }
+        return '';
+    });
+    if(beforeSelected){
+        temp2.addClass(`selectedNoteTooltip selectedNoteTooltip${beforeSelected}`)
+        beforeSelected = beforeSelected.toLowerCase();
+        if(mafiaTeam.includes(beforeSelected.toLowerCase())){
+            
+            if($("#noteTooltipMafiaPanel").css("display") == "none"){
+                $("#noteTooltipSelectCitizen").removeClass();
+                $("#noteTooltipSelectCitizen").addClass("unselectedNoteTooltipSelect");
+                $("#noteTooltipSelectMafia").removeClass();
+                $("#noteTooltipSelectMafia").addClass("selectedNoteTooltipSelect");
+                $("#noteTooltipCitizenPanel").css("display", "none");
+                $("#noteTooltipMafiaPanel").css("display", "block");
+            }
+        }else{
+            if($("#noteTooltipCitizenPanel").css("display") == "none"){
+                $("#noteTooltipSelectMafia").removeClass();
+                $("#noteTooltipSelectMafia").addClass("unselectedNoteTooltipSelect");
+                $("#noteTooltipSelectCitizen").removeClass();
+                $("#noteTooltipSelectCitizen").addClass("selectedNoteTooltipSelect");
+                $("#noteTooltipMafiaPanel").css("display", "none");
+                $("#noteTooltipCitizenPanel").css("display", "block");
+            }
+        }
+    }
+    
+   
+});
+
+/* NOTE TOOLTIP CITIZNE VS MAFIA */
+$(document).on("click", "#noteTooltipSelectCitizen", function(){
+    if($("#noteTooltipCitizenPanel").css("display") == "none"){
+        $("#noteTooltipSelectMafia").removeClass();
+        $("#noteTooltipSelectMafia").addClass("unselectedNoteTooltipSelect");
+        $("#noteTooltipSelectCitizen").removeClass();
+        $("#noteTooltipSelectCitizen").addClass("selectedNoteTooltipSelect");
+        $("#noteTooltipMafiaPanel").css("display", "none");
+        $("#noteTooltipCitizenPanel").css("display", "block");
+    }
+});
+
+$(document).on("click", "#noteTooltipSelectMafia", function(){
+    if($("#noteTooltipMafiaPanel").css("display") == "none"){
+        $("#noteTooltipSelectCitizen").removeClass();
+        $("#noteTooltipSelectCitizen").addClass("unselectedNoteTooltipSelect");
+        $("#noteTooltipSelectMafia").removeClass();
+        $("#noteTooltipSelectMafia").addClass("selectedNoteTooltipSelect");
+        $("#noteTooltipCitizenPanel").css("display", "none");
+        $("#noteTooltipMafiaPanel").css("display", "block");
+    }
+});
+
+$(document).on("click", ".noteTooltipCard", function(){
+    if($(".noteTooltipCard").hasClass("selectedNoteTooltip")==true){
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltip");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipPolice");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipDoctor");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipSoldier");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipPolitician");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipDetective");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipPsychic");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipReporter");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipTerrorist");
+        // $(".noteTooltipCard").removeClass("selectedNoteTooltipMafia");
+        $(".noteTooltipCard").removeClass(function (index, className) {
+            let temp = className.match(/(select)\w+/g);
+            if(temp){
+                return temp.join(' ');
+            }
+            return '';
+        });
+
+        $(this).addClass("selectedNoteTooltip")
+        $(this).addClass("selectedNoteTooltip"+$(this).attr("job"));
+    }else{
+        $(this).addClass("selectedNoteTooltip");
+        $(this).addClass("selectedNoteTooltip"+$(this).attr("job"));
+    }
+});
+
+
+
+
+
+
+
+
+
 
 $(window).resize(function () {
     $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) - parseFloat($("#upperGameContainer").css("height")) - 40 + "px"))
 })
 
-socket.on('refreshRoom', function (data2) {
+socket.on('refreshRoom', function (data) {
 
     if (info[currentRoom].isPlaying) {
-        let data = data2.members;
-
-        $('#gameMembers').html('');
-        for (let i in data) {
-            if (data2.alive.includes(data[i])) {
-                $('#gameMembers').append(`
-                <div member-data="${data[i]}" class="card member" style="float:left;display:inline-block;">
-                    <img src="../images/icon_player.png" class="card-img-top" alt="...">
-                    <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px;">
-                        <div class="${currentName == data[i] ? 'myName' : ''}" style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
-                            ${data[i]}
-                        </div>    
-                    
-                    </div>
-                </div>`
-
-                )
+        let member = data.members;
+        let string = '';
+        
+        for (let i in member) {
+            if (data.alive.includes(member[i])) {
+                //살아씅ㄹ때
             } else {
-                $('#gameMembers').append(`
-                <div member-data="${data[i]}" class="card member dead" style="float:left;display:inline-block;">
-                    <img src="../images/icon_player.png" class="card-img-top" alt="...">
-                    <div class="card-body" style="text-align:center;padding-left:0px; padding-right:0px; padding-top:8px">
-                        <div class="${currentName == data[i] ? 'myName' : ''}" style="font-size:18px; height:36px;color:#${getColor(data[i])}; font-weight:500;">
-                            ${data[i]}
-                        </div>    
-                    
-                    </div>
-                </div>`
-
-                )
+                //죽었을때
             }
-
+            let temp = $(`[member-data=${member[i]}]`)
+            if(temp.length){
+                string += `
+                <div class="${temp.attr('class')}" member-data="${member[i]}">
+                    <div class="memberNoteBoxWrap">
+                        <div id="${member[i]}" class="${temp.find('.jobCard').attr('class')}"></div>
+                        <div class="memberNoteBoxNameWrap">
+                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
+                        </div>
+                    </div>
+                </div>
+                `
+            }else{
+                string += `
+                <div class="memberNoteBox" member-data="${member[i]}">
+                    <div class="memberNoteBoxWrap">
+                        <div id="${member[i]}" class="jobCard questionCard"></div>
+                        <div class="memberNoteBoxNameWrap">
+                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
+                        </div>
+                    </div>
+                </div>
+                `
+            }
+            
+            
             // 
         }
+        $('#notePanel').html(string);
 
-        $('#gameMembers').find('img').on('load', function () {
-            $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) - parseFloat($("#upperGameContainer").css("height")) - 40 + "px"))
-        });
+
+        let cardId = $("#noteTooltipWrap").attr('class')
+        console.log(cardId  )
+        if(!info[currentRoom].members.includes(cardId)){
+            $("#noteTooltipWrap").removeClass();
+            $(".hideCard").removeClass("hideCard");
+            $("#noteTooltipWrap").fadeOut(150);
+        }else{
+            $("#noteTooltipWrap").removeClass();
+            $(".hideCard").removeClass("hideCard");
+
+
+
+            var positionX = Math.abs($(`.jobCard#${cardId}`).width() + 15);
+            var positionY = Math.abs($(`.jobCard#${cardId}`).parent().parent().offset().top + (($(`.jobCard#${cardId}`).parent().parent().height() - $("#noteTooltipWrap").innerHeight())/2));
+            $("#noteTooltipWrap").addClass(cardId);
+            $("#"+cardId).addClass("hideCard");
+
+            console.log(cardId, positionX, positionY)
+            
+            $("#noteTooltipWrap").removeClass().addClass(cardId);
+            
+            $("#noteTooltipWrap").css({left : positionX + "px", top : positionY + "px"}).fadeIn(250);
+        }
+
     }
 
 
@@ -58,17 +262,34 @@ socket.on('startGame', function () {
 
     $("#leftContainer").css('display', 'none');
     $("#leftGameContainer").css('display', 'block');
+
+    inGameVisibility();
 })
 
 socket.on('getTimeStatus', function (time) {
 
-    $('#timeStatus').html(time);
+    let minute = Math.floor(time / 60);
+    let second = time % 60;
+    if(second < 10){
+        second = '0' + second;
+    }else{
+        second = '' + second;
+    }
+    minute = '0' + minute;
+    $('#roomConditionBoxTime').text(`${minute} : ${second}`);
 
 })
 
 
 socket.on('getDateStatus', function (n, dayORnight) {
-    $('#dateStatus').html(n + " 번째 " + dayORnight);
+    $('#roomConditionBoxText').html(n + " 일차 " + dayORnight);
+    if(dayORnight == "낮"){
+        $('#roomConditionBoxImg').addClass('morning').removeClass('night')
+        $('#gameArea').hide().removeClass('nightBg').addClass('morningBg').fadeIn(400);
+    }else if(dayORnight == "밤"){
+        $('#roomConditionBoxImg').addClass('night').removeClass('morning')
+        $('#gameArea').hide().removeClass('morningBg').addClass('nightBg').fadeIn(400);
+    }
     noticeAppend(dayORnight + "이 되었습니다.")
 })
 
@@ -204,21 +425,19 @@ socket.on('endGame', function () {
 
     rightPanelVisibility()
     roomManageVisibility();
+    inGameVisibility();
 
 
-    namePopover(roomName);
 
-    $("#leftContainer").css('display', 'block');
-    $("#leftGameContainer").css('display', 'none');
+    
 
-    $("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) - parseFloat($("#exitRoom").css("height")) - parseFloat($("#upperRoomContainer").css("height"))) + "px")
+
+    $("#noteTooltipWrap").removeClass();
+    $(".hideCard").removeClass("hideCard");
+    $("#noteTooltipWrap").fadeOut(150);
+    $('#notePanel').html();
 
     noticeAppend("게임이 끝났습니다.");
-
-
-
-
-
 })
 
 

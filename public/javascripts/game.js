@@ -87,7 +87,7 @@ socket.on('selectPlayerAvailable', function(message, selectableMember){
     chatAppend('noticePrimary', message);
 
     $(`.member`).css('cursor', "not-allowed");
-    for(i in selectableMember){
+    for(let i in selectableMember){
         $(`.member[member-data=${selectableMember[i]}]`).css('cursor', "pointer");
     }
     $(".member").on("click", function(){

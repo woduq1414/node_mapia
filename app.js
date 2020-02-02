@@ -101,7 +101,7 @@ function getHash(text, max) {
   
 	hash = hash * hash
 
-	console.log(hash);
+
 
 	hash = (hash % max) + 1;
 	return hash;
@@ -561,8 +561,8 @@ io.on('connection', function (socket) {
 
 	function setDate(roomName, date, time) {
 
-		NIGHT_TIME = 7;
-		DAY_TIME = 3;
+		NIGHT_TIME = 30;
+		DAY_TIME = 30;
 		VOTE_TIME = 3;
 		APPEAL_TIME = 3;
 		FINAL_TIME = 7;
@@ -638,7 +638,7 @@ io.on('connection', function (socket) {
 				}
 			}, 1000)
 
-			if (date == 3) {
+			if (date == 2) {
 				endGame(roomName);
 			}
 
@@ -1117,7 +1117,7 @@ io.on('connection', function (socket) {
 		}
 		io.to(after).emit('changeRoomName', before, after)
 		//console.log(io.sockets.adapter.rooms[after].sockets);
-		refreshMain(info);
+
 	})
 
 
@@ -1132,11 +1132,11 @@ io.on('connection', function (socket) {
 				io.to(roomName).emit('changePassword', roomName, 1);
 			}
 
+
 		}
 
 
 
-		refreshMain(info);
 	})
 
 
@@ -1146,14 +1146,20 @@ io.on('connection', function (socket) {
 		if (info[roomName].members.length <= after) {
 			info[roomName].limit = after;
 			io.to(roomName).emit('changeRoomLimit', before, after);
+
 		} else {
 			socket.emit('changeRoomLimitErr');
 		}
 
 
 
+		
+	})
+
+	socket.on('requestRefreshMain', function(){
 		refreshMain(info);
 	})
+
 
 	socket.on('joinRoom', (roomName) => {
 

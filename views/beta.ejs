@@ -18,7 +18,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
         <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
         <script src="/javascripts/push.min.js"></script>
-
+        <!-- <script src="/javascripts/jquery.textfill.min.js"></script> -->
         <!-- FONT -->
         <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&amp;subset=korean" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&amp;subset=korean" rel="stylesheet">
@@ -82,6 +82,20 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="notePanel" class="unselectedPanel invisible">
+                <div class="memberNoteBox">
+                    <div class="memberNoteBoxWrap">
+                        <div class="jobCard questionCard"></div>
+                        <div class="memberNoteBoxNameWrap">
+                            <div class="memberNoteBoxName goldClass">레벨높은사람</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
             <div id="gamePanel" class="selectedPanel">
                 <div id="addRoomWrap">
                     <div id="addRoom">
@@ -130,6 +144,24 @@
                         <div class="v-mid">나가기</div>
                     </div>
                 </div>
+
+                <div id="roomConditionBox">
+                    <div id="roomConditionBoxWrap">
+                        <div id="roomConditionBoxInnerWrap">
+                            <span id="roomConditionBoxImg" class="morning"></span>
+                            <div id="roomConditionBoxText">
+                                2일차 낮
+                            </div>
+                            <div class="bar v-mid" style="width: 1px; height: 22px; float: left; margin-left: 8px; margin-right: 8px;"></div>
+                            <div id="roomConditionBoxTime">
+                                02:34
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
             </div>
 
             <div id="gameArea">
@@ -302,6 +334,138 @@
                 </div>
             </div>
         </div>
+
+
+        <div id="roomCreateModalWrap">
+            <div id="roomCreateModalBackground">
+                
+            </div>
+            <div id="roomCreateModal">
+                <div id="roomCreateModalContent" class="roomCreateModalClassForJS">
+                    <div id="roomCreateModalName">
+                        방 생성하기
+                    </div>
+                    <div id="roomCreateModalInnerWrap">
+                        <div id="roomCreateModalLeftArea">
+                            <div id="roomCreateModalLeftTopArea">
+                                <div id="roomCreateModalTitleBox">
+                                    <input id="roomCreateModalTitle" type="text" placeholder="방 제목을 입력해주세요">
+                                </div>
+                            </div>
+                            <div id="roomCreateModalLeftBottomArea">
+                                <div id="roomCreateModalUserBox">
+                                    <div class="roomCreateModalBoxWrap">
+                                        <div id="groupIconWrap"><div id="groupIcon"></div></div>
+                                        <div id="roomCreateModalUserBoxInnerWrap">
+                                            <div id="roomCreateModalUserBoxLeftArea">
+                                                <div id="maxUserSettingBox">
+                                                    <input id="maxUserSetting" type="text" value="12" maxlength="2">
+                                                </div>
+                                            </div>
+                                            <div id="roomCreateModalUserBoxRightArea">
+                                                <div id="upButton"></div>
+                                                <div id="downButton"></div>
+                                            </div>
+                                        </div>
+                                        <div id="roomCreateModalBoxBottomArea">
+                                            <div id="roomCreateModalBoxBottomAreaContent">
+                                                위의 숫자로 인원 수를 변경하세요
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="roomCreateModalPasswordBox">
+                                    <div class="roomCreateModalBoxWrap">
+                                        <div id="lockIconWrap">
+                                            <div id="lockIcon"></div>
+                                            <div id="unlockIcon" class="invisible"></div>
+                                        </div>
+                                        <div id="roomCreateModalPasswordBoxInnerWrap">
+                                            <div id="roomPasswordSettingBoxWrap">
+                                                <div id="roomPasswordSettingBox">
+                                                    <input id="roomPasswordSetting" type="text" placeholder="비밀번호를 입력하세요" maxlength="30">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="roomCreateModalBoxBottomArea">
+                                            <div id="roomCreateModalBoxBottomAreaContent">
+                                                비밀번호를 설정하세요<br>
+                                                <span style="font-size: 13px">
+                                                    (빈칸으로 설정하면 비밀번호 없는 방을 생성합니다)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="roomCreateModalRightArea">
+                            <div id="roomCreateModalNormal" class="selectedRoomCreateSetting">
+                                <div class="roomCreateModalSelectContent">
+                                    일<br>반
+                                </div>
+                            </div>
+                            <div id="roomCreateModalUserSetting" class="unselectedRoomCreateSetting">
+                                <div class="roomCreateModalSelectContent">
+                                    사<br>용<br>자<br>설<br>정
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="roomCreateModalBoxBottomButtonArea">
+                        <div id="roomCreateFinishButton">
+                            <div class="roomCreateButton">완료</div>
+                        </div>
+                        <div id="roomCreateExitButton">
+                            <div class="roomCreateButton">나가기</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="noteTooltipWrap">
+            <div id="noteTooltipFullWrap">
+                <div id="noteTooltipTriangle">
+                </div>
+                <div id="noteTooltip">
+                    <div id="noteTooltipInnerWrap">
+                        <div id="noteTooltipTopArea">
+                            <div id="noteTooltipName">
+                                시민좀하는사람1
+                            </div>
+                            <div id="noteTooltipSelectWrap">
+                                <div id="noteTooltipSelectCitizen" class="selectedNoteTooltipSelect">
+                                    <div class="noteTooltipSelectText">시민팀</div>
+                                </div>
+                                <div id="noteTooltipSelectMafia" class="unselectedNoteTooltipSelect">
+                                    <div class="noteTooltipSelectText">마피아팀</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="noteTooltipBottomArea">
+                            <div id="noteTooltipCitizenPanel">
+                                
+                                <div job="Police" class="noteTooltipCard noteTooltipPolice spanRight10"></div>
+                                <div job="Doctor" class="noteTooltipCard noteTooltipDoctor spanRight10"></div job="Police">
+                                <div job="Soldier" class="noteTooltipCard noteTooltipSoldier spanRight10"></div job="Police">
+                                <div job="Politician" class="noteTooltipCard noteTooltipPolitician spanRight10"></div job="Police">
+                                <div job="Detective" class="noteTooltipCard noteTooltipDetective spanRight10"></div job="Politician">
+                                <div job="Psychic" class="noteTooltipCard noteTooltipPsychic spanRight10"></div job="Politician">
+                                <div job="Reporter" class="noteTooltipCard noteTooltipReporter spanRight10"></div job="Politician">
+                                <div job="Terrorist" class="noteTooltipCard noteTooltipTerrorist spanRight10"></div job="Politician">
+                            </div>
+                            <div id="noteTooltipMafiaPanel">
+                                <div job="Mafia" class="noteTooltipCard noteTooltipMafia spanRight10"></div job="Politician">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script src="/javascripts/beta.js"> </script>
         <script src="/javascripts/betaGame.js"> </script>
     </body>

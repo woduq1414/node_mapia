@@ -18,7 +18,40 @@
 userClass = {};
 
 
+function showModal(selector){
+  $(selector).fadeIn(200).css("display","unset")
 
+}
+
+function hideModal(selector){
+  $(selector).fadeOut(200, function(){
+    
+    $(selector).css("display","none")
+  })
+}
+
+
+function inGameVisibility(){
+  if(currentRoom && info[currentRoom].isPlaying){
+    $('#roomConditionBox').css("display", "unset");
+    $('#roomControlWrap').css("display", "none");
+    $('#selectGame, #selectMemberControl, #selectFriend').addClass('invisible');
+    $('#selectNote, #selectNote .selectWrap').removeClass('invisible').removeClass('unselectedChoosePanel').addClass('selectedChoosePanel');
+    $('#notePanel').removeClass('unselectedPanel').addClass('selectedPanel').removeClass('invisible')
+    $('#memberPanel').addClass('invisible')
+  }else{
+    $('#roomConditionBox').css("display", "none");
+    $('#roomControlWrap').css("display", "unset");
+    $('#selectFriend').removeClass('invisible');
+    $('#selectNote').addClass('invisible');
+    $('#notePanel').addClass('invisible')
+    $('#memberPanel').removeClass('invisible')
+  }
+  
+  
+}
+
+inGameVisibility();
 
 
 function clearChattingArea() {
@@ -28,6 +61,7 @@ function clearChattingArea() {
 
 
 function rightPanelVisibility() {
+  console.log("SDAF")
   if (currentRoom) {
     $('#rightPanel').css('visibility', 'visible');
 
@@ -89,12 +123,12 @@ function roomManageVisibility() {
   if (currentRoom && info[currentRoom].members[0] == getMyName()) {
     $('#startButton').css('visibility', 'visible');
     $('#roomSettingButton').css('visibility', 'visible');
-   
+    $('.roomMasterArea').css('display', 'unset');
 
   } else {
     $('#startButton').css('visibility', 'hidden');
     $('#roomSettingButton').css('visibility', 'hidden');
-    
+    $('.roomMasterArea').css('display', 'none');
 
   }
 }
@@ -119,6 +153,7 @@ function getNameSpan(name) {
 
 
 function refreshRoom() {
+
   $('#roomTitleBox').html(`${currentRoom}<br><span style="font-size: 14px">(${info[currentRoom].members.length}/${info[currentRoom].limit})</span>`)
   $('#selectMemberControl .selectWrap').html(`참가 인원 관리(${info[currentRoom].members.length})`)
 
@@ -171,7 +206,8 @@ function refreshRoom() {
                       ${isRoomMaster ? '<span class="crown spanRight7"></span>' : ''}
                       <span class="goldClass nameWrap">${name}</span>
                   </div>
-                  <div class="memberBoxLeftBottomArea">
+                  <div class="memberBoxLeftBottomArea ${name == currentName ? "invisible" : ""}" >
+                    <span class="roomMasterArea">
                       <span class="kick button">
                           퇴장시키기
                       </span>
@@ -180,6 +216,8 @@ function refreshRoom() {
                           방장위임
                       </span>
                       <span class="bar"></span>
+                    </span>
+                      
                       <span class="addToFriend button">
                           친구추가
                       </span>
@@ -364,75 +402,48 @@ $(document).on("click", "#startButton", function () {
 
 
 $(document).on("click", "#roomSettingButton", function () {
-  Swal.fire({
-    title: 'Room Manage',
-    html: `
-<div class="input-group mb-3">
-<div class="input-group-prepend">
-<span class="input-group-text" id="basic-addon1">방 이름</span>
-</div>
-<input type="text" id="changeRoomNameArea" class="form-control" placeholder="방 이름" aria-label="방 이름" aria-describedby="basic-addon1" value="${currentRoom}">
-</div>
-<div class="input-group mb-3">
-<div class="input-group-prepend">
-<span class="input-group-text" id="basic-addon1">최대 인원</span>
-</div>
-<input type="text" id="changeRoomLimitArea" class="form-control" placeholder="최대 인원" aria-label="최대 인원" aria-describedby="basic-addon1" value="${info[currentRoom].limit}">
-</div>
-<div class="input-group mb-3">
-<div class="input-group-prepend">
-<div class="input-group-text">
-  비밀번호
-</div>
-<div class="input-group-text">
-  <input id="changePasswordCheck" type="checkbox" aria-label="Checkbox for following text input" ${info[currentRoom].password ? "checked" : ""}>
-</div>
-</div>
-<input id="changePasswordArea" type="password" class="form-control" aria-label="Text input with checkbox" ${info[currentRoom].password ? "" : "disabled"}>
-</div>
-`,
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Apply',
-    inputAttributes: {
-      autocapitalize: 'off'
-    },
-    showClass: {
-      popup: 'animated fadeInUpBig faster'
-    },
-    hideClass: {
-      popup: 'animated fadeOutDownBig faster'
-    },
-    preConfirm: () => {
+
+  showModal("#roomCreateModalWrap");
 
 
-      let passwordCheck = $('#changePasswordCheck').is(":checked")
-      if (passwordCheck) {
-        password = $('#changePasswordArea').val();
-        socket.emit('changePassword', currentRoom, password)
-      } else {
-        password = "";
-        socket.emit('changePassword', currentRoom, password)
-      }
-
-      let before = info[currentRoom].limit
-      let after = $('#changeRoomLimitArea').val()
-      if (before != after) {
-        socket.emit('changeRoomLimit', currentRoom, before, after)
-
-      }
+  $("#roomCreateModalWrap #roomCreateModalTitle").val(currentRoom)
+  $("#roomCreateModalWrap #maxUserSetting").val(info[currentRoom].limit)
 
 
-      before = currentRoom
-      after = $('#changeRoomNameArea').val()
-      if (before != after) {
-        socket.emit('changeRoomName', before, after)
-        currentRoom = after;
-      }
-    }
+  $("#roomCreateModalWrap #roomCreateModalBoxBottomButtonArea").html(`
+  <div class="manageRoomFinish" id="roomCreateFinishButton">
+    <div class="roomCreateButton">완료</div>
+  </div>
+  <div id="roomCreateExitButton">
+    <div class="roomCreateButton">나가기</div>
+  </div>
+  `)
 
-  })
+
+      // let passwordCheck = $('#changePasswordCheck').is(":checked")
+      // if (passwordCheck) {
+      //   password = $('#changePasswordArea').val();
+      //   socket.emit('changePassword', currentRoom, password)
+      // } else {
+      //   password = "";
+      //   socket.emit('changePassword', currentRoom, password)
+      // }
+
+      // let before = info[currentRoom].limit
+      // let after = $('#changeRoomLimitArea').val()
+      // if (before != after) {
+      //   socket.emit('changeRoomLimit', currentRoom, before, after)
+
+      // }
+
+
+      // before = currentRoom
+      // after = $('#changeRoomNameArea').val()
+      // if (before != after) {
+      //   socket.emit('changeRoomName', before, after)
+      //   currentRoom = after;
+      // }
+
 })
 
 
@@ -505,70 +516,102 @@ $(document).on("click", ".logout", function () {
   location.href = "/logout"
 })
 
-$(document).on("click", "#addRoom", function () {
 
-  Swal.fire({
-    title: 'Room Name',
-    html: `
-<div class="input-group mb-3">
-<div class="input-group-prepend">
-<span class="input-group-text" id="basic-addon1">방 이름</span>
-</div>
-<input type="text" id="roomNameArea" class="form-control" placeholder="방 이름" aria-label="방 이름" aria-describedby="basic-addon1">
-</div>
-<div class="input-group mb-3">
-<div class="input-group-prepend">
-<span class="input-group-text" id="basic-addon1">최대 인원</span>
-</div>
-<input type="text" id="roomLimitArea" class="form-control" placeholder="최대 인원" aria-label="최대 인원" aria-describedby="basic-addon1" value="12">
-</div>
-<div class="input-group mb-3">
-<div class="input-group-prepend">
-<div class="input-group-text">
-  비밀번호
-</div>
-<div class="input-group-text">
-  <input id="passwordCheck" type="checkbox" aria-label="Checkbox for following text input">
-</div>
-</div>
-<input id="passwordArea" type="password" class="form-control" aria-label="Text input with checkbox" disabled>
-</div>
-`,
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Apply',
-    inputAttributes: {
-      autocapitalize: 'off'
-    },
-    showLoaderOnConfirm: true,
-    showClass: {
-      popup: 'animated fadeInUpBig faster'
-    },
-    hideClass: {
-      popup: 'animated fadeOutDownBig faster'
-    },
-    preConfirm: () => {
-      let password;
-      let roomName = $('#roomNameArea').val()
-      let passwordCheck = $('#passwordCheck').is(":checked")
-      if (passwordCheck) {
-        password = $('#passwordArea').val()
-      } else {
-        password = "";
-      }
-      let roomLimit = $('#roomLimitArea').val();
+$("#addRoom").on("click", function(){
+  
+  showModal("#roomCreateModalWrap")
 
-      console.log(roomName, passwordCheck, password);
-      if (getMyName()) {
-        socket.emit('makeRoom', roomName, password, roomLimit);
-        socket.emit('joinRoom', roomName, getMyName());
-      }
+  $("#roomCreateModalWrap #roomCreateModalTitle").val(`${getMyName()}의 방`)
+  $("#roomCreateModalWrap #roomCreateModalBoxBottomButtonArea").html(`
+  <div class="addRoomFinish" id="roomCreateFinishButton">
+    <div class="roomCreateButton">완료</div>
+  </div>
+  <div id="roomCreateExitButton">
+    <div class="roomCreateButton">나가기</div>
+  </div>
+  `)
+});
+
+
+
+
+$(document).on("click", "#roomCreateFinishButton, #roomCreateExitButton", function(){
+  hideModal("#roomCreateModalWrap");
+});
+
+$("#roomCreateModalBackground").on("click", function(){
+  hideModal("#roomCreateModalWrap");
+});
+
+$(document).on("click", "#upButton", function(){
+  if($("#maxUserSetting").val() <= 98){
+    $("#maxUserSetting").val($("#maxUserSetting").val() * 1 + 1)
+  }
+  
+})
+
+$(document).on("click", "#downButton", function(){
+  if($("#maxUserSetting").val() >= 2){
+    $("#maxUserSetting").val($("#maxUserSetting").val() * 1 - 1)
+  }
+  
+})
+
+
+
+$(document).on("click", "#roomCreateFinishButton", function(){
+
+  if($(this).hasClass('addRoomFinish')){
+    let roomName = $('#roomCreateModalTitle').val()
+    let password = $('#roomPasswordSetting').val();
+    if(!password){
+      password = '';
+    }
+  
+    let roomLimit = $('#maxUserSetting').val()
+  
+    if (getMyName()) {
+      socket.emit('makeRoom', roomName, password, roomLimit);
+      socket.emit('joinRoom', roomName, getMyName());
+    }
+    $("#roomCreateModalWrap").css("display","none");
+  }else if($(this).hasClass('manageRoomFinish')){
+    
+    
+    let passwordCheck = $('#roomPasswordSetting').val();
+    if (passwordCheck) {
+      password = $('#changePasswordArea').val();
+      socket.emit('changePassword', currentRoom, password)
+    } else {
+      password = "";
+      socket.emit('changePassword', currentRoom, password)
+    }
+
+    let before = info[currentRoom].limit
+    let after = $('#maxUserSetting').val()
+    if (before != after) {
+      socket.emit('changeRoomLimit', currentRoom, before, after)
 
     }
-  })
 
+
+    before = currentRoom
+    after = $('#roomCreateModalTitle').val()
+    if (before != after) {
+      currentRoom = after;
+      socket.emit('changeRoomName', before, after)
+      
+    }
+
+    socket.emit('requestRefreshMain');
+  }
+  
+
+  
 })
+
+
+
 
 $(document).on("click", ".room", function () {
 
@@ -646,6 +689,7 @@ socket.on('changeRoomName', function (before, after) {
   currentRoom = after;
   noticeAppend(`방의 이름이 ${before}에서 ${after}로 변경되었습니다.`)
 
+  refreshRoom();
 })
 
 socket.on('a', function (data) {
@@ -827,13 +871,20 @@ socket.on('leaveRoom', function (roomName, name, socketID, me) {
 
   if (me) {
     currentRoom = undefined;
+    rightPanelVisibility();
+    roomManageVisibility();
+  }else{
+    if(!info[currentRoom].isPlaying){
+      rightPanelVisibility();
+      roomManageVisibility();
+    }else{
+      inGameVisibility();
+    }
   }
-
-  rightPanelVisibility();
-  roomManageVisibility();
-  namePopover(roomName);
-
   
+
+
+
 
 })
 
@@ -940,11 +991,20 @@ socket.on('refreshMain', function (data) {
   $('#roomContainer').html(string);
 
   if (currentRoom) {
-    refreshRoom();
+    //refreshRoom();
+    
+    if(!info[currentRoom].isPlaying){
+      rightPanelVisibility();
+      
+    }else{
+      
+    }
+  }else{
+    rightPanelVisibility();
   }
 
+  
 
-  rightPanelVisibility();
   //roomManageVisibility();
   //$('[data-toggle=" "]').tooltip()
   //$("#roomContainer").css("height", (parseFloat($("#leftContainer").css("height")) -  parseFloat($("#exitRoom").css("height")) -  parseFloat($("#upperRoomContainer").css("height"))) + "px")
@@ -1036,3 +1096,6 @@ $('#selectGame').on("click", function(){
   
  
 })
+
+
+

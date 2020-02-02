@@ -29,12 +29,22 @@ form{
 .spanRight6{
     margin-right: 6px!important;
 }
+.spanLeft7{
+    margin-left: 7px!important;
+}
 .spanRight7{
     margin-right: 7px!important;
 }
 .spanRight8{
     margin-right: 8px!important;
 }
+.spanRight9{
+    margin-right: 9px!important;
+}
+.spanRight10{
+    margin-right: 10px!important;
+}
+
 
 /* SCROLL BAR */
 ::-webkit-scrollbar{width: 6px;}
@@ -165,7 +175,7 @@ form{
             font-size: 16.5px;
         }
         .invisible{
-            display: none;
+            display: none!important;
         }
     /* SELECT */
 
@@ -446,6 +456,102 @@ form{
         }
     /* FRIENDPANEL */
 
+    /* NOTE PANEL */
+    #notePanel{
+        float: left;
+        overflow-y: scroll;
+    }
+        .memberNoteBox{
+            width: 100%;
+            height: 100px;
+            background: #828282;
+        }
+            .memberNoteBoxWrap{
+                padding-top: 10px;
+                padding-bottom: 10px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+                .jobCard{
+                    width: 60px;
+                    height: 80px;
+                    display: block;
+                    float: left;
+                    background: #E6E6E6;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+                .QuestionCard{
+                    background: url(/images/questionCard.png) left top;
+                    background-size: 60px;
+                }
+                .MafiaCard{
+                    background: url(/images/mafiaCard.png) left top;
+                    background-size: 60px;
+                }
+                .PoliceCard{
+                    background: url(/images/policeCard.png) left top;
+                    background-size: 60px;
+                }
+                .DoctorCard{
+                    background: url(/images/doctorCard.png) left top;
+                    background-size: 60px;
+                }
+                .SoldierCard{
+                    background: url(/images/soldierCard.png) left top;
+                    background-size: 60px;
+                }
+                .PoliticianCard{
+                    background: url(/images/politicianCard.png) left top;
+                    background-size: 60px;
+                }
+                .DetectiveCard{
+                    background: url(/images/detectiveCard.png) left top;
+                    background-size: 60px;
+                }
+                .PsychicCard{
+                    background: url(/images/psychicCard.png) left top;
+                    background-size: 60px;
+                }
+                .ReporterCard{
+                    background: url(/images/reporterCard.png) left top;
+                    background-size: 60px;
+                }
+                .TerroristCard{
+                    background: url(/images/terroristCard.png) left top;
+                    background-size: 60px;
+                }
+                .HideCard{
+                    background: url(/images/hideCard.png) left top;
+                    background-size: 60px;
+                }
+                .memberNoteBoxNameWrap{
+                    width: calc(100% - 85px);
+                    height: calc(100% - 20px);
+                    float: left;
+                    padding-left: 25px;
+                }
+                .memberNoteBoxName{
+                    width: 100%;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    word-wrap: normal;
+                    overflow: hidden;
+                    color: #FFFFFF;
+                    position: relative;
+                    transform: translateY(-50%);
+                    top: 50%;
+                }
+            .mafiaNoteBox{
+                background: #C40000;
+                color: #FFFFFF;
+            }
+            .citizenNoteBox{
+                background: #002D70;
+                color: #FFFFFF;
+            }
+    /* NOTE PANEL */
+
     /* ADD ROOM */
 
     #addRoomWrap{
@@ -463,6 +569,12 @@ form{
         margin-top: 15px;
         margin-bottom: 10px;
         border-radius: 10px;
+    }
+    #addRoomInnerWrap{
+        display: inline-block;
+        position: relative;
+        transform: translateY(-50%);
+        top: 50%;
     }
     #addRoomImg{
         width: 24px;
@@ -577,6 +689,69 @@ form{
             }
     /* ROOM CONTROL BOX */
 
+    /* ROOM CONDITION BOX */
+    #roomConditionBox{
+        width: 100%;
+        height: 70px;
+        background-color: #2E2E2E;
+        text-align: center;
+    }
+        #roomConditionBoxWrap{
+            width: 270px;
+            height: 70px;
+            position: absolute;
+            top: 0px;
+            right: 50px;
+        }
+            #roomConditionBoxInnerWrap{
+                height: 30px;
+                float: right;
+                position: relative;
+                transform: translateY(-50%);
+                top: 50%;
+            }
+                #roomConditionBoxImg{
+                    float: left;
+                }
+                    .morning{
+                        width: 29px;
+                        height: 29px;
+                        display: block;
+                        float: left;
+                        background: url(/images/morning.png) left top;
+                        background-size: 29px;
+                    }
+                    .night{
+                        width: 29px;
+                        height: 29px;
+                        display: block;
+                        float: left;
+                        background: url(/images/night.png) left top;
+                        background-size: 29px;
+                    }
+                #roomConditionBoxText{
+                    float: left;
+                    font-size: 21px;
+                    font-weight: lighter;
+                    color: #fff;
+                    margin-top: 1px;
+                    margin-left: 8px;
+                    position: relative;
+                    transform: translateY(-50%);
+                    top: 50%;
+                }
+                #roomConditionBoxTime{
+                    float: left;
+                    font-size: 21px;
+                    font-weight: lighter;
+                    color: #fff;
+                    margin-top: 1px;
+                    position: relative;
+                    transform: translateY(-50%);
+                    top: 50%;
+                }
+    /* ROOM CONDITION BOX */
+
     /* GAME AREA */
     #gameArea{
         width: 100%;
@@ -585,7 +760,15 @@ form{
         text-align: center;
         overflow-x: hidden;
         overflow-y: scroll;
+        background: #190D16;
     }
+        .nightBg{
+            background: #000000!important;
+        }
+        .morningBg{
+            background: rgb(194,194,194);
+            background: linear-gradient(180deg, rgba(194,194,194,1) 0%, rgba(162,162,162,1) 85%, rgba(165,165,165,1) 100%)!important;
+        }
     #gameAreaWrap{
         height: calc(100% - 40px);
         padding-top: 25px;
@@ -636,10 +819,10 @@ form{
                     float: left;
                 }
             .talkContentBox{
-                margin-top: 10px;
                 width: 100%;
                 height: auto;
                 overflow: hidden;
+                margin-top: 10px;
             }
             .goldContentBox{
                 border: 2px solid #C4A342!important;
@@ -651,7 +834,6 @@ form{
             .myContentBox{
                 float: right;
                 border-top-right-radius: 0px!important;
-
             }
                 .talkContentWrap{
                     max-width: 450px;
@@ -661,7 +843,6 @@ form{
                     padding-top: 10px;
                     padding-bottom: 10px;
                     border-radius: 15px;
-                    
                 }
                 .normal{
                     background: #fff;
@@ -715,7 +896,7 @@ form{
         right: 0;
         background-color: #434343;
     }
-    input::-webkit-input-placeholder {
+    #chatBox input::-webkit-input-placeholder {
         color: #FFFFFF;
         font-family: 'Nanum Barun Gothic';
     }
@@ -732,7 +913,7 @@ form{
         font-size: 18px;
         cursor: pointer;
         border: none;
-        font-family: 'Nanum Barun Gothic';
+        font-family: 'Nanum Gothic';
     }
     #chatSend{
         width: 120px;
@@ -782,48 +963,256 @@ form{
     /* AD */
 /* RIGHT PANEL */
 
+/* NOTE TOOLTIP */
+#noteTooltipWrap{
+    position: absolute;
+    display: none;
+}
+    #noteTooltipFullWrap{
+        width: 814px;
+        height: 229px;
+    }
+        #noteTooltipTriangle{
+            width: 0px;
+            height: 0px;
+            float: left;
+            border-top: 10px solid transparent;
+            border-right: 12px solid rgba(40,40,40,0.9);
+            border-bottom: 10px solid transparent;
+            position: relative;
+            transform: translateY(-50%);
+            top: 50%;
+        }
+        #noteTooltip{
+            width: calc(100% - 12px);
+            height: 100%;
+            float: left;
+            background: rgba(40,40,40,0.9);
+            color: #FFFFFF;
+            position: relative;
+            transform: translateY(-50%);
+            top: 50%;
+        }
+            #noteTooltipInnerWrap{
+                width: calc(100% - 50px);
+                height: calc(100% - 50px);
+                padding-left: 30px;
+                padding-right: 20px;
+                padding-top: 25px;
+                padding-bottom: 25px;
+            }
+                #noteTooltipTopArea{
+                    width: 100%;
+                    height: auto;
+                    float: left;
+                }
+                    #noteTooltipName{
+                        float: left;
+                        font-size: 36px;
+                        font-weight: 900;
+                        color: #FFFFFF;
+                    }
+                    #noteTooltipSelectWrap{
+                        width: 180px;
+                        height: 42px;
+                        float: right;
+                        font-family: 'Nanum Gothic';
+                        text-align: right;
+                        margin-right: 10px;
+                    }
+                        #noteTooltipSelectCitizen{
+                            width: 90px;
+                            height: 42px;
+                            float: left;
+                            text-align: center;
+                            color: #FFFFFF;
+                            font-size: 16px;
+                            cursor: pointer;
+                            border-top-left-radius: 10px;
+                            border-bottom-left-radius: 10px;
+                        }
+                            .selectedNoteTooltipSelect{
+                                background: #000000;
+                            }
+                        #noteTooltipSelectMafia{
+                            width: 90px;
+                            height: 42px;
+                            float: left;
+                            text-align: center;
+                            color: #FFFFFF;
+                            font-size: 16px;
+                            cursor: pointer;
+                            border-top-right-radius: 10px;
+                            border-bottom-right-radius: 10px;
+                        }
+                            .unselectedNoteTooltipSelect{
+                                background: #828282;
+                            }
+                            .noteTooltipSelectText{
+                                display: inline-block;
+                                font-size: 16px;
+                                position: relative;
+                                transform: translateY(-50%);
+                                top: 50%;
+                            }
+
+                #noteTooltipBottomArea{
+                    width: 100%;
+                    padding-top: 25px;
+                    float: left;
+                }
+                    .noteTooltipCard{
+                        width: 84px;
+                        height: 112px;
+                        border-radius: 10px;
+                        float: left;
+                        cursor: pointer;
+                    }
+                    #noteTooltipCitizenPanel .noteTooltipCard:hover{
+                        box-shadow: 0 0 0 5px #708DD9;
+                    }
+                    #noteTooltipMafiaPanel .noteTooltipCard:hover{
+                        box-shadow: 0 0 0 5px #C40000;
+                    }
+                    #noteTooltipCitizenPanel{
+                        float: left;
+                    }
+                        .noteTooltipPolice{
+                            background: url(/images/policeCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .noteTooltipDoctor{
+                            background: url(/images/doctorCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .noteTooltipSoldier{
+                            background: url(/images/soldierCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .noteTooltipPolitician{
+                            background: url(/images/politicianCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .noteTooltipDetective{
+                            background: url(/images/detectiveCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .noteTooltipPsychic{
+                            background: url(/images/psychicCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .noteTooltipReporter{
+                            background: url(/images/reporterCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .noteTooltipTerrorist{
+                            background: url(/images/terroristCard.png) left top;
+                            background-size: 84px;
+                        }
+
+                        .selectedNoteTooltipPolice{
+                            background: url(/images/selectedPoliceCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipDoctor{
+                            background: url(/images/selectedDoctorCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipSoldier{
+                            background: url(/images/selectedSoldierCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipPolitician{
+                            background: url(/images/selectedPoliticianCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipDetective{
+                            background: url(/images/selectedDetectiveCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipPsychic{
+                            background: url(/images/selectedPsychicCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipReporter{
+                            background: url(/images/selectedReporterCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipTerrorist{
+                            background: url(/images/selectedTerroristCard.png) left top;
+                            background-size: 84px;
+                        }
+
+                    #noteTooltipMafiaPanel{
+                        float: left;
+                        display: none;
+                    }
+                        .noteTooltipMafia{
+                            background: url(/images/mafiaCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipMafia{
+                            background: url(/images/selectedMafiaCard.png) left top;
+                            background-size: 84px;
+                        }
+
+/* NOTE TOOLTIP */
+
 /* ROOM CREATE MODAL */
 #roomCreateModalWrap{
     width: 100%;
     height: 100%;
-    /*display: none;*/
+    display: none;
     position: fixed;
     left: 0;
     top: 0;
-    background: rgba(0,0,0,0.55);
     overflow: hidden;
     z-index: 1000;
 }
+    #roomCreateModalBackground{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 999;
+        background: rgba(0,0,0,0.55);
+    }
     #roomCreateModal{
         width: calc(100% - 0px); /* 330px */
         height: calc(100% - 0px); /* 150px */
         position: fixed;
         top: 15%;
-        right: 0;
+        left: calc((100% - 770px)/2);
+        right: calc((100% - 770px)/2);
+        z-index: 1000;
     }
         #roomCreateModalContent{
             width: 770px;
             height: 567px;
             background: #2E2E2E;
             color: #fff;
-            border: 3px solid #707070;
+            box-shadow: 0 0 0 3px #707070 inset;
             border-radius: 10px;
             text-align: center;
-            margin: 15% auto;
             margin-top: 0px;
             padding-top: 20px;
             padding-bottom: 15px;
             padding-left: 65px;
             padding-right: 65px;
         }
-            #roomCreateModalTitle{
+            #roomCreateModalName{
                 width: 100%;
                 display: inline-block;
                 color: #EFE1BA;
-                font-size: 18px;
+                font-size: 16px;
+                font-family: 'Nanum Gothic';
             }
             #roomCreateModalInnerWrap{
+                width: 100%;
+                height: 455px;
                 padding-top: 15px;
+                float: left;
             }
                 #roomCreateModalLeftArea{
                     width: calc(100% - 90px);
@@ -832,14 +1221,291 @@ form{
                     float: left;
                 }
                     #roomCreateModalLeftTopArea{
-
+                        width: 100%;
+                        height: 60px;
+                        margin-bottom: 15px;
                     }
+                        #roomCreateModalTitleBox{
+                            width: 100%;
+                            height: 60px;
+                            background: #434343;
+                            box-shadow: 0 0 0 2px #D1C29A inset;
+                            border-top-left-radius: 10px;
+                            border-top-right-radius: 10px;
+                            text-align: center;
+                        }
+                            #roomCreateModalTitle{
+                                width: 640px;
+                                height: 20px;
+                                background: #434343;
+                                color: #EFE1BA;
+                                border: none;
+                                outline: none;
+                                font-size: 18px;
+                                font-family: 'Nanum Gothic';
+                                text-align: center;
+                                position: relative;
+                                transform: translateY(-50%);
+                                top: 50%;
+                            }
+                            #roomCreateModal input::-webkit-input-placeholder {
+                                color: #EFE1BA;
+                                font-size: 18px;
+                                font-family: 'Nanum Gothic';
+                            }
                     #roomCreateModalLeftBottomArea{
-
+                        width: 100%;
+                        height: calc(100% - 75px);
                     }
+                        /* USER BOX */
+                        #roomCreateModalUserBox{
+                            width: calc((100% - 20px) / 2);
+                            height: 100%;
+                            float: left;
+                            background: #4D4D4D;
+                            box-shadow: 0 0 0 2px #D1C29A inset;
+                            border-bottom-left-radius: 10px;
+                            margin-right: 20px;
+                            text-align: center;
+                        }
+                        #roomCreateModalUserBoxInnerWrap{
+                            width: 110px;
+                            display: inline-block;
+                            margin-top: 25px;
+                        }
+                        #roomCreateModalUserBoxLeftArea{
+                            float: left;
+                        }
+                            #maxUserSettingBox{
+                                width: 80px;
+                                height: 47px;
+                                float: left;
+                                margin-right: 10px;
+                            }
+                                #maxUserSetting{
+                                    width: 80px;
+                                    height: 47px;
+                                    background: #4D4D4D;
+                                    color: #EFE1BA;
+                                    border: none;
+                                    outline: none;
+                                    font-family: 'Nanum Gothic';
+                                    font-size: 58px;
+                                    font-weight: bold;
+                                    text-align: center;
+                                }
+                        #roomCreateModalUserBoxRightArea{
+                            float: left;
+                        }
+                            #upButton{
+                                width: 20px;
+                                height: 16px;
+                                display: inline-block;
+                                background: url(/images/up.png) left top;
+                                background-size: 20px;
+                                display: block;
+                                cursor: pointer;
+                                margin-bottom: 15px;
+                            }
+                            #downButton{
+                                width: 20px;
+                                height: 16px;
+                                display: inline-block;
+                                background: url(/images/down.png) left top;
+                                background-size: 20px;
+                                display: block;
+                                cursor: pointer;
+                            }
+                        #roomCreateModalBoxBottomArea{
+                            width: 100%;
+                            height: calc(100% - 175px);
+                            display: table;
+                            vertical-align: bottom;
+                            float: left;
+                        }
+                            #roomCreateModalBoxBottomAreaContent{
+                                width: 100%;
+                                height: 100%;
+                                font-size: 14px;
+                                color: #EFE1BA;
+                                display: table-cell;
+                                vertical-align: bottom;
+                            }
+                        /* USER BOX */
+
+                        /* PASSWORD BOX */
+
+                        #roomCreateModalPasswordBox{
+                            width: calc((100% - 20px) / 2);
+                            height: 100%;
+                            float: left;
+                            background: #4D4D4D;
+                            box-shadow: 0 0 0 2px #D1C29A inset;
+                            border-bottom-right-radius: 10px;
+                            text-align: center;
+                        }
+                        #roomCreateModalPasswordBoxInnerWrap{
+                            width: 100%;
+                            display: inline-block;
+                            margin-top: 25px;
+                        }
+                            #roomPasswordSettingBoxWrap{
+                                width: calc(100% - 60px);
+                                padding-left: 30px;
+                                padding-right: 30px;
+                            }
+                                #roomPasswordSettingBox{
+                                    width: 100%;
+                                    height: 40px;
+                                    padding-bottom: 10px;
+                                    border-bottom: 1.5px solid #B2ADA0;
+                                    float: left;
+                                    text-align: center;
+                                }
+                                    #roomPasswordSetting{
+                                        width: 100%;
+                                        height: 100%;
+                                        background: #4D4D4D;
+                                        color: #EFE1BA;
+                                        font-size: 34px;
+                                        font-family: 'Nanum Gothic';
+                                        font-weight: bold;
+                                        text-align: center;
+                                        border: none;
+                                        outline: none;
+                                        display: inline-block;
+                                    }
+                                    #roomPasswordSettingBox input::-webkit-input-placeholder {
+                                        color: #EFE1BA;
+                                        font-family: 'Nanum Gothic';
+                                        font-size: 22px;
+                                    }
+                        
+                        #roomCreateModalBoxBottomArea{
+                            width: 100%;
+                            height: calc(100% - 172px);
+                            display: table;
+                            vertical-align: bottom;
+                            float: left;
+                        }
+                            #roomCreateModalBoxBottomAreaContent{
+                                width: 100%;
+                                height: 100%;
+                                font-size: 14px;
+                                color: #EFE1BA;
+                                display: table-cell;
+                                vertical-align: bottom;
+                            }
+
+                            
+                        /* PASSWORD BOX */
+
+                        #groupIconWrap{
+                            width: 100%;
+                            height: 103px;
+                        }
+                            #groupIcon{
+                                width: 163px;
+                                height: 103px;
+                                display: inline-block;
+                                background: url(/images/group.png) left top;
+                                background-size: 163px;
+                            }
+                        #lockIconWrap{
+                            width: 100%;
+                            height: 103px;
+                        }
+                            #lockIcon{
+                                width: 75px;
+                                height: 103px;
+                                display: inline-block;
+                                background: url(/images/lock.png) left top;
+                                background-size: 75px;
+                            }
+                            #unlockIcon{
+                                width: 75px;
+                                height: 103px;
+                                display: inline-block;
+                                background: url(/images/unlock.png) left top;
+                                background-size: 75px;
+                            }
+                        .roomCreateModalBoxWrap{
+                            width: calc(100% - 40px);
+                            height: calc(100% - 100px);
+                            padding-top: 60px;
+                            padding-bottom: 40px;
+                            padding-left: 20px;
+                            padding-right: 20px;
+                        }
+
             #roomCreateModalRightArea{
                 width: 60px;
                 height: 455px;
                 float: right;
             }
+                #roomCreateModalNormal{
+                    width: 60px;
+                    height: 220px;
+                    float: left;
+                    cursor: pointer;
+                    margin-bottom: 15px;
+                }
+                    .selectedRoomCreateSetting{
+                        background: #D9BF79;
+                        color: #FBF1D6;
+                        border-top-left-radius: 10px;
+                        border-top-right-radius: 10px;
+                    }
+                #roomCreateModalUserSetting{
+                    width: 60px;
+                    height: 220px;
+                    float: left;
+                    cursor: pointer;
+                }
+                    .unselectedRoomCreateSetting{
+                        background: #EFE1BA;
+                        color: #2E2E2E;
+                        border-bottom-left-radius: 10px;
+                        border-bottom-right-radius: 10px;
+                    }
+                .roomCreateModalSelectContent{
+                    font-family: 'Nanum Gothic';
+                    font-size: 16px;
+                    font-weight: bold;
+                    position: relative;
+                    transform: translateY(-50%);
+                    top: 50%;
+                }
+
+            #roomCreateModalBoxBottomButtonArea{
+                height: 50px;
+                display: inline-block;
+                padding-top: 20px;
+            }
+                #roomCreateFinishButton{
+                    width: 180px;
+                    height: 50px;
+                    background: #D9BF79;
+                    border: 2px solid #707070;
+                    color: #000000;
+                    border-radius: 10px;
+                    float: left;
+                    cursor: pointer;
+                    margin-right: 20px;
+                }
+                #roomCreateExitButton{
+                    width: 180px;
+                    height: 50px;
+                    background: #4D4D4D;
+                    border: 2px solid #828282;
+                    color: #FFFFFF;
+                    float: left;
+                    cursor: pointer;
+                    border-radius: 10px;
+                }
+                .roomCreateButton{
+                    position: relative;
+                    transform: translateY(-50%);
+                    top: 50%;
+                }
 /* ROOM CREATE MODAL */

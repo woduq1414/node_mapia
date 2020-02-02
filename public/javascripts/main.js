@@ -15,7 +15,7 @@
   //  }
 
   //  openFullScreenMode();
-
+alert("AFSaD");
 
 
       function getColor(text){
@@ -23,8 +23,8 @@
           if (text.length === 0) {
               return hash;
           }
-          for (i = 0; i < len; i++) {
-              charC = text.charCodeAt(i);
+          for (let i = 0; i < len; i++) {
+              let charC = text.charCodeAt(i);
               hash = ((hash<<5)-hash)+charC;
               hash = hash & hash; 
           }
@@ -679,14 +679,14 @@
         $('[data-toggle="tooltip"]').tooltip('hide')
         console.log(data);
         var string = "<hr>";
-        for (key in data){
+        for (let key in data){
           if(data[key].isPlaying) continue;
   
   
           let popup = "";
           popup += `<span style='color:red !important'>${key}</span><hr class='tooltipHR' style='background-color:red'>`
           //popup += "접속자 : " + data[key]["members"].length + "명";
-          for (i in data[key]["members"]){
+          for (let i in data[key]["members"]){
             if (i == 0){
               popup += "<span> <i class='fas fa-crown'></i> " + data[key]["members"][i] + "</span>"
             }else{
