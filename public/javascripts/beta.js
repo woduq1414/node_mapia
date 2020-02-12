@@ -884,25 +884,33 @@ socket.on('leaveRoom', function (roomName, name, socketID, me) {
   
 
 
-
+  refreshRoom()
 
 })
 
 socket.on('kickedRoom', function (roomName, name, socketID, me) {
   console.log(roomName, name, me);
   noticeAppend(`${getNameSpan(name)} 님이 방장에 의해 강제퇴장 당했습니다.`)
+
   if (me) {
     currentRoom = undefined;
+    rightPanelVisibility();
+    roomManageVisibility();
     Swal.fire({
       icon: 'error',
       title: 'ㅋㅋㅋㅋㅋㅋㅋ',
       text: '강퇴 당함 ㅋ'
     })
+  }else{
+    if(!info[currentRoom].isPlaying){
+      rightPanelVisibility();
+      roomManageVisibility();
+    }else{
+      inGameVisibility();
+    }
   }
 
-  rightPanelVisibility();
-  roomManageVisibility();
-  namePopover(roomName);
+  refreshRoom()
 })
 
 
@@ -995,7 +1003,7 @@ socket.on('refreshMain', function (data) {
     
     if(!info[currentRoom].isPlaying){
       rightPanelVisibility();
-      
+      refreshRoom();
     }else{
       
     }

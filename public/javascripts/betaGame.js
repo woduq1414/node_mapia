@@ -1,3 +1,93 @@
+let gameData;
+
+function setJob(member, jobName){
+    let temp = $($(`[member-data=${member}`)) 
+    temp.find('.jobCard').removeClass().addClass(`jobCard ${jobName}Card`)
+    temp.removeClass().addClass(`memberNoteBox ${mafiaTeam.includes(jobName) ? "mafiaNoteBox": "citizenNoteBox"}`)
+}
+
+function refreshGame(){
+    let data = gameData;
+    if (info[currentRoom].isPlaying) {
+        let member = data.members;
+        let string = '';
+        
+        for (let i in member) {
+            if (data.alive.includes(member[i])) {
+                //살아씅ㄹ때
+            } else {
+                //죽었을때
+            }
+            let temp = $(`[member-data=${member[i]}]`)
+
+            let myJob;
+            if(member[i] == currentName){
+                myJob = currentJob;
+            }
+
+            if(temp.length){
+                string += `
+                <div class="${temp.attr('class')}" member-data="${member[i]}">
+                    <div class="memberNoteBoxWrap">
+                        <div id="${member[i]}" class="${temp.find('.jobCard').attr('class')}"></div>
+                        <div class="memberNoteBoxNameWrap">
+                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
+                        </div>
+                    </div>
+                </div>
+                `
+            }else{
+                string += `
+                <div class="memberNoteBox ${myJob ? mafiaTeam.includes(myJob) ? "mafiaNoteBox": "citizenNoteBox" : ""}" member-data="${member[i]}">
+                    <div class="memberNoteBoxWrap">
+                        <div id="${member[i]}" class="jobCard ${myJob ? myJob : "Question"}Card"></div>
+                        <div class="memberNoteBoxNameWrap">
+                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
+                        </div>
+                    </div>
+                </div>
+                `
+            }
+            
+            
+            // 
+        }
+        $('#notePanel').html(string);
+
+
+        let cardId = $("#noteTooltipWrap").attr('class')
+        console.log(cardId  )
+        if(!info[currentRoom].members.includes(cardId)){
+            $("#noteTooltipWrap").removeClass();
+            $(".hideCard").removeClass("hideCard");
+            $("#noteTooltipWrap").fadeOut(150);
+        }else{
+            $("#noteTooltipWrap").removeClass();
+            $(".hideCard").removeClass("hideCard");
+
+
+
+            var positionX = Math.abs($(`.jobCard#${cardId}`).width() + 15);
+            var positionY = Math.abs($(`.jobCard#${cardId}`).parent().parent().offset().top + (($(`.jobCard#${cardId}`).parent().parent().height() - $("#noteTooltipWrap").innerHeight())/2));
+            $("#noteTooltipWrap").addClass(cardId);
+            $("#"+cardId).addClass("hideCard");
+
+            console.log(cardId, positionX, positionY)
+            
+            $("#noteTooltipWrap").removeClass().addClass(cardId);
+            
+            $("#noteTooltipWrap").css({left : positionX + "px", top : positionY + "px"}).fadeIn(250);
+        }
+
+    }
+
+
+}
+
+currentJob = ''
+
+
+
 let mafiaTeam = ["mafia"]
 
 
@@ -25,7 +115,8 @@ $(document).on("click", ".jobCard", function(){
 
         
         $("#noteTooltipWrap").removeClass().addClass(cardId);
-
+        $("#noteTooltipName").text(cardId);
+        
         $("#noteTooltipWrap").css({left : positionX + "px", top : positionY + "px"}).fadeIn(timeIn);
     }else{
         type = 2;
@@ -183,72 +274,8 @@ $(window).resize(function () {
 
 socket.on('refreshRoom', function (data) {
 
-    if (info[currentRoom].isPlaying) {
-        let member = data.members;
-        let string = '';
-        
-        for (let i in member) {
-            if (data.alive.includes(member[i])) {
-                //살아씅ㄹ때
-            } else {
-                //죽었을때
-            }
-            let temp = $(`[member-data=${member[i]}]`)
-            if(temp.length){
-                string += `
-                <div class="${temp.attr('class')}" member-data="${member[i]}">
-                    <div class="memberNoteBoxWrap">
-                        <div id="${member[i]}" class="${temp.find('.jobCard').attr('class')}"></div>
-                        <div class="memberNoteBoxNameWrap">
-                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
-                        </div>
-                    </div>
-                </div>
-                `
-            }else{
-                string += `
-                <div class="memberNoteBox" member-data="${member[i]}">
-                    <div class="memberNoteBoxWrap">
-                        <div id="${member[i]}" class="jobCard questionCard"></div>
-                        <div class="memberNoteBoxNameWrap">
-                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
-                        </div>
-                    </div>
-                </div>
-                `
-            }
-            
-            
-            // 
-        }
-        $('#notePanel').html(string);
-
-
-        let cardId = $("#noteTooltipWrap").attr('class')
-        console.log(cardId  )
-        if(!info[currentRoom].members.includes(cardId)){
-            $("#noteTooltipWrap").removeClass();
-            $(".hideCard").removeClass("hideCard");
-            $("#noteTooltipWrap").fadeOut(150);
-        }else{
-            $("#noteTooltipWrap").removeClass();
-            $(".hideCard").removeClass("hideCard");
-
-
-
-            var positionX = Math.abs($(`.jobCard#${cardId}`).width() + 15);
-            var positionY = Math.abs($(`.jobCard#${cardId}`).parent().parent().offset().top + (($(`.jobCard#${cardId}`).parent().parent().height() - $("#noteTooltipWrap").innerHeight())/2));
-            $("#noteTooltipWrap").addClass(cardId);
-            $("#"+cardId).addClass("hideCard");
-
-            console.log(cardId, positionX, positionY)
-            
-            $("#noteTooltipWrap").removeClass().addClass(cardId);
-            
-            $("#noteTooltipWrap").css({left : positionX + "px", top : positionY + "px"}).fadeIn(250);
-        }
-
-    }
+    gameData = data;
+    refreshGame()
 
 
 })
@@ -305,7 +332,13 @@ socket.on('appeal', function (player) {
 
 
 socket.on('initJob', function (job) {
+
+
     noticeAppend(`당신은 ${job}입니다.`);
+
+    currentJob = job;
+
+   
 })
 
 socket.on('selectPlayerAvailable', function (message, selectableMember) {
@@ -454,6 +487,8 @@ socket.on('noticeGameResult', function (winner, resultTime) {
 socket.on('policeResult', function (selected, result) {
     if (result) {
         noticeAppend(`${selected}는 마피아입니다.`)
+        setJob(selected, "mafia")
+
     } else {
         noticeAppend(`${selected}는 마피아가 아닙니다.`)
     }

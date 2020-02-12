@@ -360,7 +360,7 @@ io.on('connection', function (socket) {
 				jobList.push("citizen")
 			}
 			jobList[0] = "mafia"
-			jobList[1] = "priest"
+			jobList[1] = "police"
 			jobList[2] = "soldier";
 		}
 

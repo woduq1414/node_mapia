@@ -509,8 +509,8 @@ form{
                     background: url(/images/detectiveCard.png) left top;
                     background-size: 60px;
                 }
-                .PsychicCard{
-                    background: url(/images/psychicCard.png) left top;
+                .ShamanCard{
+                    background: url(/images/shamanCard.png) left top;
                     background-size: 60px;
                 }
                 .ReporterCard{
@@ -1097,8 +1097,8 @@ form{
                             background: url(/images/detectiveCard.png) left top;
                             background-size: 84px;
                         }
-                        .noteTooltipPsychic{
-                            background: url(/images/psychicCard.png) left top;
+                        .noteTooltipShaman{
+                            background: url(/images/shamanCard.png) left top;
                             background-size: 84px;
                         }
                         .noteTooltipReporter{
@@ -1130,8 +1130,8 @@ form{
                             background: url(/images/selectedDetectiveCard.png) left top;
                             background-size: 84px;
                         }
-                        .selectedNoteTooltipPsychic{
-                            background: url(/images/selectedPsychicCard.png) left top;
+                        .selectedNoteTooltipShaman{
+                            background: url(/images/selectedShamanCard.png) left top;
                             background-size: 84px;
                         }
                         .selectedNoteTooltipReporter{
