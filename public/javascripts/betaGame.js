@@ -33,6 +33,13 @@ function refreshGame(){
                         <div class="memberNoteBoxNameWrap">
                             <div class="memberNoteBoxName goldClass">${member[i]}</div>
                         </div>
+                        <div class="memberSelectWrap" >
+                            <div class="memberSelect" style="visibility:${temp.find('.memberSelect').css("visibility")};">
+                                <div class="memberSelectText">
+                                    지목
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 `
@@ -43,6 +50,13 @@ function refreshGame(){
                         <div id="${member[i]}" class="jobCard ${myJob ? myJob : "Question"}Card"></div>
                         <div class="memberNoteBoxNameWrap">
                             <div class="memberNoteBoxName goldClass">${member[i]}</div>
+                        </div>
+                        <div class="memberSelectWrap">
+                            <div class="memberSelect" style="visibility:hidden">
+                                <div class="memberSelectText">
+                                    지목
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -344,19 +358,24 @@ socket.on('initJob', function (job) {
 socket.on('selectPlayerAvailable', function (message, selectableMember) {
     noticeAppend(message);
 
-    $(`.member`).css('cursor', "not-allowed");
+    $('.memberNoteBox .memberSelect').css("visibility", "hidden")
     for (i in selectableMember) {
-        $(`.member[member-data=${selectableMember[i]}]`).css('cursor', "pointer");
+        $(`.memberNoteBox[member-data=${selectableMember[i]}] .memberSelect`).css("visibility", "visible");
     }
-    $(".member").on("click", function () {
+    $(".memberSelect").on("click", function () {
+        
+        if (selectableMember.includes($(this).parents('.memberNoteBox').attr('member-data'))) {
+            if (!$(this).hasClass("selectedMember")) {
+                console.log('d')
 
-        if (selectableMember.includes($(this).attr('member-data'))) {
-            if (!$(this).hasClass("selected")) {
-                $('.member').css("border", "0px");
-                $('.selected').removeClass('selected');
-                $(this).addClass('selected');
-                $(this).css("border", "5px solid red");
-                socket.emit('selectPlayer', currentRoom, $(this).attr('member-data'));
+                // $('.member').css("border", "0px");
+                // $('.selected').removeClass('selected');
+                // $(this).addClass('selected');
+                // $(this).css("background-", "5px solid red");
+                $('.selectedMember').removeClass('selectedMember')
+                $(this).addClass('selectedMember')
+                
+                socket.emit('selectPlayer', currentRoom, $(this).parents('.memberNoteBox').attr('member-data'));
             } else {
 
             }
@@ -368,9 +387,8 @@ socket.on('selectPlayerAvailable', function (message, selectableMember) {
 
 })
 
-socket.on('selectPlayerUnvailable', function (message) {
-
-    $(".member").off("click");
+socket.on('selectPlayerUnavailable', function (message) {
+    $('.memberNoteBox .memberSelect').not('.selectedMember').css("visibility", "hidden").off("click");
 
 })
 

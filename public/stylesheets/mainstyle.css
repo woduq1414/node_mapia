@@ -526,7 +526,7 @@ form{
                     background-size: 60px;
                 }
                 .memberNoteBoxNameWrap{
-                    width: calc(100% - 85px);
+                    width: calc(100% - 145px);
                     height: calc(100% - 20px);
                     float: left;
                     padding-left: 25px;
@@ -541,6 +541,38 @@ form{
                     position: relative;
                     transform: translateY(-50%);
                     top: 50%;
+                }
+                .memberSelectWrap{
+                    width: 60px;
+                    height: calc(100% - 20px);
+                    float: left;
+                }
+                .memberSelect{
+                    width: 100%;
+                    height: 30px;
+                    border-radius: 10px;
+                    background: rgb(31, 31, 31);
+                    float: left;
+                    position: relative;
+                    transform: translateY(-50%);
+                    top: 50%;
+                    text-align: center;
+                    padding-top: 1px;
+                    cursor: pointer;
+                }
+                .memberSelectText{
+                    position: relative;
+                    transform: translateY(-50%);
+                    top: 50%;
+                    font-size: 16px;
+                    color: white;
+                }
+                .selectedMember {
+                    background-color : white !important;
+                    color :black !important;
+                }
+                .selectedMember .memberSelectText{
+                    color :black !important;
                 }
             .mafiaNoteBox{
                 background: #C40000;

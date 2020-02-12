@@ -266,7 +266,7 @@ io.on('connection', function (socket) {
 
 
 	function endGame(roomName, winner) {
-
+		io.to(roomName).emit('selectPlayerUnavailable', "");
 		if (info.hasOwnProperty(roomName)) {
 			info[roomName].isPlaying = 0;
 			clearInterval(timer[roomName]);
@@ -359,8 +359,11 @@ io.on('connection', function (socket) {
 				//jobList[i] = "citizen";
 				jobList.push("citizen")
 			}
-			jobList[0] = "mafia"
-			jobList[1] = "police"
+
+			//custom_job
+
+			jobList[0] = "detective"
+			jobList[1] = "mafia"
 			jobList[2] = "soldier";
 		}
 
@@ -561,13 +564,16 @@ io.on('connection', function (socket) {
 
 	function setDate(roomName, date, time) {
 
-		NIGHT_TIME = 30;
-		DAY_TIME = 30;
+		NIGHT_TIME = 20;
+		DAY_TIME = 5;
 		VOTE_TIME = 3;
 		APPEAL_TIME = 3;
 		FINAL_TIME = 7;
 		RESULT_TIME = 5;
 		info[roomName].gameState.date = date;
+
+		refreshRoom(roomName);
+		io.to(roomName).emit('selectPlayerUnavailable', "");
 		if (time == "night") {
 
 
@@ -576,7 +582,7 @@ io.on('connection', function (socket) {
 
 			info[roomName].gameState.time = "night"
 
-			refreshRoom(roomName);
+			
 
 			io.to(roomName).emit('getDateStatus', date, "밤")
 
@@ -645,16 +651,17 @@ io.on('connection', function (socket) {
 
 
 		} else if (time == "day") {
+			
 
 			info[roomName].gameState.time = "day"
 
-			refreshRoom(roomName);
+
 
 			io.to(roomName).emit('getDateStatus', date, "낮")
+			io.to(roomName).emit('selectPlayerUnavailable', "");
 
 
-
-
+			
 
 
 
@@ -710,7 +717,6 @@ io.on('connection', function (socket) {
 			}, 1000)
 		} else if (time == "appeal") {
 
-			refreshRoom(roomName);
 
 
 			let voted = {};
@@ -1432,7 +1438,7 @@ io.on('connection', function (socket) {
 			if (!getSelected(roomName, socket.name)) {
 				info[roomName].gameState.job[socket.name].selected = selected;
 				io.to(roomName).emit('votedPlayer', selected);
-				socket.emit('selectPlayerUnvailable', "");
+				socket.emit('selectPlayerUnavailable', "");
 			}
 		} else if (info[roomName].gameState.time == "night") {
 			let selectActived = 0;
@@ -1459,13 +1465,13 @@ io.on('connection', function (socket) {
 					socket.emit('policeResult', selected, 0);
 				}
 				info[roomName].gameState.job[socket.name].ability = 0;
-				socket.emit('selectPlayerUnvailable', "");
+				socket.emit('selectPlayerUnavailable', "");
 			} else if (getJobName(roomName, socket.name) == "shaman" && hasAbility(roomName, socket.name)) {
 				info[roomName].gameState.job[socket.name].selected = selected;
 				selectActived = 1;
 				socket.emit('shamanResult', selected, getOriginalJobName(roomName, selected));
 				info[roomName].gameState.job[socket.name].ability = 0;
-				socket.emit('selectPlayerUnvailable', "");
+				socket.emit('selectPlayerUnavailable', "");
 
 			} else if (getJobName(roomName, socket.name) == "reporter" && hasAbility(roomName, socket.name) && info[roomName].gameState.date >= 2) {
 				info[roomName].gameState.job[socket.name].selected = selected;
@@ -1474,7 +1480,7 @@ io.on('connection', function (socket) {
 				info[roomName].gameState.job[socket.name].selected = selected;
 				selectActived = 1;
 				info[roomName].gameState.job[socket.name].ability = 0;
-				socket.emit('selectPlayerUnvailable');
+				socket.emit('selectPlayerUnavailable');
 				socket.emit('gameMessage', "조사를 시작합니다.")
 
 			} else if (getJobName(roomName, socket.name) == "priest" && hasAbility(roomName, socket.name)) {
