@@ -521,6 +521,10 @@ form{
                     background: url(/images/terroristCard.png) left top;
                     background-size: 60px;
                 }
+                .PriestCard{
+                    background: url(/images/priestCard.png) left top;
+                    background-size: 60px;
+                }
                 .HideCard{
                     background: url(/images/hideCard.png) left top;
                     background-size: 60px;
@@ -582,6 +586,21 @@ form{
                 background: #002D70;
                 color: #FFFFFF;
             }
+            .deadNoteBox{
+                background: #444444;
+            }
+                .deadNoteBoxName{
+                    color: #9F9F9F!important;
+                }
+                .deadIcon{
+                    width: 18px;
+                    height: 21px;
+                    display: block;
+                    float: left;
+                    margin-right: 10px;
+                    background: url(/images/skull.png) left top;
+                    background-size: 18px;
+                }
     /* NOTE PANEL */
 
     /* ADD ROOM */
@@ -1001,7 +1020,7 @@ form{
     display: none;
 }
     #noteTooltipFullWrap{
-        width: 814px;
+        width: 911px; /* 814 */
         height: 229px;
     }
         #noteTooltipTriangle{
@@ -1141,6 +1160,10 @@ form{
                             background: url(/images/terroristCard.png) left top;
                             background-size: 84px;
                         }
+                        .noteTooltipPriest{
+                            background: url(/images/priestCard.png) left top;
+                            background-size: 84px;
+                        }
 
                         .selectedNoteTooltipPolice{
                             background: url(/images/selectedPoliceCard.png) left top;
@@ -1172,6 +1195,10 @@ form{
                         }
                         .selectedNoteTooltipTerrorist{
                             background: url(/images/selectedTerroristCard.png) left top;
+                            background-size: 84px;
+                        }
+                        .selectedNoteTooltipPriest{
+                            background: url(/images/selectedPriestCard.png) left top;
                             background-size: 84px;
                         }
 

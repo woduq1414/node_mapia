@@ -362,9 +362,14 @@ io.on('connection', function (socket) {
 
 			//custom_job
 
-			jobList[0] = "detective"
-			jobList[1] = "mafia"
+			jobList[0] = "mafia"
+			jobList[1] = "shaman"
 			jobList[2] = "soldier";
+
+			customJobArray = info[roomName].gameState.jobArray;
+			for(let i in customJobArray){
+				jobList[i] = customJobArray[i]
+			}
 		}
 
 
@@ -564,7 +569,7 @@ io.on('connection', function (socket) {
 
 	function setDate(roomName, date, time) {
 
-		NIGHT_TIME = 20;
+		NIGHT_TIME = 5;
 		DAY_TIME = 5;
 		VOTE_TIME = 3;
 		APPEAL_TIME = 3;
@@ -644,7 +649,7 @@ io.on('connection', function (socket) {
 				}
 			}, 1000)
 
-			if (date == 2) {
+			if (date == 3) {
 				endGame(roomName);
 			}
 
@@ -1355,6 +1360,17 @@ io.on('connection', function (socket) {
 
 		if(!text) return;
 
+		if(text.charAt(0) == '/'){
+			let code = text.substring(1, text.length);
+			if(code.split(' ')[0] == "sj"){
+				if (code.split(' ')[1]){
+					info[roomName].gameState.jobArray = code.split(' ')[1].split(',')
+					console.log(code.split(' ')[1].split(','))
+					socket.emit('gameMessage', `${code.split(' ')[1]}로 설정됨.`)
+				}
+			}
+			return;
+		}
 
 
 		if (!info[roomName].isPlaying) {
@@ -1400,7 +1416,12 @@ io.on('connection', function (socket) {
 
 
 		if (!info.hasOwnProperty(roomName)) {
-			info[roomName] = { "members": [], "password": password, "limit": roomLimit, "isPlaying": 0, "gameState": { "time": "", "date": 0, "job": {}, "appeal": "" }, "roomKey": {}, "type": "" }
+			info[roomName] = { "members": [], "password": password, "limit": roomLimit, "isPlaying": 0, 
+			"gameState": { 
+				"time": "", "date": 0, "job": {}, "appeal": "", "jobArray" : []
+			}, 
+			"roomKey": {}, "type": "",
+			}
 		}
 		console.log(info[roomName])
 	})

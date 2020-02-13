@@ -3,8 +3,30 @@ let gameData;
 function setJob(member, jobName){
     let temp = $($(`[member-data=${member}`)) 
     temp.find('.jobCard').removeClass().addClass(`jobCard ${jobName}Card`)
-    temp.removeClass().addClass(`memberNoteBox ${mafiaTeam.includes(jobName) ? "mafiaNoteBox": "citizenNoteBox"}`)
+    temp.removeClass('mafiaNoteBox citizenNoteBox').addClass(`${mafiaTeam.includes(jobName) ? "mafiaNoteBox": "citizenNoteBox"}`)
+    if(temp.hasClass('deadNoteBox')){
+        temp.removeClass('deadNoteBox').addClass('deadNoteBox');
+    }
 }
+
+function memberDie(memberName){
+    $(`.memberNoteBox[member-data=${memberName}]`)
+        .addClass("deadNoteBox");
+    $(`.memberNoteBox[member-data=${memberName}] .memberNoteBoxName`)
+        .html('<span class="deadIcon"></span>' + memberName)
+        .removeClass()
+        .addClass("memberNoteBoxName deadNoteBoxName")
+}
+
+function memberRevive(memberName){
+    $(`.memberNoteBox[member-data=${memberName}]`)
+        .removeClass('deadNoteBox')
+    $(`.memberNoteBox[member-data=${memberName}] .memberNoteBoxName`)
+        .html(memberName)
+        .removeClass()
+        .addClass("memberNoteBoxName")
+}
+
 
 function refreshGame(){
     let data = gameData;
@@ -31,7 +53,7 @@ function refreshGame(){
                     <div class="memberNoteBoxWrap">
                         <div id="${member[i]}" class="${temp.find('.jobCard').attr('class')}"></div>
                         <div class="memberNoteBoxNameWrap">
-                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
+                            <div class="${temp.find('.memberNoteBoxName').attr('class')}">${temp.find('.memberNoteBoxName').html()}</div>
                         </div>
                         <div class="memberSelectWrap" >
                             <div class="memberSelect" style="visibility:${temp.find('.memberSelect').css("visibility")};">
@@ -49,7 +71,7 @@ function refreshGame(){
                     <div class="memberNoteBoxWrap">
                         <div id="${member[i]}" class="jobCard ${myJob ? myJob : "Question"}Card"></div>
                         <div class="memberNoteBoxNameWrap">
-                            <div class="memberNoteBoxName goldClass">${member[i]}</div>
+                            <div class="memberNoteBoxName">${member[i]}</div>
                         </div>
                         <div class="memberSelectWrap">
                             <div class="memberSelect" style="visibility:hidden">
@@ -399,7 +421,8 @@ socket.on('votedPlayer', function (player) {
 
 socket.on('mafiaAbility', function (memberName) {
     noticeAppend(memberName + "(이)가 마피아에 의해 죽었습니다.");
-    $(`.member[member-data=${memberName}]`).addClass("dead");
+    memberDie(memberName)
+        
 });
 
 
@@ -410,19 +433,23 @@ socket.on('doctorAbility', function (memberName) {
 
 socket.on('soldierAbility', function (memberName) {
     noticeAppend(memberName + "(이)가 마피아의 공격을 버텨냈습니다! 장하다 국군 장병!");
+    setJob(memberName, "soldier")
 
 });
 
 socket.on('politicianAbility', function (memberName) {
     noticeAppend(`정치인은 투표로 죽지 않습니다. 장하다 정치인!`);
+    setJob(memberName, "politician")
 });
 
 socket.on('reporterAbility', function (memberName, jobName) {
     noticeAppend(`(충격,공포,실화) ${memberName}이(가) ${jobName}(이)라고? 삐슝빠슝뿌슝`);
+    setJob(memberName, jobName)
 });
 
 socket.on('priestAbility', function (memberName) {
     noticeAppend(`${memberName}가 부활했습니다.`);
+    memberRevive(memberName)
 });
 
 
@@ -430,7 +457,7 @@ socket.on('priestAbility', function (memberName) {
 socket.on('voteResult', function (memberName, isDie) {
     if (isDie) {
         noticeAppend(memberName + "(이)가 투표로 처형당했습니다.");
-        $(`.member[member-data=${memberName}]`).addClass("dead");
+        memberDie(memberName)
     } else {
         noticeAppend(memberName + "(이)가 투표에서 살아남았습니다.");
     }
@@ -515,6 +542,7 @@ socket.on('policeResult', function (selected, result) {
 socket.on('shamanResult', function (selected, result) {
     if (result) {
         noticeAppend(`${selected}는 ${result}였습니다.`);
+        setJob(selected, result)
     }
 })
 

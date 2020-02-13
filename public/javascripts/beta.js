@@ -713,6 +713,10 @@ socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
   let string;
   let isRoomMaster = info[roomName].members[0] == name && !info[roomName].isPlaying;
 
+  if(type == "dead"){
+    name = "<span class='deadIcon'></span>" + name;
+  }
+
   if (beforeChatName != name) {
     string = `
   <div class="talkBox ${me ? "myBox" : "otherBox"}">
