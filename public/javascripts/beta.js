@@ -134,16 +134,36 @@ function roomManageVisibility() {
 }
 
 
-function noticeAppend(text) {
-  let string = `
+function noticeAppend(text, type) {
+  let string = ""
+  if(type == "appeal"){
+    string = `
+  <div class="electionAlertBox">
+  <span class="vote_red"></span> ${text}
+  </div>
+  <br>
+  `
+  }else if(type == "vote"){
+    string = `
+    <div class="alertBox">
+      <span style="color:red">${text}</span> 한 표!
+    </div>
+    <br>
+    `
+  }else{
+    string = `
   <div class="alertBox">
     ${text}
   </div>
   <br>
   `
+  
+  }
   $('#gameAreaWrap').append(string);
   $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);
   beforeChatName = '';
+
+  
 }
 
 function getNameSpan(name) {
@@ -799,8 +819,8 @@ $(window).blur(function () {
 
 socket.on('noticeChangeName', function (before, after, socketID) {
 
-  chatAppend("noticePrimary", `<span class="chatName" data-sname='${before}' data-sid='${socketID}' style='font-weight:1000;color:#${getColor(before)}'>${before}</span>님이 <span class="chatName" data-sname='${after}' data-sid='${socketID}' style='font-weight:1000;color:#${getColor(after)}'>${after}</span>로 이름 바꿈 ㅋ`);
-  namePopover(currentRoom);
+  noticeAppend(`<span class="chatName" data-sname='${before}' data-sid='${socketID}' style='font-weight:1000;color:#${getColor(before)}'>${before}</span>님이 <span class="chatName" data-sname='${after}' data-sid='${socketID}' style='font-weight:1000;color:#${getColor(after)}'>${after}</span>로 이름 바꿈 ㅋ`);
+
 })
 
 
@@ -831,12 +851,12 @@ socket.on('exceedRoomLimit', function (roomName) {
 })
 
 
-$(document).on("click", "#setName", function () {
+$(document).on("click", "#userImg", function () {
 
-  var a = $('#myInfoName').text().trim();
-  var b = $('#inputName').val()
 
-  socket.emit('changeName', a, b)
+  var after = prompt('바꿀 이름')
+
+  socket.emit('changeName', after)
 
 })
 
@@ -846,7 +866,7 @@ $(document).on("click", "#setName", function () {
 
 socket.on('joinRoom', function (roomName, name, socketID, me, data) {
   
-  if (me) {
+  if (me == 1) {
     clearChattingArea();
   }
   users = data;
@@ -924,9 +944,9 @@ socket.on('failSetName', function () {
   alert("이미 있는 이름임ㅋ");
 })
 
-socket.on('successSetName', function () {
-  $('#myInfoName').text($('#inputName').val())
-  currentName = $('#inputName').val()
+socket.on('successSetName', function (after) {
+  $('#myInfoName').text(after)
+  currentName = after
 })
 
 
@@ -1064,7 +1084,8 @@ $('.config').on("click", function () {
 
 
 socket.on('refreshRoom', function (data) {
-
+  users = data;
+  refreshRoom()
 })
 
 

@@ -17,7 +17,10 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
         <script src="https://kit.fontawesome.com/43798b0c81.js" crossorigin="anonymous"></script>
-        <script src="/javascripts/push.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"/></script>
+
+        <!-- <script src="/javascripts/push.min.js"></script> -->
         <!-- <script src="/javascripts/jquery.textfill.min.js"></script> -->
         <!-- FONT -->
         <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&amp;subset=korean" rel="stylesheet">
@@ -51,7 +54,7 @@
                         </div>
                         <div id="myInfoLevelBarWrap">
                             <div id="myInfoLevelBar">
-                                <div id="myInfoLevelBarContent" style="width: 72px;"></div>
+                                <div id="myInfoLevelBarContent" style="width: <%= exp / 5 %>%"></div>
                             </div>
                         </div>
                         <div id="myInfoLevel">
@@ -469,6 +472,7 @@
 
         <script src="/javascripts/beta.js"> </script>
         <script src="/javascripts/betaGame.js"> </script>
+        <script src="/reload/reload.js"></script>
     </body>
     
 </html>

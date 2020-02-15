@@ -41,7 +41,7 @@
             $.post("/login", postData,function(result){
                 if(result['success']){
                     console.log(result['name']);
-                    location.href = "main";
+                    location.href = "beta";
                 }else{
                     alert("실패");
                 }

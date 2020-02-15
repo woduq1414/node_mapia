@@ -308,7 +308,7 @@ $(window).resize(function () {
     $("#gameMembers").css("height", (parseFloat($("#leftGameContainer").css("height")) - parseFloat($("#upperGameContainer").css("height")) - 40 + "px"))
 })
 
-socket.on('refreshRoom', function (data) {
+socket.on('refreshGame', function (data) {
 
     gameData = data;
     refreshGame()
@@ -325,6 +325,8 @@ socket.on('startGame', function () {
 
     $("#leftContainer").css('display', 'none');
     $("#leftGameContainer").css('display', 'block');
+
+    $("#notePanel").html('')
 
     inGameVisibility();
 })
@@ -363,7 +365,7 @@ socket.on('gameMessage', function (message) {
 
 
 socket.on('appeal', function (player) {
-    noticeAppend(`<span style='font-weight:1000;color:#${getColor(player)}'>${player}</span> - 최후의 변론`);
+    noticeAppend(`<span style='font-weight:1000;color:red'>${player}</span> - 최후의 변론`, "appeal");
 })
 
 
@@ -416,7 +418,7 @@ socket.on('selectPlayerUnavailable', function (message) {
 
 
 socket.on('votedPlayer', function (player) {
-    noticeAppend(`${player}`)
+    noticeAppend(`${player}`, "vote")
 });
 
 socket.on('mafiaAbility', function (memberName) {
@@ -456,15 +458,17 @@ socket.on('priestAbility', function (memberName) {
 
 socket.on('voteResult', function (memberName, isDie) {
     if (isDie) {
-        noticeAppend(memberName + "(이)가 투표로 처형당했습니다.");
+        noticeAppend(memberName + "(이)가 투표로 처형당했습니다.", "appeal");
         memberDie(memberName)
     } else {
-        noticeAppend(memberName + "(이)가 투표에서 살아남았습니다.");
+        noticeAppend(memberName + "(이)가 투표에서 살아남았습니다.", "appeal");
     }
 
 });
 
 socket.on('finalVote', function (member) {
+    noticeAppend("찬반투표를 시작합니다", "appeal");
+
     $('#finalVoteModal div.modal-body').html(`<span style="font-weight:800;font-size:20px;color:#${getColor(member)};">${member}</span> - 처형`);
     $('#finalVoteModal').modal();
 
@@ -567,3 +571,13 @@ socket.on('mafiaSelected', function (selected) {
     }
 
 })
+
+
+
+socket.on('refreshLevel', function(level, exp){
+    $('#myInfoLevel').html(level)
+    console.log(level, exp)
+    $('#myInfoLevelBarContent').css('width', `${Math.floor(exp / 500 * 100)}%`)
+
+})
+

@@ -521,10 +521,6 @@ form{
                     background: url(/images/terroristCard.png) left top;
                     background-size: 60px;
                 }
-                .PriestCard{
-                    background: url(/images/priestCard.png) left top;
-                    background-size: 60px;
-                }
                 .HideCard{
                     background: url(/images/hideCard.png) left top;
                     background-size: 60px;
@@ -551,33 +547,55 @@ form{
                     height: calc(100% - 20px);
                     float: left;
                 }
-                .memberSelect{
-                    width: 100%;
-                    height: 30px;
-                    border-radius: 10px;
-                    background: rgb(31, 31, 31);
+                    .memberSelect{
+                        width: 100%;
+                        height: 30px;
+                        border-radius: 10px;
+                        background: rgb(31, 31, 31);
+                        float: left;
+                        position: relative;
+                        transform: translateY(-50%);
+                        top: 50%;
+                        text-align: center;
+                        padding-top: 1px;
+                        cursor: pointer;
+                    }
+                    .memberSelectText{
+                        position: relative;
+                        transform: translateY(-50%);
+                        top: 50%;
+                        font-size: 16px;
+                        color: white;
+                    }
+                    .selectedMember {
+                        background-color : white !important;
+                        color :black !important;
+                    }
+                    .selectedMember .memberSelectText{
+                        color :black !important;
+                    }
+                .memberVoteWrap{
+                    width: 60px;
+                    height: calc(100% - 20px);
                     float: left;
-                    position: relative;
-                    transform: translateY(-50%);
-                    top: 50%;
-                    text-align: center;
-                    padding-top: 1px;
-                    cursor: pointer;
                 }
-                .memberSelectText{
-                    position: relative;
-                    transform: translateY(-50%);
-                    top: 50%;
-                    font-size: 16px;
-                    color: white;
-                }
-                .selectedMember {
-                    background-color : white !important;
-                    color :black !important;
-                }
-                .selectedMember .memberSelectText{
-                    color :black !important;
-                }
+                    .memberVote{
+                        width: 100%;
+                        float: left;
+                        position: relative;
+                        transform: translateY(-50%);
+                        top: 50%;
+                    }
+                    .vote_white{
+                        /* float: right; */
+                        margin-right: 10px;
+                        cursor: pointer;
+                        width: 36px;
+                        height: 36px;
+                        display: inline-block;
+                        background: url(/images/vote_white.png) left top;
+                        background-size: 36px;
+                    }
             .mafiaNoteBox{
                 background: #C40000;
                 color: #FFFFFF;
@@ -842,6 +860,31 @@ form{
             .goldClass{
                 color: #EFE1BA;
             }
+            .nominated{
+                color: #FF0000;
+            }
+        .electionAlertBox{
+            display: inline-block;
+
+            margin-bottom: 10px;
+            background: #FFFFFF;
+            color: #FF0000;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 9px;
+            padding-right: 9px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+            .vote_red{
+                width: 18px;
+                height: 18px;
+                display: block;
+                float: left;
+                background: url(/images/vote_red.png) left top;
+                background-size: 18px;
+                margin-right: 5px;
+            }
         .talkBox{
             margin-top: 10px;
             margin-bottom: 10px;
@@ -1020,7 +1063,7 @@ form{
     display: none;
 }
     #noteTooltipFullWrap{
-        width: 911px; /* 814 */
+        width: 814px;
         height: 229px;
     }
         #noteTooltipTriangle{
@@ -1160,10 +1203,6 @@ form{
                             background: url(/images/terroristCard.png) left top;
                             background-size: 84px;
                         }
-                        .noteTooltipPriest{
-                            background: url(/images/priestCard.png) left top;
-                            background-size: 84px;
-                        }
 
                         .selectedNoteTooltipPolice{
                             background: url(/images/selectedPoliceCard.png) left top;
@@ -1195,10 +1234,6 @@ form{
                         }
                         .selectedNoteTooltipTerrorist{
                             background: url(/images/selectedTerroristCard.png) left top;
-                            background-size: 84px;
-                        }
-                        .selectedNoteTooltipPriest{
-                            background: url(/images/selectedPriestCard.png) left top;
                             background-size: 84px;
                         }
 

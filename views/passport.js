@@ -1,14 +1,19 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-var mongoose = require('mongoose');
+
+var mysql = require('sync-mysql');
+
 
 require('dotenv').config();
+
 const config = {
 	DB_USER : process.env.DB_USER,
-	DB_PASSWORD : process.env.DB_PASSWORD
+  DB_PASSWORD : process.env.DB_PASSWORD,
 }
 
+
+var mongoose = require('mongoose');
 mongoose.connect(`mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`, {useNewUrlParser: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, "connection error:"));
@@ -21,9 +26,13 @@ var User = new Schema({
 	password: String,
 	name: String,
   date: Date,
+  stat: Object,
   config : Object
 });
 var userModel = mongoose.model('User', User);
+
+
+
 
 module.exports = () => {
   passport.serializeUser((user, done) => { // Strategy 성공 시 호출됨
@@ -59,6 +68,16 @@ module.exports = () => {
             newUser.password = password; // generateHash을 통해 비밀번호를 hash화 합니다.
             newUser.name = req.body.signupName;
             newUser.date = Date.now();
+            newUser.stat = {
+              "level" : 1,
+              "exp" : 0,
+              "gameCount" : 0,
+              "citizenLose" : 0,
+              "citizenWin" : 0,
+              "mafiaLose" : 0,
+              "mafiaWin" : 0
+            };
+
             newUser.config = {};
             newUser.save(function (err) { // 저장합니다.
               if (err) throw err;
@@ -78,6 +97,8 @@ module.exports = () => {
     passReqToCallback: false,
   }, (id, password, done) => {
     console.log(id, password);
+
+
     userModel.findOne({ id: id }, (findError, user) => {
         console.log(user)
       if (findError) return done(findError); // 서버 에러 처리
