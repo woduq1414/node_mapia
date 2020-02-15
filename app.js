@@ -1,11 +1,11 @@
 const NIGHT_TIME = 15;
-const DAY_TIME = 15;
+const DAY_TIME = 60;
 const VOTE_TIME = 10;
 const APPEAL_TIME = 10;
 const FINAL_TIME = 7;
 const RESULT_TIME = 5;
 
-const CHECK_END = 1;
+const CHECK_END = 0;
 const PASS_LOGIN = 0;
 
 let mafiaTeam = ["mafia"]
@@ -1744,7 +1744,7 @@ io.on('connection', function (socket) {
 			} else if (getJobName(roomName, socket.name) == "doctor"){
 				info[roomName].gameState.job[socket.name].selected = selected;
 				selectActived = 1;
-				
+
 			} else if (getJobName(roomName, socket.name) == "police" && hasAbility(roomName, socket.name)) {
 				info[roomName].gameState.job[socket.name].selected = selected;
 				selectActived = 1;
@@ -1796,7 +1796,18 @@ io.on('connection', function (socket) {
 
 	})
 
+	socket.on('lengthenTime', function(roomName){
+		if(info[roomName].gameState.time == "day"){
+			timeLimit[roomName] = timeLimit[roomName] + 15;
+		}
+		
+	})
 
+	socket.on('shortenTime', function(roomName){
+		if(info[roomName].gameState.time == "day"){
+			timeLimit[roomName] = timeLimit[roomName] - 15;
+		}
+	})
 
 })
 
