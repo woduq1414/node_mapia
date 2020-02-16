@@ -582,5 +582,16 @@ socket.on('refreshLevel', function(level, exp){
 })
 
 
-
+$(document).on("click",".nameWrap", function(){
+    let userName = $(this).parents('.memberBox').attr('member-data')
+    console.log(userName)
+    $.ajax({
+        url:'../api/users',
+        type:'post',
+        data:{"userName" : userName},
+        success:function(data){
+            console.log(data)
+        }
+    })
+})
 

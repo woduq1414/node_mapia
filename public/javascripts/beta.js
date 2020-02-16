@@ -219,12 +219,12 @@ function refreshRoom() {
       
       string += `
     
-      <div class="memberBox ${levelClass}" data-sid="${users[name].socketID}">
+      <div class="memberBox ${levelClass}" data-sid="${users[name].socketID}" member-data="${name}">
           <div class="memberBoxWrap">
               <div class="memberBoxLeftArea">
                   <div class="memberBoxLeftTopArea">
                       ${isRoomMaster ? '<span class="crown spanRight7"></span>' : ''}
-                      <span class="goldClass nameWrap">${name}</span>
+                      <span class="goldClass nameWrap" style="cursor:pointer">${name}</span>
                   </div>
                   <div class="memberBoxLeftBottomArea ${name == currentName ? "invisible" : ""}" >
                     <span class="roomMasterArea">
@@ -730,6 +730,10 @@ socket.on('newRoomMaster', function (roomName, name) {
 
 socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
 
+
+  let newMessage = $('#gameArea').scrollTop() + $('#gameArea').height() != $('#gameArea')[0].scrollHeight
+
+
   let string;
   let isRoomMaster = info[roomName].members[0] == name && !info[roomName].isPlaying;
 
@@ -768,7 +772,25 @@ socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
 
   }
 
-  $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight + 1000);
+  if(newMessage){
+    $('#newMessageAlertBox').remove()
+    $('#gameAreaWrap').append($(`
+    <div id="newMessageAlertBox">
+      <div id="newMessageAlertContent">새로운 메세지가 있습니다</div>
+    </div>
+    `).hide().fadeIn(200))
+    $('#newMessageAlertBox').on("click", function(){
+      $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);
+      $('#newMessageAlertBox').remove()
+    })
+
+  }else{
+    $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);
+  }
+
+  
+  
+  
   beforeChatName = name;
 
   // if(currentName != name && !isFocus && !info[roomName].isPlaying){

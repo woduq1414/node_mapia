@@ -277,6 +277,26 @@ app.get('/index', (req, res) => {
 });
 
 
+app.post('/api/users', (req, res) => {
+	if (req.body.userName){
+		userName = req.body.userName
+		var user;
+		user = db.db('test').collection("users");
+
+		user.findOne({ name : userName }, function(err, result){
+			if(err){
+				res.send("err")
+			}
+			res.send(result.stat);
+		});
+
+	}else{
+		res.send("erra");
+	}
+
+});
+
+
 
 
 // app.post('/login', async(req, res) => {
@@ -1314,16 +1334,13 @@ io.on('connection', function (socket) {
 
 			// const client = new MongoClient(uri, { useNewUrlParser: true });
 			var users;
-			client.connect(err => {
-				users = client.db("test").collection("users");
-				users.updateOne({ name: before }, { $set: { name: after } }, function (err, result) {
-					if (err) {
-						console.error('UpdateOne Error ', err);
-						return;
-					}
-					//console.log('UpdateOne 성공 ');
-				});
-				client.close();
+			users = client.db("test").collection("users");
+			users.updateOne({ name: before }, { $set: { name: after } }, function (err, result) {
+				if (err) {
+					console.error('UpdateOne Error ', err);
+					return;
+				}
+				//console.log('UpdateOne 성공 ');
 			});
 
 		}
