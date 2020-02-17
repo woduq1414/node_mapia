@@ -600,7 +600,7 @@ $(document).on("click", "#roomCreateFinishButton", function(){
     
     let passwordCheck = $('#roomPasswordSetting').val();
     if (passwordCheck) {
-      password = $('#changePasswordArea').val();
+      password = passwordCheck  
       socket.emit('changePassword', currentRoom, password)
     } else {
       password = "";
@@ -773,16 +773,19 @@ socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
   }
 
   if(newMessage){
-    $('#newMessageAlertBox').remove()
-    $('#gameAreaWrap').append($(`
-    <div id="newMessageAlertBox">
-      <div id="newMessageAlertContent">새로운 메세지가 있습니다</div>
-    </div>
-    `).hide().fadeIn(200))
-    $('#newMessageAlertBox').on("click", function(){
-      $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);
+    if($('#newMessageAlertBox').length == 0){
       $('#newMessageAlertBox').remove()
-    })
+      $('#gameAreaWrap').append($(`
+      <div id="newMessageAlertBox">
+        <div id="newMessageAlertContent">새로운 메세지가 있습니다</div>
+      </div>
+      `).hide().fadeIn(200))
+      $('#newMessageAlertBox').on("click", function(){
+        $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);
+        $('#newMessageAlertBox').remove()
+      })
+    }
+    
 
   }else{
     $('#gameArea').scrollTop($('#gameArea')[0].scrollHeight);

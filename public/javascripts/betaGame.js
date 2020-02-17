@@ -1,7 +1,7 @@
 let gameData;
 
 function setJob(member, jobName){
-    let temp = $($(`[member-data=${member}`)) 
+    let temp = $(`#notePanel [member-data=${member}`) 
     temp.find('.jobCard').removeClass().addClass(`jobCard ${jobName}Card`)
     temp.removeClass('mafiaNoteBox citizenNoteBox').addClass(`${mafiaTeam.includes(jobName) ? "mafiaNoteBox": "citizenNoteBox"}`)
     if(temp.hasClass('deadNoteBox')){
@@ -40,7 +40,7 @@ function refreshGame(){
             } else {
                 //죽었을때
             }
-            let temp = $(`[member-data=${member[i]}]`)
+            let temp = $(`#notePanel [member-data=${member[i]}]`)
 
             let myJob;
             if(member[i] == currentName){
@@ -66,6 +66,7 @@ function refreshGame(){
                 </div>
                 `
             }else{
+                
                 string += `
                 <div class="memberNoteBox ${myJob ? mafiaTeam.includes(myJob) ? "mafiaNoteBox": "citizenNoteBox" : ""}" member-data="${member[i]}">
                     <div class="memberNoteBoxWrap">
@@ -124,7 +125,7 @@ currentJob = ''
 
 
 
-let mafiaTeam = ["mafia"]
+let mafiaTeam = ["mafia", "spy"]
 
 
 $(document).on("click", ".jobCard", function(){
@@ -523,12 +524,17 @@ socket.on('endGame', function () {
 })
 
 
-socket.on('noticeGameResult', function (winner, resultTime) {
+socket.on('noticeGameResult', function (winner, resultTime, jobs) {
     if (winner == "mafiaWin") {
         noticeAppend("마피아 팀이 승리하였습니다.");
     } else if (winner == "citizenWin") {
         noticeAppend("시민 팀이 승리하였습니다.");
     }
+    console.log(jobs)
+    for(member in jobs){
+        setJob(member, jobs[member]);
+    }
+
     noticeAppend(`${resultTime}초 후 로비로 복귀합니다.`);
 })
 
@@ -540,6 +546,14 @@ socket.on('policeResult', function (selected, result) {
 
     } else {
         noticeAppend(`${selected}는 마피아가 아닙니다.`)
+    }
+})
+
+socket.on('spyResult', function (selected, result) {
+    if (result) {
+        noticeAppend(`${selected}는 ${result}입니다.`)
+        setJob(selected, result)
+
     }
 })
 
@@ -557,22 +571,6 @@ socket.on('detectiveResult', function (selected, result) {
 })
 
 
-socket.on('mafiaSelected', function (selected) {
-    $temp = $(`.member[member-data=${selected}]`);
-
-    if (!$temp.hasClass("selected")) {
-        $('.member').css("border", "0px");
-        $('.selected').removeClass('selected');
-        $temp.addClass('selected');
-        $temp.css("border", "5px solid red");
-
-    } else {
-
-    }
-
-})
-
-
 
 socket.on('refreshLevel', function(level, exp){
     $('#myInfoLevel').html(level)
@@ -580,6 +578,7 @@ socket.on('refreshLevel', function(level, exp){
     $('#myInfoLevelBarContent').css('width', `${Math.floor(exp / 500 * 100)}%`)
 
 })
+
 
 
 $(document).on("click",".nameWrap", function(){
@@ -595,3 +594,10 @@ $(document).on("click",".nameWrap", function(){
     })
 })
 
+
+socket.on('mafiaContacted', function(mafiaTeam){
+    noticeAppend("접선 했습니다.")
+    for(member in mafiaTeam){
+        setJob(member, mafiaTeam[member])
+    }
+})
