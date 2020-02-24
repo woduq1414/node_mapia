@@ -1,7 +1,7 @@
-const NIGHT_TIME = 3;
-const DAY_TIME = 3;
-const VOTE_TIME = 5;
-const APPEAL_TIME = 3;
+const NIGHT_TIME = 7;
+const DAY_TIME = 15;
+const VOTE_TIME = 10;
+const APPEAL_TIME = 7;
 const FINAL_TIME = 7;
 const RESULT_TIME = 5;
 
@@ -1735,7 +1735,7 @@ io.on('connection', function (socket) {
 			"gameState": { 
 				"time": "", "date": 0, "job": {}, "appeal": "", "jobArray" : []
 			}, 
-			"roomKey": {}, "type": "normals",
+			"roomKey": {}, "type": "normal",
 			}
 		}
 		console.log(info[roomName])
