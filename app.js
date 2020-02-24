@@ -5,7 +5,7 @@ const APPEAL_TIME = 7;
 const FINAL_TIME = 7;
 const RESULT_TIME = 5;
 
-const CHECK_END = 0;
+const CHECK_END = 1;
 const PASS_LOGIN = 0;
 
 let mafiaTeam = ["mafia", "spy"]
