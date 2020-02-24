@@ -470,22 +470,43 @@ socket.on('voteResult', function (memberName, isDie) {
 socket.on('finalVote', function (member) {
     noticeAppend("찬반투표를 시작합니다", "appeal");
 
-    $('#finalVoteModal div.modal-body').html(`<span style="font-weight:800;font-size:20px;color:#${getColor(member)};">${member}</span> - 처형`);
-    $('#finalVoteModal').modal();
+    // $('#finalVoteModal div.modal-body').html(`<span style="font-weight:800;font-size:20px;color:#${getColor(member)};">${member}</span> - 처형`);
+    // $('#finalVoteModal').modal();
 
-    $('#agreeVote').on("click", function () {
+
+    Swal.fire({
+    title: `<span style="font-weight:800;color:red">${member}</span>&nbsp;-&nbsp;처형`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: 'gray',
+    confirmButtonText: '찬성',
+    cancelButtonText: '반대'
+    }).then((result) => {
+    if (result.value) {
         socket.emit('selectPlayer', currentRoom, 1);
-    })
-    $('#disagreeVote').on("click", function () {
+    } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+    ) {
         socket.emit('selectPlayer', currentRoom, 0);
+    }
     })
+
+
+    // $('#agreeVote').on("click", function () {
+    //     socket.emit('selectPlayer', currentRoom, 1);
+    // })
+    // $('#disagreeVote').on("click", function () {
+    //     socket.emit('selectPlayer', currentRoom, 0);
+    // })
 })
 
 
 socket.on('endFinalVote', function () {
     $('#agreeVote').off("click");
     $('#disagreeVote').off("click");
-    $('#finalVoteModal').modal('hide');
+    Swal.close()
 })
 
 

@@ -63,10 +63,22 @@ module.exports = () => {
    
           return done(null, false, { message: '중복된 이름' });
         } else{
+
+
+            let nameReg = /^[a-zA-Z가-힣]([a-zA-Z0-9가-힣]){1,9}$/
+            if(req.body.signupName.match(nameReg) == null){
+              return done(null, false, { message: '닉네임은 2~10자 영문자,한글,숫자만 가능함. 단, 첫 글자에 숫자 불가능' });
+            }
+
+
             const newUser = new userModel();
             newUser.id = id; // 넘겨받은 정보들을 세팅합니다.
             newUser.password = password; // generateHash을 통해 비밀번호를 hash화 합니다.
             newUser.name = req.body.signupName;
+
+
+
+
             newUser.date = Date.now();
             newUser.stat = {
               "level" : 1,

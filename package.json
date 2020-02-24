@@ -47,7 +47,8 @@
     "sync-mysql": "^3.0.1",
     "uglify-es": "^3.3.9",
     "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.41.5"
+    "webpack": "^4.41.5",
+    "xss": "^1.0.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

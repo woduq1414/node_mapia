@@ -1,11 +1,11 @@
-const NIGHT_TIME = 10;
+const NIGHT_TIME = 3;
 const DAY_TIME = 3;
 const VOTE_TIME = 5;
 const APPEAL_TIME = 3;
 const FINAL_TIME = 7;
 const RESULT_TIME = 5;
 
-const CHECK_END = 1;
+const CHECK_END = 0;
 const PASS_LOGIN = 0;
 
 let mafiaTeam = ["mafia", "spy"]
@@ -29,7 +29,7 @@ var connect = require('connect')
 var route = require('./views/route');
 var bodyParser = require('body-parser');
 var sessionStore = require('sessionstore');
-
+var xss = require("xss");
 
 var async = require('async')
 
@@ -577,9 +577,12 @@ io.on('connection', function (socket) {
 				return n;
 			}
 			maxMember -= addJob("mafia", Math.floor(maxMember / 4));
+			if(maxMember >= 5){
+				maxMember -= addJob("spy", 1);
+			}
 			maxMember -= addJob("police", 1);
 			maxMember -= addJob("doctor", 1);
-
+			
 			let specialJob = ["soldier", "politician", "shaman", "reporter", "detective", "priest"];
 			let temp = specialJob;
 			for (let i = 0; i < maxMember; i++) {
@@ -1278,94 +1281,105 @@ io.on('connection', function (socket) {
 		var temp;
 		let before = socket.name;
 
-		for (key in info) {
-			for (i in info[key]["members"]) {
-				if (info[key]["members"][i] == after && after && f == 0) {
-					socket.emit('failSetName');
-
-					f = 1;
-				}
-			}
+		let nameReg = /^[a-zA-Z가-힣]([a-zA-Z0-9가-힣]){1,9}$/
+		if(after.match(nameReg) == null){
+			socket.emit('failSetName');
+			console.log(after)
+			return;
 		}
-		if (f == 0) {
-			for (key in info) {
 
-				for (i in info[key]["members"]) {
-					if (info[key]["members"][i] == before) {
-						temp = key;
-						info[key]["members"][i] = after;
-
-
+		var users;
+		users = db.db("test").collection("users");
+		users.findOne({ name: after }, function (err, result) {
+			if (result) {
+				console.error('UpdateOne Error ', err);
+				socket.emit('failSetName');
+				f = 1;
+			}	
+			if (f == 0) {
+				for (key in info) {
+	
+					for (i in info[key]["members"]) {
+						if (info[key]["members"][i] == before) {
+							temp = key;
+							info[key]["members"][i] = after;
+	
+	
+						}
+	
 					}
-
+	
 				}
-
+				socket.name = after;
+				socket.emit('successSetName', after);
+				refreshMain(info);
+	
+				io.to(temp).emit('noticeChangeName', before, after, socket.id);
+	
+				//console.log("ASD", before, after ,"sdf");
+	
+				// userModel2.findOneAndUpdate({name:before}, { $set:  {name:after} }, function(){
+				// 	console.log(after);
+				// });
+				// userModel2.findOne({'name': before }, function (err, doc) {
+	
+				// 	console.log(err, doc);
+				// 	doc.name = 'jason bourne';
+				// 	doc.save(function (err) {
+				// 				if (err) {
+				// 					throw err;
+				// 				}
+				// 				else {
+	
+				// 				}
+				// 	});
+				// });
+				// userModel2.findOne({'name': before}, function(err, user) {
+				// 	if(err) {
+				// 		throw err;
+				// 	}
+				// 	else {
+				// 		user.name = after;
+	
+				// 		user.save(function (err) {
+				// 			if (err) {
+				// 				throw err;
+				// 			}
+				// 			else {
+				// 				//
+				// 				console.log(user[name])
+				// 				console.log(user)
+				// 			}
+				// 		});
+	
+				// 	}
+				// 	console.log("SAD", user)
+				// });
+				// const MongoClient = require('mongodb').MongoClient;
+				// const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`;
+	
+				// const client = new MongoClient(uri, { useNewUrlParser: true });
+				var users;
+				users = db.db("test").collection("users");
+				users.updateOne({ name: before }, { $set: { name: after } }, function (err, result) {
+					if (err) {
+						console.error('UpdateOne Error ', err);
+						return;
+					}
+					//console.log('UpdateOne 성공 ');
+				});
+	
 			}
-			socket.name = after;
-			socket.emit('successSetName', after);
+	
 			refreshMain(info);
+		});
 
-			io.to(temp).emit('noticeChangeName', before, after, socket.id);
 
-			//console.log("ASD", before, after ,"sdf");
-
-			// userModel2.findOneAndUpdate({name:before}, { $set:  {name:after} }, function(){
-			// 	console.log(after);
-			// });
-			// userModel2.findOne({'name': before }, function (err, doc) {
-
-			// 	console.log(err, doc);
-			// 	doc.name = 'jason bourne';
-			// 	doc.save(function (err) {
-			// 				if (err) {
-			// 					throw err;
-			// 				}
-			// 				else {
-
-			// 				}
-			// 	});
-			// });
-			// userModel2.findOne({'name': before}, function(err, user) {
-			// 	if(err) {
-			// 		throw err;
-			// 	}
-			// 	else {
-			// 		user.name = after;
-
-			// 		user.save(function (err) {
-			// 			if (err) {
-			// 				throw err;
-			// 			}
-			// 			else {
-			// 				//
-			// 				console.log(user[name])
-			// 				console.log(user)
-			// 			}
-			// 		});
-
-			// 	}
-			// 	console.log("SAD", user)
-			// });
-			// const MongoClient = require('mongodb').MongoClient;
-			// const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`;
-
-			// const client = new MongoClient(uri, { useNewUrlParser: true });
-			var users;
-			users = db.db("test").collection("users");
-			users.updateOne({ name: before }, { $set: { name: after } }, function (err, result) {
-				if (err) {
-					console.error('UpdateOne Error ', err);
-					return;
-				}
-				//console.log('UpdateOne 성공 ');
-			});
-
-		}
-
-		refreshMain(info);
+		
 	})
 
 	socket.on('changeRoomName', function (before, after) {
+		after = xss(after)
 		info[after] = info[before];
 		delete info[before];
 
@@ -1715,7 +1729,7 @@ io.on('connection', function (socket) {
 
 	socket.on('makeRoom', function (roomName, password, roomLimit) {
 
-
+		roomName = xss(roomName);
 		if (!info.hasOwnProperty(roomName)) {
 			info[roomName] = { "members": [], "password": password, "limit": roomLimit, "isPlaying": 0, 
 			"gameState": { 

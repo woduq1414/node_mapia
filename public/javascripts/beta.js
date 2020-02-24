@@ -224,7 +224,7 @@ function refreshRoom() {
               <div class="memberBoxLeftArea">
                   <div class="memberBoxLeftTopArea">
                       ${isRoomMaster ? '<span class="crown spanRight7"></span>' : ''}
-                      <span class="goldClass nameWrap" style="cursor:pointer">${name}</span>
+                      <span class="memberNameWrap" style="cursor:pointer">${name}</span>
                   </div>
                   <div class="memberBoxLeftBottomArea ${name == currentName ? "invisible" : ""}" >
                     <span class="roomMasterArea">
@@ -730,6 +730,7 @@ socket.on('newRoomMaster', function (roomName, name) {
 
 socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
 
+  text = filterXSS(text)
 
   let newMessage = $('#gameArea').scrollTop() + $('#gameArea').height() != $('#gameArea')[0].scrollHeight
 
@@ -966,7 +967,7 @@ socket.on('kickedRoom', function (roomName, name, socketID, me) {
 
 
 socket.on('failSetName', function () {
-  alert("이미 있는 이름임ㅋ");
+  alert("실패");
 })
 
 socket.on('successSetName', function (after) {
