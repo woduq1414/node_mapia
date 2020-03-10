@@ -797,33 +797,34 @@ socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
   
   beforeChatName = name;
 
-  // if(currentName != name && !isFocus && !info[roomName].isPlaying){
-  //   if(config.checkPushAlarm){
-  //     Push.create(name, {
-  //       body: text,
-  //       icon: '/images/icon_player.png',
-  //       timeout: 3000,
-  //       onClick: function () {
-  //           window.focus();
-  //           this.close();
-  //       }
-  //     });
-  //   }
-  //   if(config.checkChattingSFX){
-  //     var audio = document.getElementById('audio_play'); 
-  //     audio.volume = config.VolumeSFX;
-  //     if (audio.paused) { 
-  //         audio.play(); 
-  //     }else{ 
-  //         audio.pause(); 
-  //         audio.currentTime = 0 
-  //         audio.play(); 
-  //     } 
-  //   }
+  if(currentName != name && !isFocus && !info[roomName].isPlaying){
+    if(1 && config.checkPushAlarm){
+      Push.create(name, {
+        body: text,
+        icon: '/images/icon_player.png',
+        timeout: 3000,
+        onClick: function () {
+            window.focus();
+            this.close();
+        }
+      });
+    }
+    if(1 && config.checkChattingSFX){
+      var audio = document.getElementById('audio_play'); 
+      //audio.volume = config.VolumeSFX;
+      audio.volume = 0.5;
+      if (audio.paused) { 
+          audio.play(); 
+      }else{ 
+          audio.pause(); 
+          audio.currentTime = 0 
+          audio.play(); 
+      } 
+    }
 
 
 
-  // }
+  }
 
 
   namePopover(roomName);
