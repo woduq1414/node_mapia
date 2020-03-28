@@ -882,8 +882,10 @@ $(document).on("click", "#userImg", function () {
 
 
   var after = prompt('바꿀 이름')
+  if(after){
+    socket.emit('changeName', after)
+  }
 
-  socket.emit('changeName', after)
 
 })
 
