@@ -7,6 +7,7 @@ const RESULT_TIME = 5;
 
 const CHECK_END = 1;
 const PASS_LOGIN = 0;
+const GAME_TYPE = "normal";
 
 let mafiaTeam = ["mafia", "spy"]
 
@@ -607,8 +608,8 @@ io.on('connection', function (socket) {
 
 			//custom_job
 
-			jobList[0] = "spy"
-			jobList[1] = "mafia"
+			jobList[0] = "mafia"
+			jobList[1] = "doctor"
 			jobList[2] = "soldier";
 
 			customJobArray = info[roomName].gameState.jobArray;
@@ -1735,7 +1736,7 @@ io.on('connection', function (socket) {
 			"gameState": { 
 				"time": "", "date": 0, "job": {}, "appeal": "", "jobArray" : []
 			}, 
-			"roomKey": {}, "type": "normal",
+			"roomKey": {}, "type": GAME_TYPE,
 			}
 		}
 		console.log(info[roomName])

@@ -732,7 +732,7 @@ socket.on('receiveChat', function (socketID, roomName, name, text, type, me) {
 
   text = filterXSS(text)
 
-  let newMessage = $('#gameArea').scrollTop() + $('#gameArea').height() != $('#gameArea')[0].scrollHeight
+  let newMessage = $('#gameArea').scrollTop() + $('#gameArea').height() != $('#gameArea')[0].scrollHeight && !me
 
 
   let string;
