@@ -375,6 +375,14 @@ socket.on('initJob', function (job) {
 
     noticeAppend(`당신은 ${job}입니다.`);
 
+
+    if(mafiaTeam.includes(job)){
+        noticeAppend(`시민팀을 속이고 승리하세요!`);
+    }else{
+        noticeAppend(`마피아팀을 찾고 승리하세요!`);
+    }
+
+    
     currentJob = job;
 
    

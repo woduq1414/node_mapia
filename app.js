@@ -1,12 +1,12 @@
-const NIGHT_TIME = 7;
-const DAY_TIME = 15;
+const NIGHT_TIME = 15;
+const DAY_TIME = 30;
 const VOTE_TIME = 10;
-const APPEAL_TIME = 7;
-const FINAL_TIME = 7;
+const APPEAL_TIME = 10;
+const FINAL_TIME = 10;
 const RESULT_TIME = 5;
 
 const CHECK_END = 1;
-const PASS_LOGIN = 0;
+const PASS_LOGIN = 1;
 const GAME_TYPE = "normal";
 
 let mafiaTeam = ["mafia", "spy"]
@@ -76,29 +76,65 @@ app.use(express.static(__dirname + '/public'));
 const MongoClient = require('mongodb').MongoClient;
 const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`;
 
-function connectDB()
-{
-    //localhost 로컬 호스트
-    //:27017  몽고디비 포트
-    //local db 생성시 만든 폴더 명
-    var databaseURL = uri;
-    MongoClient.connect(databaseURL,
-        function (err, database)
-        {
-            if (err)
-            {
-                console.log('db connect error');
-                return;
-            }
- 
-            console.log('db was connected : ' + databaseURL);
-            db = database;          //이 구문까지 실행되었다면 ongoDB 에 연결된 것
-        }
-    );
- 
+function connectDB() {
+	//localhost 로컬 호스트
+	//:27017  몽고디비 포트
+	//local db 생성시 만든 폴더 명
+	var databaseURL = uri;
+	MongoClient.connect(databaseURL,
+		function (err, database) {
+			if (err) {
+				console.log('db connect error');
+				return;
+			}
+
+			console.log('db was connected : ' + databaseURL);
+			db = database;          //이 구문까지 실행되었다면 ongoDB 에 연결된 것
+		}
+	);
+
 }
 
 
+
+// var async = require('async');
+var async = require('async');
+console.log("start");
+data = ""
+
+
+async.waterfall([
+	function (callback) {
+		setTimeout(function () {
+			console.log('func_1 function is called');
+			callback(null, 'first');
+		}, 2000);
+
+
+		// 출처: https://hanswsw.tistory.com/2 [Han's Dev Log]
+
+	}, // 1 
+	function (arg, callback) {
+		console.log("arg : " + arg);
+		callback(null, 'second');
+	}, // 2 
+	function (arg, callback) {
+		console.log("arg : " + arg);
+		callback(null, 'finish');
+	}  // 3 
+], function (err, result) {
+	if (err) {
+		console.log('Error 발생');
+	} else {
+		console.log('result : ' + result);
+	}  // 4
+	data = "helllo";
+});
+console.log(data);
+
+// 출처: https://hanswsw.tistory.com/2 [Han's Dev Log]
+
+console.log("end");
 
 // const client = new MongoClient(uri, { useNewUrlParser: true });
 
@@ -146,29 +182,29 @@ function randomString(len) {
 function getHash(text, max) {
 	var hash = 0, len = text.length;
 	if (text.length === 0) {
-	  return hash;
+		return hash;
 	}
 	for (i = 0; i < len; i++) {
-	  charC = text.charCodeAt(i);
-	  hash = ((hash << 2) - hash) + charC;
-	  hash = hash & hash;
+		charC = text.charCodeAt(i);
+		hash = ((hash << 2) - hash) + charC;
+		hash = hash & hash;
 	}
-  
+
 	hash = hash * hash
 
 
 
 	hash = (hash % max) + 1;
 	return hash;
-  }
+}
 
 
-function getLevel(exp){
+function getLevel(exp) {
 	console.log(exp)
 	return Math.floor(exp / 500) + 1
 }
 
-function getNeedExp(level){
+function getNeedExp(level) {
 	//console.log(exp)
 	return level * 500
 }
@@ -180,9 +216,9 @@ app.get('/main', (req, res) => {
 
 	if (req.user) {
 		sessionID = req.user.id;
-		
+
 		var user;
-		
+
 		user = client.db("test").collection("users");
 		user.findOne({ id: sessionID }, function (err, result) {
 			if (err) {
@@ -196,7 +232,7 @@ app.get('/main', (req, res) => {
 
 		});
 		client.close();
-		
+
 	} else if (PASS_LOGIN) {
 		res.render('main.ejs', { name: randomString(4) });
 	} else {
@@ -247,15 +283,15 @@ app.get('/beta', (req, res) => {
 			console.log(sessionExp)
 			console.log(`${sessionName} 로그인`);
 			level = getLevel(sessionExp);
-			res.render('beta.ejs', { name: sessionName, level : level, exp : sessionExp - getNeedExp(level - 1) });
+			res.render('beta.ejs', { name: sessionName, level: level, exp: sessionExp - getNeedExp(level - 1) });
 
 
 		});
 
 	} else if (PASS_LOGIN) {
-		let name = randomStringKR(4);
-		
-		res.render('beta.ejs', { name: name, level :  getHash(name, 150)});
+		let name = randomString(4);
+
+		res.render('beta.ejs', { name: name, level: 20, exp: 350 });
 	} else {
 		res.redirect("/index");
 	}
@@ -279,19 +315,19 @@ app.get('/index', (req, res) => {
 
 
 app.post('/api/users', (req, res) => {
-	if (req.body.userName){
+	if (req.body.userName) {
 		userName = req.body.userName
 		var user;
 		user = db.db('test').collection("users");
 
-		user.findOne({ name : userName }, function(err, result){
-			if(err){
+		user.findOne({ name: userName }, function (err, result) {
+			if (err) {
 				res.send("err")
 			}
 			res.send(result.stat);
 		});
 
-	}else{
+	} else {
 		res.send("erra");
 	}
 
@@ -344,176 +380,183 @@ io.on('connection', function (socket) {
 	function endGame(roomName, winner) {
 		io.to(roomName).emit('selectPlayerUnavailable', "");
 		if (info.hasOwnProperty(roomName)) {
-			
+
 			clearInterval(timer[roomName]);
 
 			let jobs = {}
-			for(member of info[roomName].members){
+			for (member of info[roomName].members) {
 				jobs[member] = getOriginalJobName(roomName, member);
 			}
 
 			io.to(roomName).emit('noticeGameResult', winner, RESULT_TIME, jobs);
 
 			let inc = {}
-			if (winner = "citizenWin") { //시민 승
 
 
-				for (i in info[roomName].members){
-					let member = info[roomName].members[i];
-					if (mafiaTeam.includes(getJobName(roomName, member))){
-						var user;
-
-						user = db.db('test').collection("users");
-						inc = {
-							"stat.gameCount" : 1,
-							"stat.mafiaLose" : 1,
-							"stat.exp" : 100
-						}
+			if (!PASS_LOGIN) {
+				if (winner = "citizenWin") { //시민 승
 
 
-
-					}else{
-						var user;
-
-						user = db.db('test').collection("users");
-						inc = {
-							"stat.gameCount" : 1,
-							"stat.citizenWin" : 1,
-							"stat.exp" : 200
-							
-						}
-						
-
-
-					}
-				}
-
-			} else if (winner = "mafiaWin") { // 마피아 승
-
-				for (i in info[roomName].members){
-					let member = info[roomName].members[i];
-					if (mafiaTeam.includes(getJobName(roomName, member))){
-						var user;
-
-						user = db.db('test').collection("users");
-						inc = {
-							"stat.gameCount" : 1,
-							"stat.mafiaWin" : 1,
-							"stat.exp" : 200
-						}
-
-
-
-					}else{
-						var user;
-
-						user = db.db('test').collection("users");
-						inc = {
-							"stat.gameCount" : 1,
-							"stat.citizenLose" : 1,
-							"stat.exp" : 100
-						}
-
-
-
-					}
-				}
-
-			}
-			async.parallel([
-				function(callback){
-					async.forEach(info[roomName].members, function(member, userCallback){
-						var user;
-						user = db.db('test').collection("users");
-						user.updateOne({ name : member }, {
-							$inc : inc
-						}, function(err, result){
-							user.findOne({ name : member }, function(err, result){
-		
-								let socketID = info[roomName].gameState.job[member].socketID
-								let sock = io.sockets.connected[socketID];
-								let level = getLevel(result.stat.exp)
-								console.log(level)
-								sock.emit('refreshLevel', level , result.stat.exp - getNeedExp(level - 1));
-							});
-
-							userCallback()
-						})
-					}, function(){
-						callback(null)
-						
-					})
-				}
-
-			], function(err){
-				let socketList = io.sockets.adapter.rooms[roomName].sockets;
-				let data = {};
-				
-				async.parallel([
-					function(callback){
-						async.forEach(Object.keys(socketList), function(socketID, userCallback){
-							console.log(socketID, "!!!!!")
-							let sock = io.sockets.connected[socketID];
-							data[sock.name] = {"socketID" : ""};
-							data[sock.name].socketID = socketID;
-							//let level = getHash(sock.name, 150);
-
+					for (i in info[roomName].members) {
+						let member = info[roomName].members[i];
+						if (mafiaTeam.includes(getJobName(roomName, member))) {
 							var user;
-							
+
 							user = db.db('test').collection("users");
-							
-
-							
-							async.waterfall([
-								function(callback) {
-									user.findOne({name : sock.name}, function(err, result){
-										callback(null, result);
-									})
-								}
-							], function (err, result) {
-								if(err){
-									console.log('Error 발생');
-								}else {
+							inc = {
+								"stat.gameCount": 1,
+								"stat.mafiaLose": 1,
+								"stat.exp": 100
+							}
 
 
-									let mafiaRate = result.stat.mafiaWin / (result.stat.mafiaWin + result.stat.mafiaLose + 1)
-									let citizenRate = result.stat.citizenWin / (result.stat.citizenWin + result.stat.citizenLose + 1)
 
-									if(mafiaRate >= citizenRate){
-										data[sock.name].levelType = "Mafia";
-									}else{
-										data[sock.name].levelType = "Citizen";
+						} else {
+							var user;
+
+							user = db.db('test').collection("users");
+							inc = {
+								"stat.gameCount": 1,
+								"stat.citizenWin": 1,
+								"stat.exp": 200
+
+							}
+
+
+
+						}
+					}
+
+				} else if (winner = "mafiaWin") { // 마피아 승
+
+					for (i in info[roomName].members) {
+						let member = info[roomName].members[i];
+						if (mafiaTeam.includes(getJobName(roomName, member))) {
+							var user;
+
+							user = db.db('test').collection("users");
+							inc = {
+								"stat.gameCount": 1,
+								"stat.mafiaWin": 1,
+								"stat.exp": 200
+							}
+
+
+
+						} else {
+							var user;
+
+							user = db.db('test').collection("users");
+							inc = {
+								"stat.gameCount": 1,
+								"stat.citizenLose": 1,
+								"stat.exp": 100
+							}
+
+
+
+						}
+					}
+
+				}
+				async.parallel([
+					function (callback) {
+						async.forEach(info[roomName].members, function (member, userCallback) {
+							var user;
+							user = db.db('test').collection("users");
+							user.updateOne({ name: member }, {
+								$inc: inc
+							}, function (err, result) {
+								user.findOne({ name: member }, function (err, result) {
+
+									let socketID = info[roomName].gameState.job[member].socketID
+									let sock = io.sockets.connected[socketID];
+									let level = getLevel(result.stat.exp)
+									console.log(level)
+									sock.emit('refreshLevel', level, result.stat.exp - getNeedExp(level - 1));
+								});
+
+								userCallback()
+							})
+						}, function () {
+							callback(null)
+
+						})
+					}
+
+				], function (err) {
+					let socketList = io.sockets.adapter.rooms[roomName].sockets;
+					let data = {};
+
+					async.parallel([
+						function (callback) {
+							async.forEach(Object.keys(socketList), function (socketID, userCallback) {
+								console.log(socketID, "!!!!!")
+								let sock = io.sockets.connected[socketID];
+								data[sock.name] = { "socketID": "" };
+								data[sock.name].socketID = socketID;
+								//let level = getHash(sock.name, 150);
+
+								var user;
+
+								user = db.db('test').collection("users");
+
+
+
+								async.waterfall([
+									function (callback) {
+										user.findOne({ name: sock.name }, function (err, result) {
+											callback(null, result);
+										})
 									}
+								], function (err, result) {
+									if (err) {
+										console.log('Error 발생');
+									} else {
 
 
-									data[sock.name].level = getLevel(result.stat.exp)
-								}  // 4
+										let mafiaRate = result.stat.mafiaWin / (result.stat.mafiaWin + result.stat.mafiaLose + 1)
+										let citizenRate = result.stat.citizenWin / (result.stat.citizenWin + result.stat.citizenLose + 1)
+
+										if (mafiaRate >= citizenRate) {
+											data[sock.name].levelType = "Mafia";
+										} else {
+											data[sock.name].levelType = "Citizen";
+										}
+
+
+										data[sock.name].level = getLevel(result.stat.exp)
+									}  // 4
 
 									userCallback();
-							});
-							
+								});
 
-							
-						
-						}, function(){
-							callback(null);
-						})
 
-					}
-				], function (err) {
-					console.log("@@@@@@@@@@@@@@@@22");
-					console.log(data)
-					io.to(roomName).emit('refreshRoom', data);
 
-				});
-			})
-			
 
-			
-			
+							}, function () {
+								callback(null);
+							})
 
-		
-			
+						}
+					], function (err) {
+						console.log("@@@@@@@@@@@@@@@@22");
+						console.log(data)
+						io.to(roomName).emit('refreshRoom', data);
+
+					});
+				})
+			}
+
+
+
+
+
+
+
+
+
+
 
 
 			timeLimit[roomName] = RESULT_TIME;
@@ -528,7 +571,7 @@ io.on('connection', function (socket) {
 					refreshMain(info);
 
 					io.to(roomName).emit('endGame');
-					
+
 				}
 			}, 1000)
 		}
@@ -578,12 +621,12 @@ io.on('connection', function (socket) {
 				return n;
 			}
 			maxMember -= addJob("mafia", Math.floor(maxMember / 4));
-			if(maxMember >= 5){
+			if (maxMember >= 5) {
 				maxMember -= addJob("spy", 1);
 			}
 			maxMember -= addJob("police", 1);
 			maxMember -= addJob("doctor", 1);
-			
+
 			let specialJob = ["soldier", "politician", "shaman", "reporter", "detective", "priest"];
 			let temp = specialJob;
 			for (let i = 0; i < maxMember; i++) {
@@ -613,7 +656,7 @@ io.on('connection', function (socket) {
 			jobList[2] = "soldier";
 
 			customJobArray = info[roomName].gameState.jobArray;
-			for(let i in customJobArray){
+			for (let i in customJobArray) {
 				jobList[i] = customJobArray[i]
 			}
 		}
@@ -650,7 +693,7 @@ io.on('connection', function (socket) {
 		for (socketID in roomMember) {
 			//console.log(memberID);
 			let sock = io.sockets.connected[socketID];
-			info[roomName].gameState.job[sock.name] = { "socketID": sock.id, "jobName": jobList[i], "selected": "", "ability": 1, "originalJobName": jobList[i], "contacted" : 0 };
+			info[roomName].gameState.job[sock.name] = { "socketID": sock.id, "jobName": jobList[i], "selected": "", "ability": 1, "originalJobName": jobList[i], "contacted": 0 };
 
 			if (jobList[i] == "mafia") {
 				sock.join(mafiaRoomName)
@@ -799,22 +842,22 @@ io.on('connection', function (socket) {
 		let mafiaCount = 0;
 		for (i in aliveMember) {
 			if (getJobName(roomName, aliveMember[i]) == "mafia" ||
-			 (mafiaTeam.includes(getJobName(roomName, aliveMember[i])) && getIsContacted(roomName, aliveMember[i])) ) {
+				(mafiaTeam.includes(getJobName(roomName, aliveMember[i])) && getIsContacted(roomName, aliveMember[i]))) {
 				mafiaCount += 1;
 			} else {
 				citizenCount += 1;
 			}
 		}
-		if (CHECK_END){
+		if (CHECK_END) {
 			if (mafiaCount == 0) { //시민 승
 
 
-			
+
 
 				return "citizenWin"
 			} else if (mafiaCount >= citizenCount) { // 마피아 승
 
-			
+
 				return "mafiaWin"
 			} else {
 				return "";
@@ -826,7 +869,7 @@ io.on('connection', function (socket) {
 
 	function setDate(roomName, date, time) {
 
-		
+
 
 
 
@@ -843,7 +886,7 @@ io.on('connection', function (socket) {
 
 			info[roomName].gameState.time = "night"
 
-			
+
 
 			io.to(roomName).emit('getDateStatus', date, "밤")
 
@@ -915,7 +958,7 @@ io.on('connection', function (socket) {
 
 
 		} else if (time == "day") {
-			
+
 
 			info[roomName].gameState.time = "day"
 
@@ -925,7 +968,7 @@ io.on('connection', function (socket) {
 			io.to(roomName).emit('selectPlayerUnavailable', "");
 
 
-			
+
 
 
 
@@ -1283,7 +1326,7 @@ io.on('connection', function (socket) {
 		let before = socket.name;
 
 		let nameReg = /^[a-zA-Z가-힣]([a-zA-Z0-9가-힣]){1,9}$/
-		if(after.match(nameReg) == null){
+		if (after.match(nameReg) == null) {
 			socket.emit('failSetName');
 			console.log(after)
 			return;
@@ -1296,34 +1339,39 @@ io.on('connection', function (socket) {
 				console.error('UpdateOne Error ', err);
 				socket.emit('failSetName');
 				f = 1;
-			}	
+			}
+			if (PASS_LOGIN){
+				f = 0;
+			}
+
+
 			if (f == 0) {
 				for (key in info) {
-	
+
 					for (i in info[key]["members"]) {
 						if (info[key]["members"][i] == before) {
 							temp = key;
 							info[key]["members"][i] = after;
-	
-	
+
+
 						}
-	
+
 					}
-	
+
 				}
 				socket.name = after;
 				socket.emit('successSetName', after);
 				refreshMain(info);
-	
+
 				io.to(temp).emit('noticeChangeName', before, after, socket.id);
-	
+
 				//console.log("ASD", before, after ,"sdf");
-	
+
 				// userModel2.findOneAndUpdate({name:before}, { $set:  {name:after} }, function(){
 				// 	console.log(after);
 				// });
 				// userModel2.findOne({'name': before }, function (err, doc) {
-	
+
 				// 	console.log(err, doc);
 				// 	doc.name = 'jason bourne';
 				// 	doc.save(function (err) {
@@ -1331,7 +1379,7 @@ io.on('connection', function (socket) {
 				// 					throw err;
 				// 				}
 				// 				else {
-	
+
 				// 				}
 				// 	});
 				// });
@@ -1341,7 +1389,7 @@ io.on('connection', function (socket) {
 				// 	}
 				// 	else {
 				// 		user.name = after;
-	
+
 				// 		user.save(function (err) {
 				// 			if (err) {
 				// 				throw err;
@@ -1352,31 +1400,37 @@ io.on('connection', function (socket) {
 				// 				console.log(user)
 				// 			}
 				// 		});
-	
+
 				// 	}
 				// 	console.log("SAD", user)
 				// });
 				// const MongoClient = require('mongodb').MongoClient;
 				// const uri = `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@cluster0-jhl8c.mongodb.net/test?retryWrites=true&w=majority`;
-	
+
 				// const client = new MongoClient(uri, { useNewUrlParser: true });
-				var users;
-				users = db.db("test").collection("users");
-				users.updateOne({ name: before }, { $set: { name: after } }, function (err, result) {
-					if (err) {
-						console.error('UpdateOne Error ', err);
-						return;
-					}
-					//console.log('UpdateOne 성공 ');
-				});
-	
+				
+				
+				if(!PASS_LOGIN){
+					var users;
+					users = db.db("test").collection("users");
+					users.updateOne({ name: before }, { $set: { name: after } }, function (err, result) {
+						if (err) {
+							console.error('UpdateOne Error ', err);
+							return;
+						}
+						//console.log('UpdateOne 성공 ');
+					});
+				}
+
+				
+
 			}
-	
+
 			refreshMain(info);
 		});
 
 
-		
+
 	})
 
 	socket.on('changeRoomName', function (before, after) {
@@ -1432,10 +1486,10 @@ io.on('connection', function (socket) {
 
 
 
-		
+
 	})
 
-	socket.on('requestRefreshMain', function(){
+	socket.on('requestRefreshMain', function () {
 		refreshMain(info);
 	})
 
@@ -1486,57 +1540,64 @@ io.on('connection', function (socket) {
 
 					socket.join(roomName, () => {
 
-						
+
 						let socketList = io.sockets.adapter.rooms[roomName].sockets;
 						let data = {};
-						
+
 						async.parallel([
-							function(callback){
-								async.forEach(Object.keys(socketList), function(socketID, userCallback){
+							function (callback) {
+								async.forEach(Object.keys(socketList), function (socketID, userCallback) {
 									console.log(socketID, "!!!!!")
 									let sock = io.sockets.connected[socketID];
-									data[sock.name] = {"socketID" : ""};
+									data[sock.name] = { "socketID": "" };
 									data[sock.name].socketID = socketID;
 									//let level = getHash(sock.name, 150);
-		
-									var user;
-									
-									user = db.db('test').collection("users");
-									
 
-									
+									var user;
+
+									user = db.db('test').collection("users");
+
+
+
 									async.waterfall([
-										function(callback) {
-											user.findOne({name : sock.name}, function(err, result){
+										function (callback) {
+											user.findOne({ name: sock.name }, function (err, result) {
 												callback(null, result);
 											})
 										}
 									], function (err, result) {
-										if(err){
+										if (err) {
 											console.log('Error 발생');
-										}else {
+										} else {
 
-
-											let mafiaRate = result.stat.mafiaWin / (result.stat.mafiaWin + result.stat.mafiaLose + 1)
-											let citizenRate = result.stat.citizenWin / (result.stat.citizenWin + result.stat.citizenLose + 1)
-
-											if(mafiaRate >= citizenRate){
-												data[sock.name].levelType = "Mafia";
-											}else{
+											if (PASS_LOGIN) {
 												data[sock.name].levelType = "Citizen";
+												data[sock.name].level = 20;
+											} else {
+												let mafiaRate = result.stat.mafiaWin / (result.stat.mafiaWin + result.stat.mafiaLose + 1)
+												let citizenRate = result.stat.citizenWin / (result.stat.citizenWin + result.stat.citizenLose + 1)
+
+												if (mafiaRate >= citizenRate) {
+													data[sock.name].levelType = "Mafia";
+												} else {
+													data[sock.name].levelType = "Citizen";
+												}
+
+
+												data[sock.name].level = getLevel(result.stat.exp)
 											}
 
 
-											data[sock.name].level = getLevel(result.stat.exp)
+
 										}  // 4
 
-											userCallback();
+										userCallback();
 									});
-									
 
-									
-								
-								}, function(){
+
+
+
+								}, function () {
 									callback(null);
 								})
 
@@ -1553,9 +1614,9 @@ io.on('connection', function (socket) {
 						});
 
 
-						
-						
-						
+
+
+
 					});
 				}
 
@@ -1617,12 +1678,12 @@ io.on('connection', function (socket) {
 
 
 	socket.on('mandateRoomMaster', function (roomName, socketID) {
-		if(socket.name != info[roomName].members[0]) return;
-		
+		if (socket.name != info[roomName].members[0]) return;
+
 		let sock = io.sockets.connected[socketID]
 		let name = sock.name;
-		
-		if(info[roomName].members[0] == sock.name) return;
+
+		if (info[roomName].members[0] == sock.name) return;
 
 		for (i in info[roomName].members) {
 			if (info[roomName].members[i] == name) {
@@ -1640,12 +1701,12 @@ io.on('connection', function (socket) {
 
 
 	socket.on('kick', function (roomName, socketID) {
-		if(socket.name != info[roomName].members[0]) return;
+		if (socket.name != info[roomName].members[0]) return;
 		let sock = io.sockets.connected[socketID]
 		//console.log(socketID);
 		let name = sock.name;
-		
-		if(info[roomName].members[0] == sock.name) return;
+
+		if (info[roomName].members[0] == sock.name) return;
 
 		for (i in info[roomName].members) {
 			if (info[roomName].members[i] == name) {
@@ -1671,12 +1732,12 @@ io.on('connection', function (socket) {
 		let sock = io.sockets.connected[socketID]
 		let name = sock.name;
 
-		if(!text) return;
+		if (!text) return;
 
-		if(text.charAt(0) == '/'){
+		if (text.charAt(0) == '/') {
 			let code = text.substring(1, text.length);
-			if(code.split(' ')[0] == "sj"){
-				if (code.split(' ')[1]){
+			if (code.split(' ')[0] == "sj") {
+				if (code.split(' ')[1]) {
 					info[roomName].gameState.jobArray = code.split(' ')[1].split(',')
 					console.log(code.split(' ')[1].split(','))
 					socket.emit('gameMessage', `${code.split(' ')[1]}로 설정됨.`)
@@ -1706,7 +1767,7 @@ io.on('connection', function (socket) {
 					} else if (getJobName(roomName, name) == "shaman") {
 						socket.broadcast.to(info[roomName].roomKey.dead).emit('receiveChat', socket.id, roomName, name, text, "normal", 0);
 						socket.emit('receiveChat', socket.id, roomName, name, text, "normal", 1);
-					} else if(mafiaTeam.includes(getJobName(roomName, name)) && getIsContacted(roomName, name)){
+					} else if (mafiaTeam.includes(getJobName(roomName, name)) && getIsContacted(roomName, name)) {
 						socket.broadcast.to(info[roomName].roomKey.mafia).emit('receiveChat', socket.id, roomName, name, text, "mafia", 0);
 						socket.emit('receiveChat', socket.id, roomName, name, text, "mafia", 1);
 					}
@@ -1732,11 +1793,12 @@ io.on('connection', function (socket) {
 
 		roomName = xss(roomName);
 		if (!info.hasOwnProperty(roomName)) {
-			info[roomName] = { "members": [], "password": password, "limit": roomLimit, "isPlaying": 0, 
-			"gameState": { 
-				"time": "", "date": 0, "job": {}, "appeal": "", "jobArray" : []
-			}, 
-			"roomKey": {}, "type": GAME_TYPE,
+			info[roomName] = {
+				"members": [], "password": password, "limit": roomLimit, "isPlaying": 0,
+				"gameState": {
+					"time": "", "date": 0, "job": {}, "appeal": "", "jobArray": []
+				},
+				"roomKey": {}, "type": GAME_TYPE,
 			}
 		}
 		console.log(info[roomName])
@@ -1793,7 +1855,7 @@ io.on('connection', function (socket) {
 
 				}
 
-			} else if (getJobName(roomName, socket.name) == "doctor"){
+			} else if (getJobName(roomName, socket.name) == "doctor") {
 				info[roomName].gameState.job[socket.name].selected = selected;
 				selectActived = 1;
 
@@ -1833,24 +1895,24 @@ io.on('connection', function (socket) {
 				selectActived = 1;
 				if (getJobName(roomName, selected) == "mafia") {
 					socket.emit('spyResult', selected, getJobName(roomName, selected));
-					
-					if(!getIsContacted(roomName, socket.name)){
+
+					if (!getIsContacted(roomName, socket.name)) {
 						info[roomName].gameState.job[socket.name].contacted = 1;
 						socket.join(info[roomName].roomKey.mafia);
 						let currentMafiaTeam = {}
-						for(member of info[roomName].members){
-							if(mafiaTeam.includes(getJobName(roomName, member))){
+						for (member of info[roomName].members) {
+							if (mafiaTeam.includes(getJobName(roomName, member))) {
 								currentMafiaTeam[member] = getJobName(roomName, member);
 							}
 						}
-						for(member in currentMafiaTeam){
+						for (member in currentMafiaTeam) {
 							let socketID = info[roomName].gameState.job[member].socketID;
 							let sock = io.sockets.connected[socketID];
 							sock.emit('mafiaContacted', currentMafiaTeam);
 						}
-						
+
 					}
-					
+
 
 				} else {
 					socket.emit('spyResult', selected, getJobName(roomName, selected));
@@ -1878,15 +1940,15 @@ io.on('connection', function (socket) {
 
 	})
 
-	socket.on('lengthenTime', function(roomName){
-		if(info[roomName].gameState.time == "day"){
+	socket.on('lengthenTime', function (roomName) {
+		if (info[roomName].gameState.time == "day") {
 			timeLimit[roomName] = timeLimit[roomName] + 15;
 		}
-		
+
 	})
 
-	socket.on('shortenTime', function(roomName){
-		if(info[roomName].gameState.time == "day"){
+	socket.on('shortenTime', function (roomName) {
+		if (info[roomName].gameState.time == "day") {
 			timeLimit[roomName] = timeLimit[roomName] - 15;
 		}
 	})
