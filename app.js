@@ -951,7 +951,7 @@ io.on('connection', function (socket) {
 				}
 			}, 1000)
 
-			if (date == 3) {
+			if (date == 99) {
 				endGame(roomName);
 			}
 
